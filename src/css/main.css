@@ -1,0 +1,3324 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.app {
+  display: grid;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  grid-template-columns: minmax(90px, 16%) minmax(0, 1fr) minmax(90px, 16%);
+  grid-template-rows: 48px minmax(0, 1fr) 32px;
+  grid-template-areas:
+    "header header header"
+    "left content right"
+    "footer footer footer";
+  background: #fff;
+  color: #000;
+}
+
+.app > * {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #D4D4D4;
+}
+
+.header {
+  grid-area: header;
+}
+
+.sidebar-left {
+  grid-area: left;
+}
+
+.sidebar-right {
+  grid-area: right;
+}
+
+.content {
+  grid-area: content;
+  overflow: hidden;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+.header, .footer {
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+}
+
+.sidebar {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .app {
+    grid-template-columns: 80px minmax(0, 1fr) 80px;
+  }
+
+  .sidebar {
+    padding: 8px 2px;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+}
+/* PROYECTOZ CHAT V002 */
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  text-align: initial;
+  overflow: hidden;
+}
+
+.chat-title {
+  flex: 0 0 26px;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid #D4D4D4;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.chat-messages {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.chat-message {
+  flex: 0 0 auto;
+  height: 20px;
+  border: 1px solid #D4D4D4;
+  background: #fff;
+}
+
+.chat-message.received {
+  align-self: flex-start;
+}
+
+.chat-message.sent {
+  align-self: flex-end;
+}
+
+.chat-message.short {
+  width: 55%;
+}
+
+.chat-message.medium {
+  width: 78%;
+  height: 28px;
+}
+
+.chat-composer {
+  flex: 0 0 30px;
+  display: flex;
+  padding: 3px;
+  border-top: 1px solid #D4D4D4;
+}
+
+.chat-composer input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #D4D4D4;
+  border-radius: 5px;
+  background: #fff;
+  color: #000;
+  outline-offset: 2px;
+}
+
+/* PROYECTOZ CHAT FUNCIONAL V003 */
+
+.chat-title {
+  position: relative;
+}
+
+#chat-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #000;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-message.chat-message-own {
+  align-self: flex-end;
+  width: fit-content;
+  max-width: 95%;
+  height: auto;
+  min-height: 24px;
+  padding: 4px 6px;
+  border: 1px solid #D4D4D4;
+  background: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.chat-composer {
+  gap: 3px;
+}
+
+.chat-composer input {
+  flex: 1 1 0;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.chat-composer button {
+  flex: 0 0 25px;
+  border: 1px solid #D4D4D4;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+.chat-composer button:hover,
+#chat-clear:hover {
+  background: #e5e5e5;
+}
+/* PROYECTOZ PROFILE V005 */
+
+.player-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+}
+
+.player-name {
+  flex: 0 0 auto;
+  padding: 2px 3px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  border-bottom: 1px solid #D4D4D4;
+}
+
+.player-avatar {
+  flex: 0 0 auto;
+  width: calc(100% - 8px);
+  aspect-ratio: 4 / 3;
+  max-height: 100px;
+  margin: 3px auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid #D4D4D4;
+  font-size: 12px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.player-stats {
+  padding: 3px;
+  border-bottom: 1px solid #D4D4D4;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.player-level {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.player-level > span {
+  white-space: nowrap;
+}
+
+.player-progress {
+  flex: 1;
+  min-width: 0;
+  height: 10px;
+  border: 1px solid #D4D4D4;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.player-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #000;
+}
+
+.player-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+}
+
+.player-navigation button {
+  width: 100%;
+  min-height: 24px;
+  padding: 2px;
+  border: 1px solid #D4D4D4;
+  border-radius: 7px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: clamp(8px, 0.85vw, 12px);
+  font-weight: bold;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.player-navigation button:hover {
+  background: #e5e5e5;
+}
+
+.player-navigation button:focus-visible {
+  outline: 2px solid #777;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .player-name {
+    font-size: 11px;
+  }
+
+  .player-avatar {
+    font-size: 10px;
+  }
+
+  .player-stats {
+    font-size: 10px;
+  }
+
+  .player-navigation {
+    padding: 2px;
+  }
+}
+/* PROYECTOZ NAME EDITOR V006 */
+
+.player-name {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 22px;
+  overflow: hidden;
+}
+
+#player-display-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#player-edit-name {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+  cursor: pointer;
+}
+
+#player-edit-name:hover {
+  background: #e5e5e5;
+}
+
+#player-name-input {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #D4D4D4;
+  background: #fff;
+  color: #000;
+}
+
+#player-name-input[hidden] {
+  display: none;
+}
+/* PROYECTOZ MUSIC V008 */
+
+.player-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.music-player {
+  flex: 0 0 auto;
+  margin-top: auto;
+  width: 100%;
+  padding: 3px;
+  border-top: 1px solid #D4D4D4;
+  background: #fff;
+  color: #000;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.music-track {
+  padding: 3px;
+  border: 1px solid #D4D4D4;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-type {
+  min-height: 24px;
+  padding: 3px;
+  border: 1px solid #D4D4D4;
+  border-top: 0;
+  overflow-wrap: anywhere;
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 25px;
+  border: 1px solid #D4D4D4;
+  border-top: 0;
+}
+
+.music-controls button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.music-controls button:hover {
+  background: #e5e5e5;
+}
+
+.music-controls button:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+#music-toggle {
+  border: 1px solid #D4D4D4;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+}
+
+/* PROYECTOZ MUSIC V010 - EXPANDED CONTENT */
+
+.music-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: initial;
+  flex: 0 0 auto;
+  min-height: 0;
+  height: 170px;
+  padding: 5px;
+  font-size: 13px;
+}
+
+.music-track {
+  flex: 0 0 42px;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.music-type {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.music-controls {
+  flex: 0 0 52px;
+  min-height: 0;
+  gap: 14px;
+}
+
+.music-controls button {
+  width: 38px;
+  height: 38px;
+  font-size: 19px;
+}
+
+#music-toggle {
+  width: 38px;
+  height: 38px;
+  border-width: 1px;
+}
+
+@media (max-height: 500px) {
+  .music-player {
+    height: 135px;
+  }
+
+  .music-track {
+    flex-basis: 34px;
+  }
+
+  .music-controls {
+    flex-basis: 42px;
+  }
+}
+/* PROYECTOZ AVATAR V012 - STRICT SQUARE */
+
+.player-avatar {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+
+  width: calc(100% - 8px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  max-height: none;
+
+  flex: 0 0 auto;
+  margin: 4px auto;
+  padding: 0;
+  overflow: hidden;
+}
+
+.player-avatar span {
+  display: block;
+  text-align: center;
+}
+
+/* PROYECTOZ AVATAR V013 - COMPACT SQUARE */
+
+.player-avatar {
+  width: min(120px, calc(100% - 8px));
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-width: 120px;
+  max-height: 120px;
+  margin: 5px auto;
+  flex: 0 0 auto;
+}
+
+/* PROYECTOZ NAVIGATION V014 */
+
+.player-navigation {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 5px;
+  overflow-y: auto;
+}
+
+.player-navigation button {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 30px;
+  margin: 0;
+}
+
+.music-player {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+@media (max-height: 550px) {
+  .player-navigation {
+    gap: 4px;
+    padding: 4px;
+    justify-content: safe center;
+  }
+
+  .player-navigation button {
+    min-height: 24px;
+  }
+}
+/* PROYECTOZ XP V015 - INDEPENDENT LAYOUT */
+
+.player-xp-system {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 4px;
+}
+
+.player-xp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-level-label {
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-xp-percentage {
+  flex: 0 0 auto;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.player-xp-system .player-progress {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  height: 12px;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #D4D4D4;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.player-xp-system .player-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #000;
+  transition: width 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-xp-system .player-progress-fill {
+    transition: none;
+  }
+}
+/* PROYECTOZ BORDERS V017 */
+
+:root {
+  --border-structural: #D4D4D4;
+  --border-internal: #E5E5E5;
+  --border-interactive: #C4C4C4;
+}
+
+.app > * {
+  border-color: var(--border-structural);
+}
+
+.chat-title,
+.player-name,
+.player-stats,
+.music-player {
+  border-color: var(--border-structural);
+}
+
+.player-avatar,
+.player-progress,
+.chat-message,
+.chat-composer input,
+.chat-composer button,
+.player-navigation button,
+.music-track,
+.music-type,
+.music-controls {
+  border-color: var(--border-internal);
+}
+
+.player-navigation button:hover,
+.chat-composer button:hover {
+  border-color: var(--border-interactive);
+}
+
+/* PROYECTOZ DARK MODE V018 */
+
+:root {
+  color-scheme: dark;
+
+  --pz-base: #101010;
+  --pz-panel: #181818;
+  --pz-surface: #222222;
+  --pz-hover: #2C2C2C;
+  --pz-border: #343434;
+  --pz-border-soft: #292929;
+  --pz-text: #EAEAEA;
+  --pz-muted: #A0A0A0;
+
+  --border-structural: var(--pz-border);
+  --border-internal: var(--pz-border-soft);
+  --border-interactive: #555555;
+}
+
+html,
+body {
+  background: var(--pz-base);
+  color: var(--pz-text);
+}
+
+.app {
+  background: var(--pz-base);
+  color: var(--pz-text);
+}
+
+.app > *,
+.header,
+.footer,
+.sidebar,
+.sidebar-left,
+.sidebar-right,
+.chat-panel,
+.player-panel {
+  background: var(--pz-panel);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+}
+
+main,
+.main,
+.main-content,
+.content,
+.content-area,
+.game-area,
+.game-container,
+#game-root {
+  background: var(--pz-base);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+}
+
+.chat-title,
+.player-name,
+.player-stats,
+.player-navigation,
+.music-player {
+  background: var(--pz-panel);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+}
+
+.player-avatar,
+.music-track,
+.music-type,
+.music-controls {
+  background: var(--pz-surface);
+  color: var(--pz-text);
+  border-color: var(--pz-border-soft);
+}
+
+.player-navigation button,
+.chat-composer button,
+.music-controls button,
+#player-edit-name,
+#chat-clear {
+  background: var(--pz-surface);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+}
+
+.player-navigation button:hover,
+.chat-composer button:hover,
+.music-controls button:hover,
+#player-edit-name:hover,
+#chat-clear:hover {
+  background: var(--pz-hover);
+  color: #FFFFFF;
+}
+
+.chat-composer,
+.chat-messages {
+  background: var(--pz-panel);
+  color: var(--pz-text);
+}
+
+.chat-message.chat-message-own {
+  background: var(--pz-surface);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+}
+
+.chat-composer input,
+#player-name-input {
+  background: var(--pz-base);
+  color: var(--pz-text);
+  border-color: var(--pz-border);
+  caret-color: var(--pz-text);
+}
+
+input::placeholder {
+  color: var(--pz-muted);
+  opacity: 1;
+}
+
+.player-xp-system,
+.player-xp-header,
+.player-level-label,
+.player-xp-percentage {
+  color: var(--pz-text);
+}
+
+.player-xp-system .player-progress {
+  background: var(--pz-base);
+  border-color: var(--pz-border);
+}
+
+.player-xp-system .player-progress-fill {
+  background: var(--pz-text);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #A0A0A0;
+  outline-offset: 2px;
+}
+
+/* PROYECTOZ EMOJI PICKER V019 */
+
+.chat-panel {
+  position: relative;
+}
+
+.chat-composer {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.chat-composer input {
+  min-width: 0;
+}
+
+#chat-emoji-toggle {
+  flex: 0 0 25px;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--pz-border, #343434);
+  border-radius: 4px;
+  background: var(--pz-surface, #222222);
+  color: var(--pz-text, #EAEAEA);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#chat-emoji-toggle:hover,
+#chat-emoji-close:hover {
+  background: var(--pz-hover, #2C2C2C);
+}
+
+.chat-emoji-picker {
+  position: absolute;
+  bottom: 39px;
+  left: 5px;
+  right: 5px;
+  z-index: 20;
+  max-height: min(310px, 55%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--pz-border, #343434);
+  border-radius: 6px;
+  background: var(--pz-panel, #181818);
+  color: var(--pz-text, #EAEAEA);
+  box-shadow: 0 8px 24px #0008;
+}
+
+.chat-emoji-picker[hidden] {
+  display: none !important;
+}
+
+.chat-emoji-header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--pz-border, #343434);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+#chat-emoji-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.chat-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  padding: 6px;
+  overflow-y: auto;
+}
+
+.chat-emoji-grid button {
+  min-width: 0;
+  height: 33px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 21px;
+  cursor: pointer;
+}
+
+.chat-emoji-grid button:hover,
+.chat-emoji-grid button:focus-visible {
+  background: var(--pz-hover, #2C2C2C);
+}
+/* PROYECTOZ XP SEPARATOR V020 */
+
+.player-xp-system {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #343434;
+}
+
+/* PROYECTOZ STATS V021 */
+
+.player-stats {
+  padding: 4px 5px 10px;
+}
+
+.player-stats > .player-xp-system ~ div {
+  padding-left: 8px;
+  padding-right: 8px;
+  line-height: 1.7;
+}
+
+.player-stats > .player-xp-system + div {
+  padding-top: 8px;
+}
+
+.player-stats > div:last-child {
+  padding-bottom: 8px;
+}
+
+/* PROYECTOZ NAVIGATION V022 - NO SCROLL */
+
+.player-navigation {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(4px, 1vh, 10px);
+  padding: 8px 5px;
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+.player-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+.player-navigation button {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+}
+
+@media (max-height: 650px) {
+  .player-navigation {
+    gap: 4px;
+    padding: 4px 5px;
+  }
+
+  .player-navigation button {
+    min-height: 25px;
+  }
+}
+
+/* ===== CELTIC PULSE V027 ===== */
+
+.music-player {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: #080f0e;
+}
+
+#music-visualizer-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.music-player > :not(#music-visualizer-canvas) {
+    position: relative;
+    z-index: 1;
+}
+
+.music-player .music-track,
+.music-player .music-type {
+    background: rgba(7, 17, 16, 0.40);
+    border-color: rgba(99, 171, 150, 0.16);
+    backdrop-filter: blur(3px);
+}
+
+.music-player .music-controls {
+    background: rgba(7, 17, 16, 0.30);
+    border-color: rgba(99, 171, 150, 0.16);
+}
+
+.music-player .music-controls button {
+    background: rgba(10, 23, 21, 0.66);
+    border-color: rgba(105, 185, 156, 0.20);
+    color: #e0f7ef;
+}
+
+.music-player .music-controls button:hover {
+    background: rgba(27, 76, 64, 0.80);
+    color: #ffffff;
+}
+
+.music-player #music-toggle {
+    border-color: rgba(116, 220, 181, 0.48);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #music-visualizer-canvas {
+        opacity: 0.55;
+    }
+}
+/* PROYECTOZ MUSIC CLEAN V032 */
+
+/* Remove the secondary music label entirely */
+.music-player .music-type {
+    display: none !important;
+}
+
+/* Remove blur and translucent panels */
+.music-player .music-track,
+.music-player .music-controls {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* Keep the track title legible */
+.music-player .music-track {
+    border: 0;
+    color: #e8fff5;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Let the visualizer remain sharp behind the controls */
+.music-player .music-controls {
+    border: 0;
+}
+/* PROYECTOZ IMMERSIVE CONTROLS V033 */
+
+/* Preserve the full visualizer surface */
+.music-player {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Track title stays visible */
+.music-player .music-track {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+}
+
+/* Controls overlay the visualizer without occupying its layout */
+.music-player .music-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    z-index: 3;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    height: 44px;
+    background: transparent;
+    border: 0;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+
+    transition:
+        opacity 220ms ease,
+        transform 220ms ease,
+        visibility 220ms ease;
+}
+
+/* Reveal controls on hover or keyboard focus */
+.music-player:hover .music-controls,
+.music-player:focus-within .music-controls {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Compact translucent buttons */
+.music-player .music-controls button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0;
+
+    background: rgba(4, 18, 17, 0.72);
+    color: #e9fff5;
+    border: 1px solid rgba(110, 235, 185, 0.25);
+    border-radius: 50%;
+
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* Main play/pause button */
+.music-player #music-toggle {
+    width: 40px;
+    height: 40px;
+    border-color: rgba(116, 240, 190, 0.55);
+}
+
+/* Hover feedback */
+.music-player .music-controls button:hover {
+    background: rgba(21, 95, 76, 0.9);
+    border-color: rgba(139, 255, 210, 0.8);
+}
+
+/* Touch devices must retain accessible controls */
+@media (hover: none) {
+    .music-player .music-controls {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+    }
+}
+
+/* Avoid unnecessary animation for reduced-motion users */
+@media (prefers-reduced-motion: reduce) {
+    .music-player .music-controls {
+        transition: none;
+    }
+}
+/* CERCO PIXEL TYPOGRAPHY V035 */
+
+/* Readable pixel-art font */
+
+
+:root {
+    --cerco-font: 'Pixelify Sans', 'Segoe UI', sans-serif;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select {
+    font-family: var(--cerco-font);
+}
+
+body {
+    font-size: 15px;
+    letter-spacing: 0.1px;
+    -webkit-font-smoothing: none;
+}
+
+/* Project identity */
+.header {
+    font-family: var(--cerco-font);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* Interface buttons */
+button {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* Chat readability */
+.chat-panel,
+.chat-message,
+.chat-composer input {
+    font-family: var(--cerco-font);
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+/* Player information */
+.player-name {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.player-stats {
+    font-size: 15px;
+}
+
+/* Music title */
+.music-player .music-track {
+    font-family: var(--cerco-font);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+/* Preserve recognizable playback symbols */
+.music-controls button {
+    font-family: Arial, sans-serif;
+}
+
+/* CERCO PIXEL OPERATOR V036 */
+
+@font-face {
+    font-family: 'CERCO Pixel';
+    src: url('../../assets/fonts/PixelOperator.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+:root {
+    --cerco-font: 'CERCO Pixel', monospace;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select {
+    font-family: var(--cerco-font);
+    font-synthesis: none;
+}
+
+body {
+    font-size: 16px;
+    letter-spacing: 0;
+    -webkit-font-smoothing: none;
+}
+
+.header {
+    font-family: var(--cerco-font);
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+button,
+.chat-panel,
+.chat-message,
+.chat-composer input,
+.player-stats {
+    font-family: var(--cerco-font);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.player-name {
+    font-family: var(--cerco-font);
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.music-player .music-track {
+    font-family: var(--cerco-font);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.music-player .music-controls button {
+    font-family: Arial, sans-serif;
+}
+
+/* CERCO SIDEBAR FIT V038 */
+
+/* Compact the information block */
+.player-stats {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 5px 5px 6px;
+    min-height: 0;
+}
+
+.player-stats > * {
+    margin: 0;
+}
+
+.player-stats > .player-xp-system ~ div {
+    padding: 0 8px;
+    line-height: 1.15;
+}
+
+.player-stats > .player-xp-system + div {
+    padding-top: 5px;
+}
+
+.player-stats > div:last-child {
+    padding-bottom: 3px;
+}
+
+/* Three equal rows within the available space */
+.player-navigation {
+    flex: 1 1 0;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(3px, 0.7vh, 8px);
+    padding: 5px;
+    align-content: stretch;
+    justify-content: stretch;
+    overflow: hidden;
+}
+
+/* Never allow buttons to exceed their grid rows */
+.player-navigation > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 46px;
+    margin: 0;
+    padding: 2px 4px;
+    box-sizing: border-box;
+    flex: initial;
+    font-size: clamp(10px, 1vw, 14px);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    justify-self: stretch;
+    align-self: center;
+}
+
+/* Music area remains untouched and anchored */
+.music-player {
+    flex: 0 0 170px;
+    height: 170px;
+    min-height: 0;
+}
+
+@media (max-height: 500px) {
+    .music-player {
+        flex-basis: 135px;
+        height: 135px;
+    }
+
+    .player-navigation {
+        gap: 2px;
+        padding: 2px 4px;
+    }
+}
+
+/* CERCO BEVELED BUTTONS V039 */
+
+/* Raised arcade-style navigation buttons */
+.player-navigation > button {
+    position: relative;
+    border: 1px solid #404040;
+    border-top-color: #646464;
+    border-left-color: #575757;
+    border-right-color: #292929;
+    border-bottom-color: #171717;
+
+    border-radius: 5px;
+
+    background: linear-gradient(
+        180deg,
+        #303030 0%,
+        #292929 10%,
+        #242424 48%,
+        #1b1b1b 100%
+    );
+
+    color: #f2f2f2;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.14),
+        inset 1px 0 0 rgba(255,255,255,0.045),
+        inset 0 -2px 0 rgba(0,0,0,0.45),
+        0 2px 0 rgba(0,0,0,0.65);
+
+    text-shadow: 0 1px 1px #000;
+
+    transition:
+        background 130ms ease,
+        border-color 130ms ease,
+        box-shadow 130ms ease,
+        transform 90ms ease;
+
+    cursor: pointer;
+}
+
+/* Slight highlight on hover */
+.player-navigation > button:hover {
+    background: linear-gradient(
+        180deg,
+        #3b3b3b 0%,
+        #333333 12%,
+        #2b2b2b 52%,
+        #222222 100%
+    );
+
+    border-top-color: #808080;
+    border-left-color: #696969;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 1px 0 0 rgba(255,255,255,0.07),
+        inset 0 -2px 0 rgba(0,0,0,0.45),
+        0 2px 0 rgba(0,0,0,0.65);
+
+    color: #ffffff;
+}
+
+/* Physical pressed-in effect */
+.player-navigation > button:active {
+    transform: translateY(2px);
+
+    background: linear-gradient(
+        180deg,
+        #171717 0%,
+        #202020 100%
+    );
+
+    border-top-color: #151515;
+    border-left-color: #1a1a1a;
+    border-right-color: #474747;
+    border-bottom-color: #555555;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.65),
+        inset 0 -1px 0 rgba(255,255,255,0.07);
+}
+
+/* Keyboard accessibility */
+.player-navigation > button:focus-visible {
+    outline: 2px solid #a0a0a0;
+    outline-offset: 2px;
+}
+
+/* CERCO PLAYER EDIT ALIGNMENT V040 */
+
+/* Keep the player name centered in the sidebar */
+.player-name {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-left: 28px;
+    padding-right: 28px;
+    box-sizing: border-box;
+}
+
+/* Move the pencil to the far right */
+.player-name #player-edit-name {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    flex: 0 0 auto;
+    z-index: 2;
+}
+
+/* Keep the pencil vertically centered on hover */
+.player-name #player-edit-name:hover,
+.player-name #player-edit-name:focus-visible {
+    transform: translateY(-50%);
+}
+
+/* CERCO COOKIES V042 */
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.footer-cookie-link {
+    display: inline;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #a9a9a9;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.footer-cookie-link:hover,
+.footer-cookie-link:focus-visible {
+    color: #ffffff;
+}
+
+.footer-separator {
+    color: #777777;
+}
+
+.cookies-dialog {
+    width: min(420px, calc(100vw - 32px));
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 18px;
+    border: 1px solid #555555;
+    border-radius: 6px;
+    background: #191919;
+    color: #eeeeee;
+    font-family: var(--cerco-font), monospace;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.cookies-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.cookies-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.cookies-dialog h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.cookies-dialog p {
+    margin: 12px 0;
+}
+
+.cookies-dialog button {
+    padding: 6px 12px;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    background: #292929;
+    color: #ffffff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cookies-dialog button:hover {
+    background: #383838;
+}
+
+#cookies-close {
+    flex: 0 0 auto;
+    padding: 3px 9px;
+}
+
+/* CERCO PLAY BUTTON V043 */
+
+/* Center the start screen inside the game stage */
+.cerco-play-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* Arcade parallelogram */
+.cerco-play-button {
+    pointer-events: auto;
+
+    width: clamp(180px, 24vw, 310px);
+    height: clamp(60px, 10vh, 86px);
+
+    padding: 0 24px;
+    box-sizing: border-box;
+
+    transform: skewX(-12deg);
+
+    border: 2px solid #505858;
+    border-radius: 0;
+
+    background: linear-gradient(
+        180deg,
+        #232727 0%,
+        #171919 100%
+    );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.13),
+        inset 0 -3px 0 rgba(0,0,0,0.45),
+        0 3px 0 rgba(0,0,0,0.55);
+
+    color: #f4f4f4;
+    cursor: pointer;
+
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        transform 120ms ease;
+}
+
+/* Counter-skew the lettering */
+.cerco-play-button > span {
+    display: block;
+    transform: skewX(12deg);
+
+    font-family: 'PixelOperator', var(--cerco-font), monospace;
+    font-size: clamp(34px, 4vw, 56px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 0 2px 0 #000;
+}
+
+.cerco-play-button:hover {
+    border-color: #82928e;
+
+    background: linear-gradient(
+        180deg,
+        #313938 0%,
+        #202625 100%
+    );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.20),
+        inset 0 -3px 0 rgba(0,0,0,0.50),
+        0 0 20px rgba(94,170,145,0.10),
+        0 3px 0 rgba(0,0,0,0.55);
+}
+
+.cerco-play-button:active {
+    transform: skewX(-12deg) translateY(2px);
+
+    box-shadow:
+        inset 0 3px 6px rgba(0,0,0,0.55),
+        inset 0 -1px 0 rgba(255,255,255,0.07);
+}
+
+.cerco-play-button:focus-visible {
+    outline: 2px solid #a0c8b7;
+    outline-offset: 5px;
+}
+
+/* Scope positioning to the game stage only */
+main:has(> .cerco-play-screen) {
+    position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cerco-play-button {
+        transition: none;
+    }
+}
+
+/* CERCO GAME INTEGRATION V044 */
+
+.cerco-game-host {
+    position: absolute;
+    inset: 0;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #101010;
+}
+
+.cerco-game-host .cerco-play-screen {
+    position: absolute;
+    inset: 0;
+}
+
+.cerco-game-host .cerco-play-screen[hidden] {
+    display: none !important;
+}
+
+.cerco-game-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #101010;
+}
+
+.cerco-game-frame[hidden] {
+    display: none !important;
+}
+
+main:has(> .cerco-game-host) {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* PROYECTOZ LEADERBOARDS V051 */
+.pz-leaderboards {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    color: #e9e9e9;
+    font-family: 'PixelOperator', monospace;
+}
+.pz-leaderboards[hidden] {
+    display: none !important;
+}
+.pz-lb-header {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #414141;
+    background: #191919;
+}
+.pz-lb-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+.pz-lb-back {
+    position: absolute;
+    left: 12px;
+    padding: 5px 12px;
+    background: #252525;
+    border: 1px solid #444;
+    color: #ddd;
+    cursor: pointer;
+    font: inherit;
+}
+.pz-lb-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    padding: 16px;
+}
+.pz-lb-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+}
+.pz-lb-choice {
+    width: clamp(170px, 30vw, 250px);
+    height: 54px;
+    transform: skewX(-14deg);
+    border: 2px solid #555;
+    background: linear-gradient(#303030, #1a1a1a);
+    color: #f2f2f2;
+    font: bold 22px 'PixelOperator', monospace;
+    cursor: pointer;
+}
+.pz-lb-choice span {
+    display: block;
+    transform: skewX(14deg);
+}
+.pz-lb-choice:hover,
+.pz-lb-back:hover {
+    border-color: #8cbcaf;
+    background: #303c39;
+}
+.pz-lb-results {
+    width: min(100%, 580px);
+    align-self: center;
+    text-align: center;
+}
+.pz-lb-results[hidden] {
+    display: none !important;
+}
+.pz-lb-results h3 {
+    font-size: 26px;
+    margin: 0 0 16px;
+}
+.pz-lb-results p {
+    color: #aaa;
+    font-size: 17px;
+}
+.pz-lb-results ol {
+    padding-left: 32px;
+    text-align: left;
+    max-height: 45vh;
+    overflow: auto;
+}
+.pz-lb-results li {
+    padding: 7px;
+    border-bottom: 1px solid #303030;
+    font-size: 18px;
+}
+.pz-lb-podium {
+    flex: 0 0 56px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 2px solid #505050;
+}
+.pz-lb-podium > div {
+    min-width: 0;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-right: 1px solid #414141;
+}
+.pz-lb-podium > div:last-child {
+    border-right: 0;
+}
+.pz-lb-podium strong {
+    font-size: 18px;
+}
+.pz-lb-podium span {
+    font-size: 15px;
+    color: #aaa;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* PROYECTOZ LEADERBOARDS V052 */
+.pz-leaderboards .pz-lb-header {
+    height: 42px;
+    min-height: 42px;
+}
+.pz-leaderboards .pz-lb-back {
+    left: 12px;
+    width: 42px;
+    height: 30px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 31px;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+}
+.pz-leaderboards .pz-lb-content {
+    position: relative;
+    justify-content: center;
+    padding: 8px 12px;
+}
+.pz-leaderboards .pz-lb-results {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 0;
+}
+.pz-leaderboards .pz-lb-results[hidden] {
+    display: none !important;
+}
+.pz-lb-position {
+    position: absolute;
+    top: 8px;
+    left: 6px;
+    width: clamp(115px, 22%, 175px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #505050;
+    border-radius: 9px;
+    background: #1b1b1b;
+    overflow: hidden;
+}
+.pz-lb-position[hidden] {
+    display: none !important;
+}
+.pz-lb-position strong {
+    width: 100%;
+    text-align: center;
+    padding: 4px 2px;
+    font-size: 15px;
+    border-bottom: 1px solid #505050;
+}
+.pz-lb-position span {
+    padding: 6px 2px;
+    font-size: 20px;
+}
+.pz-lb-ranking {
+    width: min(44%, 300px);
+    min-width: 230px;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #555;
+    background: #171717;
+}
+.pz-leaderboards .pz-lb-ranking h3 {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 5px 2px;
+    font-size: 19px;
+    text-align: center;
+    border-bottom: 1px dashed #555;
+}
+.pz-lb-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    min-height: 0;
+}
+.pz-leaderboards .pz-lb-columns ol {
+    margin: 0;
+    padding: 5px 4px 5px 29px;
+    list-style: decimal;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    min-height: 0;
+    overflow: hidden;
+}
+.pz-lb-columns ol:first-child {
+    border-right: 1px solid #484848;
+}
+.pz-leaderboards .pz-lb-columns li {
+    padding: 0;
+    border: 0;
+    font-size: 16px;
+    line-height: 1.1;
+    min-height: 17px;
+}
+.pz-lb-columns li span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.pz-lb-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    max-width: 25%;
+    text-align: right;
+    font-size: 13px !important;
+    line-height: 1.2;
+}
+@media (max-width: 650px) {
+    .pz-lb-position {
+        width: 105px;
+    }
+    .pz-lb-position strong {
+        font-size: 12px;
+    }
+    .pz-lb-ranking {
+        min-width: 185px;
+        width: 52%;
+    }
+    .pz-leaderboards .pz-lb-columns li {
+        font-size: 13px;
+    }
+    .pz-lb-status {
+        max-width: 20%;
+        font-size: 11px !important;
+    }
+}
+
+/* PROYECTOZ LEADERBOARDS V053 */
+
+/* Respect HTML hidden state in every leaderboard view */
+.pz-leaderboards [hidden] {
+    display: none !important;
+}
+
+/* Position both leaderboard sections independently */
+.pz-leaderboards .pz-lb-results:not([hidden]) {
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Your position: top-left, as in the approved mockup */
+.pz-leaderboards .pz-lb-position:not([hidden]) {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    margin: 0;
+}
+
+/* Central ranking: start at the top, not below the menu */
+.pz-leaderboards .pz-lb-ranking {
+    position: relative;
+    align-self: stretch;
+    margin: 0;
+    height: 100%;
+    max-height: 100%;
+}
+
+/* Keep rank numbers visible inside both columns */
+.pz-leaderboards .pz-lb-columns ol {
+    list-style-type: decimal;
+    list-style-position: outside;
+    counter-reset: none;
+}
+
+.pz-leaderboards #pz-lb-column-a {
+    counter-reset: list-item 0;
+}
+
+.pz-leaderboards #pz-lb-column-b {
+    counter-reset: list-item 10;
+}
+
+/* Avoid any old menu layout overlapping the ranking */
+.pz-leaderboards .pz-lb-menu[hidden],
+.pz-leaderboards .pz-lb-results[hidden],
+.pz-leaderboards .pz-lb-position[hidden] {
+    display: none !important;
+}
+
+/* PROYECTOZ LEADERBOARDS V054 */
+
+/* Use explicit CSS counters instead of clipped native list markers */
+.pz-leaderboards #pz-lb-column-a,
+.pz-leaderboards #pz-lb-column-b {
+    list-style: none;
+    padding: 5px 6px;
+    margin: 0;
+}
+
+.pz-leaderboards #pz-lb-column-a {
+    counter-reset: cerco-rank 0;
+}
+
+.pz-leaderboards #pz-lb-column-b {
+    counter-reset: cerco-rank 10;
+}
+
+.pz-leaderboards .pz-lb-columns li {
+    counter-increment: cerco-rank;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    overflow: visible;
+}
+
+.pz-leaderboards .pz-lb-columns li::before {
+    content: counter(cerco-rank) ".";
+    flex: 0 0 28px;
+    text-align: left;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.pz-leaderboards .pz-lb-columns li span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* PROYECTOZ LEADERBOARDS V055 */
+
+/* Continue the right column from position 16 */
+.pz-leaderboards #pz-lb-column-b {
+    counter-reset: cerco-rank 15;
+}
+
+/* Keep the original two-column design */
+.pz-leaderboards .pz-lb-columns {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* PROYECTOZ LEADERBOARDS V056 */
+/* PROYECTOZ LEADERBOARDS V057 */
+
+/* Distribute all 15 entries evenly across the available height */
+.pz-leaderboards .pz-lb-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.pz-leaderboards #pz-lb-column-a,
+.pz-leaderboards #pz-lb-column-b {
+    display: grid;
+    grid-template-rows: repeat(15, minmax(0, 1fr));
+    align-content: stretch;
+    justify-content: stretch;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    padding: 5px 6px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.pz-leaderboards .pz-lb-columns li {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+/* PROYECTOZ SHOP V058 */
+.pz-shop {
+    position: absolute;
+    inset: 0;
+    z-index: 21;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    color: #eee;
+    font-family: 'PixelOperator', monospace;
+    overflow: hidden;
+}
+
+.pz-shop[hidden],
+.pz-shop [hidden] {
+    display: none !important;
+}
+
+.pz-shop-header {
+    height: 42px;
+    flex: 0 0 42px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #414141;
+    background: #191919;
+}
+
+.pz-shop-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+
+.pz-shop-back {
+    position: absolute;
+    left: 12px;
+    width: 42px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #ddd;
+    font: inherit;
+    font-size: 31px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.pz-shop-back:hover {
+    color: #9ad5bd;
+}
+
+.pz-shop-content {
+    flex: 1 1 0;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.pz-shop-category {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pz-shop-category-heading {
+    flex: 0 0 auto;
+    padding-left: 12px;
+}
+
+.pz-shop-category-heading h3 {
+    margin: 0;
+    width: clamp(170px, 32%, 250px);
+    padding: 7px 10px;
+    transform: skewX(-14deg);
+    border: 1px solid #626262;
+    background: linear-gradient(#303030, #1b1b1b);
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 19px;
+    font-weight: normal;
+}
+
+.pz-shop-category-heading h3 span {
+    display: block;
+    transform: skewX(14deg);
+}
+
+.pz-shop-gallery {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    padding: 5px 3px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #697a74 #202020;
+    scroll-snap-type: x proximity;
+}
+
+.pz-shop-gallery::-webkit-scrollbar {
+    height: 9px;
+}
+
+.pz-shop-gallery::-webkit-scrollbar-track {
+    background: #202020;
+    border: 1px solid #353535;
+}
+
+.pz-shop-gallery::-webkit-scrollbar-thumb {
+    background: #697a74;
+    border: 1px solid #222;
+}
+
+.pz-shop-placeholder {
+    flex: 0 0 100%;
+    min-width: 0;
+    height: 100%;
+    border: 1px dashed #373737;
+    background: #171717;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    color: #777;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.pz-shop-item {
+    flex: 0 0 auto;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid #484848;
+    background: #1c1c1c;
+    scroll-snap-align: start;
+}
+
+@media (max-height: 500px) {
+    .pz-shop-content {
+        gap: 6px;
+        padding: 6px 10px;
+    }
+    .pz-shop-category {
+        gap: 5px;
+    }
+    .pz-shop-category-heading h3 {
+        padding: 3px 8px;
+        font-size: 16px;
+    }
+}
+
+/* PROYECTOZ PROFILE PHOTO V059 */
+.player-avatar,
+.profile-avatar,
+.profile-picture,
+.avatar-placeholder {
+    position: relative;
+    overflow: hidden;
+}
+
+.pz-photo-change {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px;
+    box-sizing: border-box;
+    border: 0;
+    background: rgba(0, 0, 0, 0.76);
+    color: #f0f0f0;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 160ms ease;
+    font-family: 'PixelOperator', monospace;
+}
+
+.pz-photo-change:hover,
+.pz-photo-change:focus-visible {
+    opacity: 1;
+}
+
+.pz-photo-change:focus-visible {
+    outline: 2px solid #94c9b6;
+    outline-offset: -3px;
+}
+
+.pz-photo-pencil {
+    font-size: 25px;
+    line-height: 1;
+    color: #b4d8cb;
+}
+
+.pz-photo-label {
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+@media (hover: none) {
+    .pz-photo-change {
+        opacity: 0.9;
+        background: rgba(0, 0, 0, 0.48);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-photo-change {
+        transition: none;
+    }
+}
+
+/* PROYECTOZ PROFILE PICTURES MODAL V060 */
+
+.pz-avatar-modal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    padding: 0;
+    width: min(560px, calc(100vw - 32px));
+    max-width: 560px;
+    max-height: min(420px, calc(100vh - 32px));
+    border: 2px solid #454545;
+    border-radius: 65px;
+    background: #181818;
+    color: #eee;
+    font-family: 'PixelOperator', monospace;
+    box-shadow: 0 18px 60px rgba(0,0,0,.65);
+    overflow: hidden;
+}
+
+.pz-avatar-modal::backdrop {
+    background: rgba(0,0,0,.68);
+}
+
+.pz-avatar-modal-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 270px;
+    max-height: min(420px, calc(100vh - 32px));
+}
+
+.pz-avatar-modal-header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 45px;
+    border-bottom: 1px solid #454545;
+}
+
+.pz-avatar-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.pz-avatar-modal-close {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #aaa;
+    font: 26px 'PixelOperator', monospace;
+    cursor: pointer;
+}
+
+.pz-avatar-modal-close:hover {
+    color: #fff;
+}
+
+.pz-avatar-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 25px 28px;
+    min-height: 0;
+}
+
+.pz-avatar-modal-body h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: normal;
+}
+
+.pz-avatar-gallery {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    min-height: 145px;
+    padding: 4px 2px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #222;
+}
+
+.pz-avatar-gallery::-webkit-scrollbar {
+    height: 9px;
+}
+
+.pz-avatar-gallery::-webkit-scrollbar-track {
+    background: #222;
+    border: 1px solid #444;
+}
+
+.pz-avatar-gallery::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.pz-avatar-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 100%;
+    min-width: 0;
+    min-height: 125px;
+    margin: 0;
+    border: 1px dashed #383838;
+    color: #858585;
+    font-size: 17px;
+    text-align: center;
+}
+
+@media (max-width: 520px) {
+    .pz-avatar-modal {
+        border-radius: 35px;
+    }
+
+    .pz-avatar-modal-body {
+        padding: 14px 18px 22px;
+    }
+
+    .pz-avatar-modal-header h2 {
+        font-size: 17px;
+    }
+}
+
+/* PROYECTOZ PIXEL TYPOGRAPHY V064 */
+@font-face {
+    font-family: 'PZ PixelOperator';
+    src: url('../../assets/fonts/PixelOperator.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+
+:root {
+    --pz-ui-font: 'PZ PixelOperator', monospace;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+option,
+dialog,
+label {
+    font-family: var(--pz-ui-font);
+}
+
+body *:not(svg):not(path) {
+    font-family: var(--pz-ui-font);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+.pz-avatar-modal,
+.pz-avatar-modal button,
+.pz-shop,
+.pz-shop button,
+.pz-leaderboards,
+.pz-leaderboards button {
+    font-family: var(--pz-ui-font);
+}
+
+/* PROYECTOZ SKINS V066 */
+.pz-skins {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    background: #111;
+    color: #eee;
+    font-family: 'PZ PixelOperator', 'PixelOperator', monospace;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.pz-skins[hidden] {
+    display: none !important;
+}
+
+.pz-skins-header {
+    position: relative;
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #383838;
+}
+
+.pz-skins-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.pz-skins-back {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #ddd;
+    font: inherit;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.pz-skins-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 10px 16px 12px;
+}
+
+.pz-skins-content h3 {
+    flex: 0 0 auto;
+    margin: 0 0 12px;
+    font-size: clamp(19px, 2.3vw, 30px);
+    font-weight: 400;
+}
+
+.pz-skins-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 6px 10px 10px 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #777 #202020;
+}
+
+.pz-skins-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    align-content: start;
+}
+
+.pz-skins-item {
+    min-width: 0;
+    aspect-ratio: 1;
+    border: 2px solid #454545;
+    background: #1a1a1a;
+    color: #eee;
+    font: inherit;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.pz-skins-item:focus-visible {
+    outline: 2px solid #94c9b6;
+    outline-offset: 2px;
+}
+
+.pz-skins-item[aria-pressed="true"] {
+    border-color: #94c9b6;
+}
+
+.pz-skins-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    margin: 0;
+    color: #888;
+    font-size: 18px;
+    text-align: center;
+}
+
+@media (max-width: 520px) {
+    .pz-skins-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pz-skins-content {
+        padding: 10px;
+    }
+}
+
+/* PROYECTOZ LEADERBOARD INFO V067 */
+
+.pz-lb-info-area {
+    position: absolute;
+    left: 16px;
+    top: 46px;
+    width: min(220px, 33%);
+    z-index: 15;
+    font-family: 'PZ PixelOperator', 'PixelOperator', monospace;
+}
+
+.pz-lb-info-area[hidden] {
+    display: none !important;
+}
+
+.pz-lb-info-trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #777;
+    border-radius: 50%;
+    background: #252525;
+    color: #eee;
+    font: 24px 'PZ PixelOperator', monospace;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.pz-lb-info-trigger:hover,
+.pz-lb-info-trigger:focus-visible {
+    background: #383838;
+    border-color: #bbb;
+}
+
+.pz-lb-info-card {
+    padding: 12px 13px 16px;
+    border: 2px solid #484848;
+    border-radius: 22px;
+    background: #1b1b1b;
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    color: #f1f1f1;
+}
+
+.pz-lb-info-card[hidden] {
+    display: none !important;
+}
+
+.pz-lb-info-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.pz-lb-info-card-header h3 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 400;
+}
+
+.pz-lb-info-close {
+    border: 0;
+    background: transparent;
+    color: #bbb;
+    font: 24px 'PZ PixelOperator', monospace;
+    cursor: pointer;
+}
+
+.pz-lb-info-close:hover {
+    color: #fff;
+}
+
+.pz-lb-info-rule {
+    height: 2px;
+    margin: 8px 0 12px;
+    background: #d0d0d0;
+}
+
+.pz-lb-info-card p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.3;
+    color: #e5e5e5;
+}
+
+@media (max-width: 750px) {
+    .pz-lb-info-area {
+        left: 8px;
+        top: 42px;
+        width: min(190px, 37%);
+    }
+
+    .pz-lb-info-card {
+        padding: 9px;
+        border-radius: 16px;
+    }
+
+    .pz-lb-info-card-header h3 {
+        font-size: 15px;
+    }
+
+    .pz-lb-info-card p {
+        font-size: 13px;
+    }
+}
+
+/* PROYECTOZ FLAMING CROWN V069 */
+
+.pz-champion-crown {
+    display: inline-flex;
+    position: relative;
+    flex: 0 0 23px;
+    width: 23px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-right: 7px;
+    isolation: isolate;
+}
+
+.pz-champion-crown[hidden] {
+    display: none !important;
+}
+
+.pz-champion-crown svg {
+    display: block;
+    width: 23px;
+    height: 22px;
+    overflow: visible;
+    shape-rendering: crispEdges;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 3px rgba(255,150,35,.35));
+}
+
+.pz-champion-flame {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: pz-crown-fire .8s ease-in-out infinite alternate;
+}
+
+.pz-champion-flame:nth-child(2) {
+    animation-delay: -.31s;
+    animation-duration: .65s;
+}
+
+.pz-champion-flame:nth-child(3) {
+    animation-delay: -.19s;
+    animation-duration: .95s;
+}
+
+.pz-champion-gold {
+    animation: pz-crown-gold 1.8s ease-in-out infinite;
+}
+
+@keyframes pz-crown-fire {
+    from {
+        transform: scaleY(.75) translateY(2px);
+        opacity: .75;
+    }
+
+    to {
+        transform: scaleY(1.13) translateY(-1px);
+        opacity: 1;
+    }
+}
+
+@keyframes pz-crown-gold {
+    0%, 100% { opacity: .88; }
+    50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pz-champion-flame,
+    .pz-champion-gold {
+        animation: none;
+    }
+}
+
+/* PROYECTOZ CROWN POSITION V074 */
+
+/* First universal ranking entry: crown before rank number */
+#pz-lb-column-a > li:first-child:has(.pz-rank-crown:not([hidden])) {
+    position: relative;
+}
+
+#pz-lb-column-a > li:first-child .pz-rank-crown:not([hidden]) {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 !important;
+    font-size: 1em;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* PROYECTOZ GOLDEN RANK V075 */
+
+/* Only the first row of the Universal leaderboard */
+#pz-lb-column-a > li.pz-golden-rank {
+    color: #e7b64d !important;
+    animation: pz-golden-glow 2.8s ease-in-out infinite;
+}
+
+#pz-lb-column-a > li.pz-golden-rank::before,
+#pz-lb-column-a > li.pz-golden-rank::marker {
+    color: inherit !important;
+}
+
+#pz-lb-column-a > li.pz-golden-rank span {
+    color: inherit !important;
+}
+
+@keyframes pz-golden-glow {
+    0%, 100% {
+        color: #b9872d;
+        text-shadow: 0 0 1px rgba(255, 195, 65, .15);
+    }
+
+    50% {
+        color: #ffe39a;
+        text-shadow:
+            0 0 4px rgba(255, 204, 86, .75),
+            0 0 9px rgba(255, 160, 32, .35);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pz-lb-column-a > li.pz-golden-rank {
+        animation: none;
+        color: #f0c66a !important;
+        text-shadow: none;
+    }
+}
+
+/* PROYECTOZ LEADERBOARD BALANCE V077 */
+
+/* Preserve the original compact YOUR POSITION card */
+.pz-leaderboards .pz-lb-position:not([hidden]) {
+    top: 6px;
+    left: 6px;
+    width: clamp(115px, 22%, 175px);
+    z-index: 2;
+}
+
+/* Keep the information trigger clear of YOUR POSITION */
+.pz-leaderboards .pz-lb-info-area:not([hidden]) {
+    left: 12px;
+    top: 125px;
+    width: min(220px, 33%);
+    z-index: 15;
+}
+
+/* Give the ranking room for player names */
+.pz-leaderboards .pz-lb-ranking {
+    width: min(62%, 470px);
+    min-width: 0;
+    max-width: 470px;
+    box-sizing: border-box;
+}
+
+/* Maintain two equally sized ranking columns */
+.pz-leaderboards .pz-lb-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Avoid shifting the podium or changing font sizes */
+@media (max-width: 750px) {
+    .pz-leaderboards .pz-lb-ranking {
+        width: min(64%, 440px);
+    }
+
+    .pz-leaderboards .pz-lb-info-area:not([hidden]) {
+        left: 8px;
+        top: 116px;
+        width: min(190px, 37%);
+    }
+}
+
+@media (max-width: 520px) {
+    .pz-leaderboards .pz-lb-ranking {
+        width: 70%;
+    }
+
+    .pz-leaderboards .pz-lb-info-area:not([hidden]) {
+        top: 110px;
+    }
+}
+
+
+/* PROYECTOZ INFO ALIGNMENT V078 */
+
+/*
+ * YOUR POSITION retains its existing dimensions.
+ * The information control sits immediately beside it.
+ */
+
+.pz-leaderboards .pz-lb-info-area:not([hidden]) {
+    left: calc(18px + clamp(115px, 22%, 175px));
+    top: 112px;
+    width: 28px;
+    height: 28px;
+    z-index: 15;
+    overflow: visible;
+}
+
+.pz-leaderboards .pz-lb-info-trigger {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: auto;
+    width: 28px;
+    height: 28px;
+}
+
+/* Information card opens beside its trigger */
+.pz-leaderboards .pz-lb-info-card:not([hidden]) {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    width: 220px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 750px) {
+    .pz-leaderboards .pz-lb-info-area:not([hidden]) {
+        left: 125px;
+        top: 108px;
+        width: 28px;
+    }
+
+    .pz-leaderboards .pz-lb-info-card:not([hidden]) {
+        width: 190px;
+    }
+}
+
+
+/* PROYECTOZ INFO RESTORE V082 */
+
+/* Independent HOW IT WORKS panel, outside YOUR POSITION */
+.pz-leaderboards .pz-lb-info-area:not([hidden]) {
+    position: absolute;
+    left: 16px;
+    top: 46px;
+    width: min(220px, 33%);
+    height: auto;
+    transform: none;
+    overflow: visible;
+    z-index: 15;
+}
+
+.pz-leaderboards .pz-lb-info-trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 24px;
+}
+
+.pz-leaderboards .pz-lb-info-card:not([hidden]) {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: auto;
+    transform: none;
+    box-sizing: border-box;
+}
+
+.pz-leaderboards .pz-lb-position > strong {
+    padding: 4px 2px;
+}
+
+@media (max-width: 750px) {
+    .pz-leaderboards .pz-lb-info-area:not([hidden]) {
+        left: 8px;
+        top: 42px;
+        width: min(190px, 37%);
+    }
+}
+
+
+/* PROYECTOZ HOW IT WORKS V083 */
+
+/* Restore HOW IT WORKS as its own visible card. */
+.pz-leaderboards > .pz-lb-info-area:not([hidden]) {
+    position: absolute;
+    top: 46px;
+    left: 16px;
+    width: min(220px, 33%);
+    height: auto;
+    transform: none;
+    overflow: visible;
+    z-index: 15;
+}
+
+.pz-leaderboards .pz-lb-info-card:not([hidden]) {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    transform: none;
+    box-sizing: border-box;
+}
+
+.pz-leaderboards .pz-lb-info-card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.pz-leaderboards .pz-lb-info-symbol {
+    display: inline;
+    position: static;
+    color: #ddd;
+    font-size: 19px;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+    flex: 0 0 auto;
+}
+
+.pz-leaderboards .pz-lb-position > strong {
+    padding: 4px 2px;
+}
+
+@media (max-width: 750px) {
+    .pz-leaderboards > .pz-lb-info-area:not([hidden]) {
+        top: 42px;
+        left: 8px;
+        width: min(190px, 37%);
+    }
+}
+
+
+/* PROYECTOZ INFO BELOW POSITION V084 */
+
+/* The explanation is placed by measured card coordinates. */
+.pz-leaderboards > .pz-lb-info-area:not([hidden]) {
+    position: absolute;
+    left: var(--pz-info-left, 16px);
+    top: var(--pz-info-top, 130px);
+    width: var(--pz-info-width, 175px);
+    max-width: none;
+    height: auto;
+    transform: none;
+    z-index: 15;
+}
+
+.pz-leaderboards > .pz-lb-info-area .pz-lb-info-card:not([hidden]) {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* PROYECTOZ INFO RIGHT V085 */
+
+/* Position the explanation beside the ranking. */
+.pz-leaderboards > .pz-lb-info-area:not([hidden]) {
+    position: absolute;
+    top: var(--pz-v085-top, 52px);
+    left: var(--pz-v085-left, 75%);
+    width: var(--pz-v085-width, 180px);
+    max-width: none;
+    height: auto;
+    transform: none;
+    box-sizing: border-box;
+    z-index: 15;
+}
+
+.pz-leaderboards > .pz-lb-info-area .pz-lb-info-card:not([hidden]) {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Prevent the card from covering the ranking on narrow screens. */
+@media (max-width: 650px) {
+    .pz-leaderboards > .pz-lb-info-area:not([hidden]) {
+        max-height: 60%;
+        overflow-y: auto;
+    }
+}
+
+
+/* CERCO FULLSCREEN V086 */
+
+.cerco-game-host .cerco-fullscreen-button {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 120px;
+    height: 34px;
+    padding: 5px 10px;
+    border: 1px solid #5b746c;
+    border-radius: 7px;
+    background: rgba(20, 30, 27, 0.94);
+    color: #e5fff2;
+    font: 16px 'CERCO Pixel', 'PixelOperator', monospace;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(80, 170, 130, 0.12);
+    transition: border-color 150ms ease, background 150ms ease;
+}
+
+.cerco-game-host .cerco-fullscreen-button:hover,
+.cerco-game-host .cerco-fullscreen-button:focus-visible {
+    border-color: #91d8b4;
+    background: rgba(33, 55, 45, 0.98);
+}
+
+.cerco-game-host .cerco-fullscreen-button > span:first-child {
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.cerco-game-host:fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: #101010;
+    overflow: hidden;
+}
+
+.cerco-game-host:fullscreen .cerco-game-frame {
+    width: 100%;
+    height: 100%;
+}
+
+.cerco-game-host:fullscreen .cerco-fullscreen-button {
+    right: 16px;
+    bottom: 16px;
+}
+
+@media (max-width: 600px) {
+    .cerco-game-host .cerco-fullscreen-button {
+        right: 8px;
+        bottom: 8px;
+        min-width: 100px;
+        height: 30px;
+        font-size: 13px;
+    }
+}
+
+
+/* CERCO FULLSCREEN VISIBILITY V087 */
+/* Show fullscreen only after the PLAY screen is hidden. */
+
+.cerco-game-host:has(#cerco-play-screen:not([hidden]))
+    .cerco-fullscreen-button {
+    display: none !important;
+}
+
+.cerco-game-host:has(#cerco-game-frame[hidden])
+    .cerco-fullscreen-button {
+    display: none !important;
+}
+
+
+/* ATANATUS NAVIGATION V088 */
+/* Consistent, compact headers across the three sections. */
+
+.pz-leaderboards > .pz-lb-header,
+.pz-shop > .pz-shop-header,
+.pz-skins > .pz-skins-header {
+    position: relative;
+    box-sizing: border-box;
+    flex: 0 0 42px;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 58px;
+    margin: 0;
+    background: #191919;
+    border-bottom: 1px solid #383838;
+    color: #eeeeee;
+}
+
+.pz-leaderboards > .pz-lb-header h2,
+.pz-shop > .pz-shop-header h2,
+.pz-skins > .pz-skins-header h2 {
+    margin: 0;
+    padding: 0;
+    font-family: var(--pz-ui-font, var(--cerco-font, monospace));
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.pz-leaderboards > .pz-lb-header .pz-lb-back,
+.pz-shop > .pz-shop-header .pz-shop-back,
+.pz-skins > .pz-skins-header .pz-skins-back {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: #dddddd;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.pz-leaderboards > .pz-lb-header .pz-lb-back:hover,
+.pz-shop > .pz-shop-header .pz-shop-back:hover,
+.pz-skins > .pz-skins-header .pz-skins-back:hover {
+    background: #292929;
+    color: #ffffff;
+}
+
+.pz-leaderboards > .pz-lb-header .pz-lb-back:focus-visible,
+.pz-shop > .pz-shop-header .pz-shop-back:focus-visible,
+.pz-skins > .pz-skins-header .pz-skins-back:focus-visible {
+    outline: 2px solid #94c9b6;
+    outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+    .pz-leaderboards > .pz-lb-header h2,
+    .pz-shop > .pz-shop-header h2,
+    .pz-skins > .pz-skins-header h2 {
+        font-size: 17px;
+    }
+}

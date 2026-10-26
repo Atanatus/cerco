@@ -1,0 +1,1 @@
+window.PROYECTOZ_TRACKS = [{"title":"A River of Stone","type":"Background music","src":"./assets/audio/Track1.mp3"},{"title":"The Silver Bridge","type":"Background music","src":"./assets/audio/Track2.mp3"}];

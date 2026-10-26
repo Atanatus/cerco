@@ -1,0 +1,388 @@
+<!-- CERCO PROJECT V034 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CERCO | PROYECTOZ</title>
+  <link rel="stylesheet" href="./src/css/main.css">
+  <script src="./src/js/main.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="header" data-project="CERCO">CERCO</header>
+    <aside class="sidebar sidebar-left chat-panel">
+  <div class="chat-title">
+    <span>CHAT</span>
+    <button type="button" id="chat-clear" title="Clear history" aria-label="Clear history"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 10v7"/><path d="M14 10v7"/></svg></button>
+  </div>
+  <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
+  <div id="chat-emoji-picker" class="chat-emoji-picker"
+     role="group" aria-label="Emoji picker" hidden>
+  <div class="chat-emoji-header">
+    <span>EMOJIS</span>
+    <button type="button" id="chat-emoji-close"
+      aria-label="Close emoji picker">×</button>
+  </div>
+  <div id="chat-emoji-grid" class="chat-emoji-grid"></div>
+</div>
+<form class="chat-composer" id="chat-form">
+    <input id="chat-input" type="text" maxlength="500" autocomplete="off" placeholder="Message..." aria-label="Type a message" required>
+<button type="button" id="chat-emoji-toggle"
+  aria-label="Choose emoji"
+  aria-expanded="false"
+  aria-controls="chat-emoji-picker"
+  title="Choose emoji">☺</button>
+    <button type="submit" aria-label="Send message" title="Send">&#10148;</button>
+  </form>
+</aside>
+    <main class="content" id="game-root">
+    <!-- CERCO PLAY BUTTON V043 -->
+    <!-- CERCO GAME INTEGRATION V044 -->
+<!-- PROYECTOZ LEADERBOARDS V052 -->
+<section class="pz-leaderboards" id="pz-leaderboards" hidden aria-label="Leaderboards">
+<!-- PROYECTOZ LEADERBOARD INFO V067 -->
+<div class="pz-lb-info-area" id="pz-lb-info-area" hidden>
+    
+
+    <aside class="pz-lb-info-card" id="pz-lb-info-card" aria-labelledby="pz-lb-info-title">
+        <header class="pz-lb-info-card-header">
+            <h3 id="pz-lb-info-title"><span class="pz-lb-info-symbol" aria-hidden="true">ⓘ</span> HOW IT WORKS</h3>
+            <button type="button" class="pz-lb-info-close" id="pz-lb-info-close" aria-label="Close information">×</button>
+        </header>
+
+        <div class="pz-lb-info-rule"></div>
+        <p id="pz-lb-info-description"></p>
+    </aside>
+</div>
+    <header class="pz-lb-header">
+        <button type="button" id="pz-lb-back" class="pz-lb-back" aria-label="Go back">
+            <span aria-hidden="true">←</span>
+        </button>
+        <h2 id="pz-lb-heading">LEADERBOARDS</h2>
+    </header>
+
+    <div class="pz-lb-content">
+        <div class="pz-lb-menu" id="pz-lb-menu">
+            <button type="button" class="pz-lb-choice" data-lb-mode="universal">
+                <span>UNIVERSAL</span>
+            </button>
+            <button type="button" class="pz-lb-choice" data-lb-mode="personal">
+                <span>PERSONAL</span>
+            </button>
+        </div>
+
+        <div class="pz-lb-results" id="pz-lb-results" hidden>
+            <aside class="pz-lb-position" id="pz-lb-position" hidden>
+                <strong>YOUR POSITION</strong>
+                <span id="pz-lb-position-value">—</span>
+            </aside>
+
+            <div class="pz-lb-ranking">
+                <h3 id="pz-lb-mode-title">TOP PLAYERS</h3>
+                <div class="pz-lb-columns">
+                    <ol id="pz-lb-column-a" start="1"></ol>
+                    <ol id="pz-lb-column-b" start="11"></ol>
+                </div>
+            </div>
+
+            <p id="pz-lb-status" class="pz-lb-status"></p>
+        </div>
+    </div>
+
+    <footer class="pz-lb-podium">
+        <div><strong>TOP #1</strong><span id="pz-lb-top1">—</span></div>
+        <div><strong>TOP #2</strong><span id="pz-lb-top2">—</span></div>
+        <div><strong>TOP #3</strong><span id="pz-lb-top3">—</span></div>
+    </footer>
+</section>
+<!-- PROYECTOZ SHOP V058 -->
+<!-- PROYECTOZ SKINS V066 -->
+<section class="pz-skins" id="pz-skins" hidden aria-label="Your skins">
+    <header class="pz-skins-header">
+        <button type="button" id="pz-skins-back" class="pz-skins-back" aria-label="Go back">←</button>
+        <h2>SKINS</h2>
+    </header>
+
+    <div class="pz-skins-content">
+        <h3>AVAILABLE SKINS:</h3>
+
+        <div class="pz-skins-scroll" id="pz-skins-scroll" tabindex="0" aria-label="Owned skins">
+            <div class="pz-skins-grid" id="pz-skins-grid"></div>
+            <p class="pz-skins-empty" id="pz-skins-empty">NO SKINS AVAILABLE</p>
+        </div>
+    </div>
+</section>
+<section class="pz-shop" id="pz-shop" hidden aria-label="Shop">
+    <header class="pz-shop-header">
+        <button type="button" class="pz-shop-back" id="pz-shop-back" aria-label="Go back">
+            <span aria-hidden="true">←</span>
+        </button>
+        <h2>SHOP</h2>
+    </header>
+
+    <div class="pz-shop-content">
+        <section class="pz-shop-category" aria-label="Skins">
+            <div class="pz-shop-category-heading">
+                <h3><span>SKINS</span></h3>
+            </div>
+            <div class="pz-shop-gallery" id="pz-shop-skins" tabindex="0" aria-label="Skins gallery">
+                <div class="pz-shop-placeholder">
+                    <span>SKINS COMING SOON</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pz-shop-category" aria-label="Profile pictures">
+            <div class="pz-shop-category-heading">
+                <h3><span>PROFILE PICTURES</span></h3>
+            </div>
+            <div class="pz-shop-gallery" id="pz-shop-avatars" tabindex="0" aria-label="Profile pictures gallery">
+                <div class="pz-shop-placeholder">
+                    <span>PROFILE PICTURES COMING SOON</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+<div class="cerco-game-host" id="cerco-game-host">
+    <div class="cerco-play-screen" id="cerco-play-screen">
+        <button type="button" id="cerco-play-button" class="cerco-play-button">
+            <span>PLAY</span>
+        </button>
+    </div>
+    <iframe
+        id="cerco-game-frame"
+        class="cerco-game-frame"
+        title="CERCO Expedition"
+        data-src="./games/CERCO/cerco_expedition_v080.html"
+        allow="fullscreen"
+        hidden
+    ></iframe>
+    <!-- CERCO FULLSCREEN V086 -->
+    <button type="button"
+            id="cerco-fullscreen"
+            class="cerco-fullscreen-button"
+            aria-label="Enter fullscreen"
+            title="Fullscreen">
+        <span aria-hidden="true">⛶</span>
+        <span class="cerco-fullscreen-label">FULLSCREEN</span>
+    </button>
+</div>
+</main>
+    <aside class="sidebar sidebar-right player-panel">
+  <div class="player-name">
+  <span id="player-display-name">Nombre</span>
+  <button type="button" id="player-edit-name" aria-label="Edit name" title="Edit name">
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 20h9"/>
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/>
+    </svg>
+  </button>
+  <input id="player-name-input" type="text" maxlength="20" aria-label="New player name" hidden>
+</div>
+
+  <div class="player-avatar" aria-label="Profile picture">
+
+    <span>Profile<br>Picture</span>
+  
+<button type="button" class="pz-photo-change" id="pz-photo-change" aria-label="Change profile picture" title="Change profile picture">
+    <span class="pz-photo-pencil" aria-hidden="true">&#9998;</span>
+    <span class="pz-photo-label">CHANGE PHOTO</span>
+</button>
+</div>
+
+  <div class="player-stats">
+    <div class="player-xp-system">
+  <div class="player-xp-header">
+    <span class="player-level-label">LVL <span id="player-level-value">1</span></span>
+    <span class="player-xp-percentage" id="player-xp-percentage">0%</span>
+  </div>
+  <div class="player-progress" role="progressbar" aria-label="Experience progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="player-progress-fill"></div>
+  </div>
+</div>
+    <div>Tier: 1</div>
+    <div>Rank: F</div>
+  </div>
+
+  <nav class="player-navigation" aria-label="Player navigation">
+    <button type="button" data-panel="leaderboard">LEADERBOARDS</button>
+    <button type="button" data-panel="shop">SHOP</button>
+    <button type="button" data-panel="settings">SKINS</button>
+  </nav>
+  <section class="music-player" id="music-player" aria-label="Music player">
+    <canvas id="music-visualizer-canvas" aria-hidden="true"></canvas>
+    <div class="music-track" id="music-track">No tracks available</div>
+    <div class="music-type" id="music-type">Background music</div>
+    <div class="music-controls">
+      <button type="button" id="music-prev" aria-label="Previous track" title="Previous track">&#9664;</button>
+      <button type="button" id="music-toggle" aria-label="Play" title="Play">&#9654;</button>
+      <button type="button" id="music-next" aria-label="Next track" title="Next track">&#9654;&#10073;</button>
+    </div>
+  </section></aside>
+    <!-- CERCO COOKIES V042 -->
+<footer class="footer">
+  <span>&copy; 2026 Atanatus.</span>
+  <span class="footer-separator" aria-hidden="true">&middot;</span>
+  <button type="button" id="cookies-open" class="footer-cookie-link" aria-haspopup="dialog">Cookies</button>
+</footer>
+  </div>
+<script src="./src/js/music-playlist.js" defer></script>
+<script src="./src/js/music-player.js" defer></script>
+  <script src="./src/js/music-visualizer.js" defer></script>
+<script src="./src/js/chat-emoji.js" defer></script>
+<dialog id="cookies-dialog" class="cookies-dialog" aria-labelledby="cookies-title">
+  <div class="cookies-dialog-header">
+    <h2 id="cookies-title">Cookies &amp; Storage</h2>
+    <button type="button" id="cookies-close" aria-label="Close">X</button>
+  </div>
+  <p>CERCO is currently a local development project.</p>
+  <p>The application may store local preferences or game information in your browser. Browser storage is not necessarily a cookie.</p>
+  <p>This notice is provisional. Before public launch, we will review the technologies used and provide the required privacy information and consent controls, where applicable.</p>
+  <p>No cookie consent is requested or recorded by this window.</p>
+  <button type="button" id="cookies-done">Close</button>
+</dialog>
+<script>
+/* CERCO COOKIES DIALOG V042 */
+(function () {
+    const dialog = document.getElementById('cookies-dialog');
+    const open = document.getElementById('cookies-open');
+    const close = document.getElementById('cookies-close');
+    const done = document.getElementById('cookies-done');
+
+    if (!dialog || !open || !close || !done) return;
+
+    open.addEventListener('click', function () {
+        if (typeof dialog.showModal === 'function') {
+            dialog.showModal();
+        }
+    });
+
+    close.addEventListener('click', function () {
+        dialog.close();
+    });
+
+    done.addEventListener('click', function () {
+        dialog.close();
+    });
+
+    dialog.addEventListener('click', function (event) {
+        if (event.target === dialog) dialog.close();
+    });
+})();
+</script>
+<script>
+/* CERCO GAME LOADER V044 */
+(function () {
+    const button = document.getElementById('cerco-play-button');
+    const screen = document.getElementById('cerco-play-screen');
+    const frame = document.getElementById('cerco-game-frame');
+
+    if (!button || !screen || !frame) return;
+
+    button.addEventListener('click', function () {
+        const source = frame.getAttribute('data-src');
+
+        if (!source) return;
+
+        frame.hidden = false;
+        frame.src = source;
+        screen.hidden = true;
+        frame.focus();
+    }, { once: true });
+})();
+</script>
+<script src="./src/js/leaderboards.js"></script>
+<script src="./src/js/shop.js"></script>
+
+<!-- PROYECTOZ PROFILE PICTURES MODAL V060 -->
+<dialog class="pz-avatar-modal" id="pz-avatar-modal" aria-labelledby="pz-avatar-modal-title">
+    <div class="pz-avatar-modal-inner">
+        <header class="pz-avatar-modal-header">
+            <h2 id="pz-avatar-modal-title">PROFILE PICTURES</h2>
+            <button type="button" id="pz-avatar-modal-close" class="pz-avatar-modal-close" aria-label="Close profile pictures">×</button>
+        </header>
+
+        <div class="pz-avatar-modal-body">
+            <h3>AVAILABLE PROFILE PICTURES:</h3>
+
+            <div class="pz-avatar-gallery" id="pz-avatar-gallery" tabindex="0" aria-label="Available profile pictures">
+                <p class="pz-avatar-empty">NO PROFILE PICTURES AVAILABLE</p>
+            </div>
+        </div>
+    </div>
+</dialog>
+<!-- PROYECTOZ PROFILE PHOTO V059 -->
+<script src="./src/js/profile-photo.js"></script>
+<script src="./src/js/skins.js"></script>
+<script src="./src/js/leaderboard-info.js"></script>
+<!-- PROYECTOZ FLAMING CROWN V069 -->
+<script src="./src/js/champion-crown.js"></script>
+
+<script>
+/* CERCO FULLSCREEN V086 */
+(function () {
+    'use strict';
+
+    function initFullscreen() {
+        const host = document.getElementById('cerco-game-host');
+        const frame = document.getElementById('cerco-game-frame');
+        const button = document.getElementById('cerco-fullscreen');
+
+        if (!host || !frame || !button) return;
+
+        function sync() {
+            const active = document.fullscreenElement === host;
+
+            button.classList.toggle('is-fullscreen', active);
+            button.setAttribute(
+                'aria-label',
+                active ? 'Exit fullscreen' : 'Enter fullscreen'
+            );
+            button.title = active ? 'Exit fullscreen' : 'Fullscreen';
+
+            const label = button.querySelector('.cerco-fullscreen-label');
+            if (label) {
+                label.textContent = active
+                    ? 'EXIT FULLSCREEN'
+                    : 'FULLSCREEN';
+            }
+        }
+
+        button.addEventListener('click', async function () {
+            try {
+                if (document.fullscreenElement === host) {
+                    await document.exitFullscreen();
+                } else {
+                    if (!host.requestFullscreen) {
+                        throw new Error('Fullscreen is not supported.');
+                    }
+                    await host.requestFullscreen();
+                }
+            } catch (error) {
+                console.error('[CERCO FULLSCREEN]', error);
+                alert('Fullscreen is unavailable in this browser.');
+            }
+
+            sync();
+        });
+
+        document.addEventListener('fullscreenchange', sync);
+        sync();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            initFullscreen,
+            { once: true }
+        );
+    } else {
+        initFullscreen();
+    }
+})();
+</script>
+</body>
+</html>
+<!-- PROYECTOZ HOW IT WORKS V083 -->
