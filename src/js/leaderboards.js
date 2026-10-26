@@ -81,6 +81,60 @@
 
         populateEmptyRanks();
         clearPodium();
+
+        /* CERCO ONLINE LEADERBOARD V1 */
+        if (universal) {
+            status.textContent = 'CONNECTING TO CERCO...';
+            const requestedMode = mode;
+
+            fetch('https://cerco-api.atanatus.workers.dev/leaderboards?kind=guest&metric=score')
+                .then(response => {
+                    if (!response.ok) throw new Error('API unavailable');
+                    return response.json();
+                })
+                .then(data => {
+                    if (mode !== requestedMode || panel.hidden) return;
+
+                    if (data.leaderboard !== 'guest' ||
+                        !Array.isArray(data.entries)) {
+                        throw new Error('Invalid response');
+                    }
+
+                    const entries = data.entries.slice(0, 30);
+                    columnA.replaceChildren();
+                    columnB.replaceChildren();
+
+                    for (let rank = 1; rank <= 30; rank++) {
+                        const li = document.createElement('li');
+                        const value = document.createElement('span');
+                        const entry = entries[rank - 1];
+
+                        value.textContent = entry
+                            ? String(entry.display_name) + ' · ' +
+                              Number(entry.best_value).toLocaleString('en-US')
+                            : '—';
+
+                        li.appendChild(value);
+                        (rank <= 15 ? columnA : columnB).appendChild(li);
+                    }
+
+                    podium.forEach((el, i) => {
+                        const entry = entries[i];
+                        el.textContent = entry
+                            ? String(entry.display_name)
+                            : '—';
+                    });
+
+                    status.textContent = entries.length
+                        ? 'CERCO · GUEST RANKING'
+                        : 'NO VERIFIED RECORDS YET';
+                })
+                .catch(() => {
+                    if (mode === requestedMode && !panel.hidden) {
+                        status.textContent = 'RANKING TEMPORARILY UNAVAILABLE';
+                    }
+                });
+        }
     }
 
     /* PROYECTOZ NAVIGATION V062 */
