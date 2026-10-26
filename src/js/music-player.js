@@ -28,6 +28,81 @@
   const audio = new Audio();
   audio.preload = 'auto';
 
+  /* CERCO VOLUME CONTROL V081 */
+  const volumeStorageKey = 'cerco.music.volume.v1';
+  const volumeContainer = document.querySelector('.music-player');
+
+  if (volumeContainer) {
+    const volumeWrap = document.createElement('div');
+    volumeWrap.id = 'cerco-volume-control';
+    volumeWrap.setAttribute('role', 'group');
+    volumeWrap.setAttribute('aria-label', 'Music volume');
+
+    const volumeLabel = document.createElement('label');
+    volumeLabel.htmlFor = 'cerco-volume-slider';
+    volumeLabel.textContent = 'VOL';
+
+    const volumeSlider = document.createElement('input');
+    volumeSlider.id = 'cerco-volume-slider';
+    volumeSlider.type = 'range';
+    volumeSlider.min = '0';
+    volumeSlider.max = '100';
+    volumeSlider.step = '1';
+    volumeSlider.value = '65';
+    volumeSlider.setAttribute('aria-label', 'Music volume');
+
+    try {
+      const stored = localStorage.getItem(volumeStorageKey);
+      if (stored !== null) {
+        const value = Number(stored);
+        if (Number.isFinite(value)) {
+          volumeSlider.value = String(Math.max(0, Math.min(100, value)));
+        }
+      }
+    } catch (_) {}
+
+    audio.volume = Number(volumeSlider.value) / 100;
+
+    volumeSlider.addEventListener('input', () => {
+      audio.volume = Number(volumeSlider.value) / 100;
+      try {
+        localStorage.setItem(volumeStorageKey, volumeSlider.value);
+      } catch (_) {}
+    });
+
+    volumeWrap.append(volumeLabel, volumeSlider);
+    volumeContainer.appendChild(volumeWrap);
+
+    const volumeStyle = document.createElement('style');
+    volumeStyle.textContent = `
+      #cerco-volume-control {
+        position: absolute;
+        right: 9px;
+        top: 9px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 8px;
+        border: 1px solid rgba(116,220,181,.30);
+        border-radius: 6px;
+        background: rgba(4,15,13,.85);
+        color: #e0f7ef;
+        font: 11px Arial,sans-serif;
+      }
+      #cerco-volume-slider {
+        width: 82px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #70e3ac;
+      }
+      @media (max-width: 600px) {
+        #cerco-volume-slider { width: 58px; }
+      }
+    `;
+    document.head.appendChild(volumeStyle);
+  }
+
   let index = 0;
   let intent = true;
   let state = 'paused';
