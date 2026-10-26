@@ -1,0 +1,13 @@
+{
+  "name": "cerco-api",
+  "main": "index.js",
+  "compatibility_date": "2026-10-26",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cerco-production",
+      "database_id": "4e85d0b5-f4dc-4c89-980a-b388dd1b98bb"
+    }
+  ]
+}
