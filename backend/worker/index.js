@@ -22,6 +22,53 @@ export default {
         message: 'Official match submission is not available yet.'
       }, 503);
     }
+    /* CERCO SERVER MATCH V1 */
+    if (url.pathname === '/matches/start' && request.method === 'POST') {
+      const origin = request.headers.get('Origin');
+
+      if (origin !== 'https://cerco.atanatus.com') {
+        return json({ error: 'origin_not_allowed' }, 403);
+      }
+
+      const length = Number(request.headers.get('Content-Length') || 0);
+      if (length > 1024) {
+        return json({ error: 'request_too_large' }, 413);
+      }
+
+      let body;
+      try {
+        const raw = await request.text();
+        if (raw.length > 1024) {
+          return json({ error: 'request_too_large' }, 413);
+        }
+        body = JSON.parse(raw);
+      } catch (_) {
+        return json({ error: 'invalid_json' }, 400);
+      }
+
+      if (!body || body.game_version !== '0.8.0' ||
+          body.mode !== 'expedition') {
+        return json({ error: 'invalid_match' }, 400);
+      }
+
+      const matchId = crypto.randomUUID();
+
+      try {
+        await env.DB.prepare(
+          `INSERT INTO matches
+           (match_id, game_version, mode, status, started_at)
+           VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP)`
+        ).bind(matchId, '0.8.0', 'expedition').run();
+      } catch (_) {
+        return json({ error: 'database_unavailable' }, 503);
+      }
+
+      return json({
+        match_id: matchId,
+        status: 'active',
+        verified: false
+      }, 201);
+    }
     if (request.method !== 'GET') {
       return json({ error: 'method_not_allowed' }, 405);
     }
