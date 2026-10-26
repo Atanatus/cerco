@@ -82,14 +82,15 @@
 
   async function submit(session) {
     if (!session.finished || session.submitting || session.submitted) return;
-    if (!session.matchId || !session.report) return;
+    if (!session.matchId || !session.sessionToken || !session.report) return;
 
     session.submitting = true;
 
     try {
       const payload = {
         ...session.report,
-        match_id: session.matchId
+        match_id: session.matchId,
+        session_token: session.sessionToken
       };
 
       const result = await post('/runs/pending', payload);
@@ -123,11 +124,14 @@
       });
 
       if (result.status !== 'active' ||
-          typeof result.match_id !== 'string') {
+          typeof result.match_id !== 'string' ||
+          typeof result.session_token !== 'string' ||
+          !/^[0-9a-f]{64}$/.test(result.session_token)) {
         throw new Error('Invalid server session');
       }
 
       session.matchId = result.match_id;
+      session.sessionToken = result.session_token;
 
       console.info(
         '[CERCO] Server session created:',
@@ -171,6 +175,7 @@
       const session = {
         runId,
         matchId: null,
+        sessionToken: null,
         report: null,
         finished: false,
         abandoned: false,
