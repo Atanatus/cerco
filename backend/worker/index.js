@@ -1,3 +1,10 @@
+/* CERCO SESSION TOKEN V1 */
+async function tokenHash(token) {
+  const bytes = new TextEncoder().encode(token);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest),
+    byte => byte.toString(16).padStart(2, '0')).join('');
+}
 const headers = {
   'Content-Type': 'application/json; charset=utf-8',
   'Cache-Control': 'no-store',
@@ -71,6 +78,8 @@ export default {
 
       if (!body || typeof body !== 'object' ||
           !uuid(body.match_id) ||
+          typeof body.session_token !== 'string' ||
+          !/^[0-9a-f]{64}$/.test(body.session_token) ||
           !uuid(body.guest_id) ||
           typeof body.run_id !== 'string' ||
           body.run_id.length < 1 ||
@@ -109,6 +118,15 @@ export default {
       }
 
       try {
+        const suppliedHash = await tokenHash(body.session_token);
+        const stored = await env.DB.prepare(
+          `SELECT token_hash FROM match_session_tokens WHERE match_id = ?`
+        ).bind(body.match_id).first();
+
+        if (!stored || stored.token_hash !== suppliedHash) {
+          return json({ error: 'invalid_session_token' }, 403);
+        }
+
         const result = await env.DB.prepare(
           `INSERT INTO pending_run_reports
            (report_id, match_id, run_id, guest_id, score,
@@ -187,19 +205,30 @@ export default {
       }
 
       const matchId = crypto.randomUUID();
+      const randomBytes = crypto.getRandomValues(new Uint8Array(32));
+      const sessionToken = Array.from(randomBytes,
+        byte => byte.toString(16).padStart(2, '0')).join('');
+      const hashedToken = await tokenHash(sessionToken);
 
       try {
-        await env.DB.prepare(
-          `INSERT INTO matches
-           (match_id, game_version, mode, status, started_at)
-           VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP)`
-        ).bind(matchId, '0.8.0', 'expedition').run();
+        await env.DB.batch([
+          env.DB.prepare(
+            `INSERT INTO matches
+             (match_id, game_version, mode, status, started_at)
+             VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP)`
+          ).bind(matchId, '0.8.0', 'expedition'),
+          env.DB.prepare(
+            `INSERT INTO match_session_tokens (match_id, token_hash)
+             VALUES (?, ?)`
+          ).bind(matchId, hashedToken)
+        ]);
       } catch (_) {
         return json({ error: 'database_unavailable' }, 503);
       }
 
       return json({
         match_id: matchId,
+        session_token: sessionToken,
         status: 'active',
         verified: false
       }, 201);
