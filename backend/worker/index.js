@@ -13,6 +13,24 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    /* CERCO CORS PREFLIGHT V1 */
+    if (request.method === 'OPTIONS') {
+      if (request.headers.get('Origin') !== 'https://cerco.atanatus.com') {
+        return json({ error: 'origin_not_allowed' }, 403);
+      }
+
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Max-Age': '600',
+          'Cache-Control': 'no-store',
+          'Vary': 'Origin'
+        }
+      });
+    }
     /* CERCO PENDING INGEST V1 */
     // Disabled until server-side verification and identity controls exist.
     // Never trust scores, IDs or audit reports supplied by the browser.
