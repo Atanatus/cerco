@@ -11,6 +11,7 @@ const headers = {
   'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
   'X-Content-Type-Options': 'nosniff'
 };
+const gameVersions = ['0.8.0', '0.8.1'];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers });
@@ -109,6 +110,27 @@ export default {
         }
       });
     }
+    // Free entitlement is a server rule, never a browser purchase receipt.
+    if (url.pathname === '/skins/inventory' && request.method === 'GET') {
+      return json({ schema: 'cerco.inventory.v1', authenticated: false,
+        ownedSkinIds: ['cerco.default'], equippedSkinId: 'cerco.default',
+        purchasesAvailable: false });
+    }
+    if (url.pathname === '/skins/equip' || url.pathname === '/skins/purchase') {
+      if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+      if (request.headers.get('Origin') !== headers['Access-Control-Allow-Origin']) {
+        return json({ error: 'origin_not_allowed' }, 403);
+      }
+      if (url.pathname === '/skins/purchase') return json({ error: 'purchases_unavailable' }, 503);
+      let body;
+      try {
+        const raw = await request.text();
+        if (raw.length > 1024) return json({ error: 'request_too_large' }, 413);
+        body = JSON.parse(raw);
+      } catch (_) { return json({ error: 'invalid_json' }, 400); }
+      if (body?.skinId !== 'cerco.default') return json({ error: 'skin_not_owned' }, 403);
+      return json({ equippedSkinId: 'cerco.default', cosmeticOnly: true, authenticated: false });
+    }
     /* CERCO PENDING INGEST V2 - UNVERIFIED ONLY */
     if (url.pathname === '/runs/pending') {
       if (request.method !== 'POST') {
@@ -169,7 +191,9 @@ export default {
       const audit = body.audit;
       if (audit.trust !== 'client_reported_unverified' ||
           audit.runId !== body.run_id ||
-          audit.gameVersion !== '0.8.0' ||
+          !gameVersions.includes(audit.gameVersion) ||
+          (audit.gameVersion === '0.8.1' &&
+            (audit.ruleset !== 'CERCO-0.7.0' || audit.schema !== 'cerco.audit.v1')) ||
           audit.seed !== body.seed ||
           !audit.final ||
           audit.final.score !== body.score ||
@@ -207,7 +231,7 @@ export default {
            FROM matches m
            WHERE m.match_id = ?
              AND m.status = 'active'
-             AND m.game_version = '0.8.0'
+             AND m.game_version = ?
              AND m.mode = 'expedition'
            ON CONFLICT(match_id) DO NOTHING`
         ).bind(
@@ -220,7 +244,8 @@ export default {
           body.seed,
           body.active_seconds,
           auditJson,
-          body.match_id
+          body.match_id,
+          audit.gameVersion
         ).run();
 
         // D1 may include the lifecycle trigger's UPDATE in changes.
@@ -376,7 +401,7 @@ export default {
         return json({ error: 'invalid_json' }, 400);
       }
 
-      if (!body || body.game_version !== '0.8.0' ||
+      if (!body || !gameVersions.includes(body.game_version) ||
           body.mode !== 'expedition') {
         return json({ error: 'invalid_match' }, 400);
       }
@@ -393,7 +418,7 @@ export default {
             `INSERT INTO matches
              (match_id, game_version, mode, status, started_at)
              VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP)`
-          ).bind(matchId, '0.8.0', 'expedition'),
+          ).bind(matchId, body.game_version, 'expedition'),
           env.DB.prepare(
             `INSERT INTO match_session_tokens (match_id, token_hash)
              VALUES (?, ?)`
