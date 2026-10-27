@@ -105,10 +105,15 @@ salas ilimitadas: al alcanzar capacidad rechaza altas y conserva el resto del ju
 
 ## Moderación y privacidad operativa
 
-El chat está **desactivado por defecto** (`CHAT_ENABLED=false`). Incluso con true,
-no permite acceso público sin un `CHAT_MODERATION_TOKEN` de al menos 32 caracteres.
-El secreto no va en Git, HTML, localStorage, capturas ni URLs. No debe transmitirse
-por este informe. Su custodia corresponde al operador con acceso de moderación.
+El chat público queda **habilitado por defecto** (`CHAT_ENABLED=true`) y no requiere
+un moderador humano conectado para que los invitados conversen. El
+`CHAT_MODERATION_TOKEN` autentica operaciones administrativas; no representa una
+persona presente. La sala solo se detiene por una pausa administrativa explícita.
+El cliente distingue esa pausa de los errores temporales de red, reintenta con
+backoff limitado y consulta de nuevo al recuperar Internet o primer plano. Si la
+API o su secreto de servicio faltan, informa indisponibilidad temporal y reintenta,
+sin simular mensajes locales. El secreto no va en Git, HTML, localStorage, capturas
+ni URLs.
 
 La API `/chat/moderation` exige Bearer y permite listar mensajes/denuncias/bloqueos,
 retirar un mensaje, bloquear participante/IP y pausar/reanudar la sala. No hay una
