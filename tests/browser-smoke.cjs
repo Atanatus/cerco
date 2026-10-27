@@ -32,6 +32,8 @@ async function main() {
   let browser;
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
+  let confirmLostReport;
+  const lostReport = new Promise(resolve => { confirmLostReport = resolve; });
   try {
     browser = await chromium.launch({ headless: true, chromiumSandbox: true });
     const contexts = [];
@@ -53,7 +55,7 @@ async function main() {
           method: req.method(), headers: requestHeaders, body: req.postDataBuffer() || undefined
         });
         if (url.pathname === '/runs/pending' && loseNextReport) {
-          loseNextReport = false; await route.abort('failed'); return;
+          loseNextReport = false; await route.abort('failed'); confirmLostReport(); return;
         }
         const headers = Object.fromEntries(response.headers);
         headers['access-control-allow-origin'] = base;
@@ -198,6 +200,14 @@ async function main() {
     console.log('Browser terminal message emitted');
     await a.waitForFunction(() => Object.keys(localStorage).some(k => k.startsWith('cerco_terminal_v1:')) &&
       !window.CERCO_SESSION_STATUS().report_stored);
+    // Persistence precedes network delivery: wait for the committed response to
+    // be dropped before reading the D1 snapshot or reloading the browser.
+    let reportWait;
+    try {
+      await Promise.race([lostReport, new Promise((_, reject) => {
+        reportWait = setTimeout(() => reject(new Error('Committed report response was not dropped')), 8000);
+      })]);
+    } finally { clearTimeout(reportWait); }
     const beforeRecovery = await db.prepare('SELECT * FROM pending_run_reports WHERE match_id = ?').bind(matchId).first();
     await a.reload();
     await a.waitForFunction(() => !Object.keys(localStorage).some(k => k.startsWith('cerco_terminal_v1:')));

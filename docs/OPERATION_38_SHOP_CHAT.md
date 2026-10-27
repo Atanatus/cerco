@@ -106,6 +106,9 @@ Dos contextos independientes: nombres/iniciales, mensajes, XSS como texto,
 reconexión/dedupe, denuncias, retirada, bloqueo, pausa y reanudación, fallo del estado
 y entrada cerrada. Límites antispam y carreras en las pruebas del Worker.
 Se conservan las regresiones de sesiones/reintentos, skins, música y reglas.
+La repetición detectó y corrigió una carrera del comprobador de respuesta perdida:
+ahora espera, con timeout, a que termine la escritura y se descarte su respuesta
+antes de leer la fila de referencia. No cambia el comportamiento del juego.
 
 ## Plan de producción sujeto a autorización específica
 
