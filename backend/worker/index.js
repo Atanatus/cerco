@@ -1,4 +1,6 @@
 /* CERCO SESSION TOKEN V1 */
+import { routeChat } from './chat.js';
+export { PublicChat } from './chat.js';
 async function tokenHash(token) {
   const bytes = new TextEncoder().encode(token);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
@@ -110,6 +112,7 @@ export default {
         }
       });
     }
+    if (url.pathname.startsWith('/chat/')) return routeChat(request, env);
     // Free entitlement is a server rule, never a browser purchase receipt.
     if (url.pathname === '/skins/inventory' && request.method === 'GET') {
       return json({ schema: 'cerco.inventory.v1', authenticated: false,

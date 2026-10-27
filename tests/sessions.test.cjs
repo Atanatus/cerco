@@ -24,7 +24,7 @@ function report(session) {
 test('Worker con D1 local aislada: informes, autenticación, carreras y regresiones', async t => {
   const options = { modules: true, scriptPath: 'backend/worker/index.js',
     compatibilityDate: '2026-10-26', d1Databases: ['DB'] };
-  const mf = new Miniflare(convertV4MiniflareOptions ? convertV4MiniflareOptions(options) : options);
+  const mf = require('./support.cjs').createRuntime(options);
   t.after(() => mf.dispose());
   const db = await mf.getD1Database('DB');
   // D1 exec accepts one statement per line; triggers must remain a single statement.
@@ -154,8 +154,7 @@ test('Worker con D1 local aislada: informes, autenticación, carreras y regresio
     const old = await start(); const recent = await start();
     await db.prepare("UPDATE matches SET started_at = datetime('now', '-73 hours') WHERE match_id = ?")
       .bind(old.match_id).run();
-    const { default: worker } = await import('data:text/javascript;base64,' +
-      Buffer.from(fs.readFileSync('backend/worker/index.js')).toString('base64'));
+    const { default: worker } = await import(require('node:url').pathToFileURL(path.resolve('backend/worker/index.js')).href);
     await worker.scheduled({ cron: 'wrong' }, { DB: db });
     assert.equal((await state(old.match_id)).status, 'active');
     await worker.scheduled({ cron: '0 */6 * * *' }, { DB: db });

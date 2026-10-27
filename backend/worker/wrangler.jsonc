@@ -3,6 +3,11 @@
   "main": "index.js",
   "compatibility_date": "2026-10-26",
   "workers_dev": true,
+  "vars": { "CHAT_ENABLED": "false" },
+  "durable_objects": {
+    "bindings": [{ "name": "CHAT_ROOM", "class_name": "PublicChat" }]
+  },
+  "migrations": [{ "tag": "chat-v1", "new_sqlite_classes": ["PublicChat"] }],
   "triggers": {
     "crons": ["0 */6 * * *"]
   },

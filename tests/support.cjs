@@ -7,7 +7,15 @@ catch {
   const root = require('node:child_process').execFileSync('cmd.exe', ['/d', '/s', '/c', 'npm.cmd root -g'], { encoding: 'utf8' }).trim();
   runtime = createRequire(path.join(root, 'wrangler', 'package.json'))('miniflare');
 }
-exports.createRuntime = options => new runtime.Miniflare(runtime.convertV4MiniflareOptions ? runtime.convertV4MiniflareOptions(options) : options);
+exports.createRuntime = options => {
+  if (options.scriptPath === 'backend/worker/index.js') {
+    options = { ...options, modules: ['index.js', 'chat.js'].map(name => ({
+      type: 'ESModule', path: path.resolve('backend/worker', name)
+    })) };
+    delete options.scriptPath;
+  }
+  return new runtime.Miniflare(runtime.convertV4MiniflareOptions ? runtime.convertV4MiniflareOptions(options) : options);
+};
 exports.schema = async db => {
   const sql = fs.readFileSync('backend/d1/schema.sql', 'utf8') + '\n' + fs.readdirSync('backend/d1/migrations').sort()
     .map(name => fs.readFileSync('backend/d1/migrations/' + name, 'utf8')).join('\n');
