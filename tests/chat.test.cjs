@@ -2,6 +2,13 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { createRuntime, origin } = require('./support.cjs');
 const admin = 'local-test-only-' + 'x'.repeat(40);
+test('production Worker configuration keeps public chat enabled and retains DO/Cron bindings', () => {
+  const config = JSON.parse(require('node:fs').readFileSync('backend/worker/wrangler.jsonc'));
+  assert.equal(config.vars.CHAT_ENABLED, 'true');
+  assert.equal(config.durable_objects.bindings[0].class_name, 'PublicChat');
+  assert.deepEqual(config.triggers.crons, ['0 */6 * * *']);
+  assert.equal(config.d1_databases[0].database_name, 'cerco-production');
+});
 function runtime(enabled = true) {
   return createRuntime({ modules: true, scriptPath: 'backend/worker/index.js', compatibilityDate: '2026-10-26',
     durableObjects: { CHAT_ROOM: { className: 'PublicChat', useSQLite: true } },
@@ -36,7 +43,7 @@ test('chat público deshabilitado y origen ajeno: nunca simula un chat local', a
 test('chat availability: fail closed without flag, binding or moderation secret; no guest credentials', async t => {
   const closed = runtime(false); t.after(() => closed.dispose());
   const request = mf => mf.dispatchFetch('https://local.test/chat/status', { headers: { Origin: origin } });
-  assert.deepEqual(await (await request(closed)).json(), { available: false });
+  assert.deepEqual(await (await request(closed)).json(), { available: false, paused: false });
   for (const options of [
     { bindings: { CHAT_ENABLED: 'true', CHAT_MODERATION_TOKEN: admin } },
     { durableObjects: { CHAT_ROOM: { className: 'PublicChat', useSQLite: true } }, bindings: { CHAT_ENABLED: 'true' } },
@@ -44,16 +51,16 @@ test('chat availability: fail closed without flag, binding or moderation secret;
   ]) {
     const incomplete = createRuntime({ modules: true, scriptPath: 'backend/worker/index.js', compatibilityDate: '2026-10-26', ...options });
     t.after(() => incomplete.dispose());
-    assert.deepEqual(await (await request(incomplete)).json(), { available: false });
+    assert.deepEqual(await (await request(incomplete)).json(), { available: false, paused: false });
     assert.equal((await incomplete.dispatchFetch('https://local.test/chat/session', { method: 'POST', headers: { Origin: origin } })).status, 503);
   }
   assert.equal((await closed.dispatchFetch('https://local.test/chat/status', { headers: { Origin: 'https://evil.example' } })).status, 403);
   const enabled = runtime(); t.after(() => enabled.dispose());
-  assert.deepEqual(await (await request(enabled)).json(), { available: true });
+  assert.deepEqual(await (await request(enabled)).json(), { available: true, paused: false });
   const moderation = action => enabled.dispatchFetch('https://local.test/chat/moderation', { method: 'POST',
     headers: { Authorization: 'Bearer ' + admin }, body: JSON.stringify({ action }) });
-  await moderation('pause'); assert.deepEqual(await (await request(enabled)).json(), { available: false });
-  await moderation('resume'); assert.deepEqual(await (await request(enabled)).json(), { available: true });
+  await moderation('pause'); assert.deepEqual(await (await request(enabled)).json(), { available: false, paused: true });
+  await moderation('resume'); assert.deepEqual(await (await request(enabled)).json(), { available: true, paused: false });
 });
 test('chat: identidades del servidor, cruce, duplicados, reconexión, límites y moderación', async t => {
   const mf = runtime(); t.after(() => mf.dispose());
