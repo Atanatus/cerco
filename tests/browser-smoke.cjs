@@ -33,6 +33,7 @@ async function main() {
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
   let availabilityResponder = null, availabilityRequests = 0;
+  let skewNextChatSession = false;
   let confirmLostReport;
   const lostReport = new Promise(resolve => { confirmLostReport = resolve; });
   try {
@@ -63,6 +64,15 @@ async function main() {
         const response = await mf.dispatchFetch('https://local.test' + url.pathname + url.search, {
           method: req.method(), headers: requestHeaders, body: req.postDataBuffer() || undefined
         });
+        if (url.pathname === '/chat/session' && skewNextChatSession && response.status === 201) {
+          skewNextChatSession = false;
+          const session = await response.json();
+          session.expiresAt += 60_000;
+          const headers = Object.fromEntries(response.headers);
+          headers['access-control-allow-origin'] = base;
+          await route.fulfill({ status: response.status, headers, body: JSON.stringify(session) });
+          return;
+        }
         if (url.pathname === '/runs/pending' && loseNextReport) {
           loseNextReport = false; await route.abort('failed'); confirmLostReport(); return;
         }
@@ -208,6 +218,15 @@ async function main() {
     assert.equal(availabilityRequests, beforeFocus + 1, 'Returning to foreground should recheck availability');
     results.push('Offline pauses retries; online and foreground restoration recheck the status endpoint.');
     await onlinePage.close(); availabilityResponder = null;
+    console.log('Browser stage: guest clock skew');
+    const skewedGuest = await pageFor('192.0.2.107');
+    await skewedGuest.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    skewNextChatSession = true;
+    await skewedGuest.locator('#chat-join').click();
+    await skewedGuest.waitForFunction(() => !document.getElementById('chat-input').disabled);
+    assert.match(await skewedGuest.locator('#chat-status').innerText(), /^Guest [a-f0-9]{8} · public guest chat$/);
+    results.push('Guest session expiry permits five-minute server/browser clock skew; Worker remains authoritative.');
+    await skewedGuest.close();
     console.log('Browser stage: skins');
 
     await a.locator('[data-panel="shop"]').click();

@@ -30,6 +30,11 @@ dure la sesión del invitado. Las claves idempotentes y el historial del servido
 evitan duplicados. Antispam, cuotas, identidades de invitado, denuncias, bloqueos y
 protección XSS siguen en el Worker.
 
+Las sesiones de invitado se validan con una tolerancia de cinco minutos entre el
+reloj del navegador y el Worker. El Worker conserva la autoridad sobre la
+caducidad del token; la tolerancia evita rechazar una sesión válida cuando el
+reloj local va ligeramente retrasado.
+
 ## Pruebas locales
 
 `npm.cmd test` (51 pruebas) y `node tests/browser-smoke.cjs` cubren API disponible,

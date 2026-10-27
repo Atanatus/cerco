@@ -4,6 +4,7 @@
   const API = 'https://cerco-api.atanatus.workers.dev';
   const STATUS_TIMEOUT_MS = 5000;
   const STATUS_BACKOFF_MS = [1000, 2000, 4000, 8000, 15000, 30000];
+  const GUEST_CLOCK_SKEW_MS = 5 * 60 * 1000;
   const form = document.getElementById('chat-form'), input = document.getElementById('chat-input');
   const list = document.getElementById('chat-messages'), status = document.getElementById('chat-status');
   const join = document.getElementById('chat-join');
@@ -195,7 +196,9 @@
       const data = await r.json();
       if (data.identity !== 'guest' || typeof data.token !== 'string' || data.token.length !== 72 ||
           !/^Guest [a-f0-9]{8}$/.test(data.displayName) || typeof data.participantId !== 'string' ||
-          !Number.isFinite(data.expiresAt) || data.expiresAt <= Date.now() || data.expiresAt > Date.now() + 2 * 3600000) throw new Error('invalid guest session');
+          !Number.isFinite(data.expiresAt) || data.expiresAt <= Date.now() ||
+          // Worker time is authoritative; allow small clock skew while still rejecting unreasonable lifetimes.
+          data.expiresAt > Date.now() + 2 * 3600000 + GUEST_CLOCK_SKEW_MS) throw new Error('invalid guest session');
       guest = data; stopped = false; reconnects = 0;
       expiryTimer = setTimeout(() => leave('Guest session expired. Join again.'), guest.expiresAt - Date.now());
       connect();
