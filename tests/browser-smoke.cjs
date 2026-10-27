@@ -64,6 +64,9 @@ async function main() {
         const response = await mf.dispatchFetch('https://local.test' + url.pathname + url.search, {
           method: req.method(), headers: requestHeaders, body: req.postDataBuffer() || undefined
         });
+        if (['/guest/profile', '/matches/start'].includes(url.pathname)) {
+          console.log('Local identity/session API', url.pathname, response.status);
+        }
         if (url.pathname === '/chat/session' && skewNextChatSession && response.status === 201) {
           skewNextChatSession = false;
           const session = await response.json();
@@ -104,6 +107,27 @@ async function main() {
     const a = await pageFor('192.0.2.101'); const b = await pageFor('192.0.2.102');
     await Promise.all([a.waitForFunction(() => !document.querySelector('#chat-join').disabled),
       b.waitForFunction(() => !document.querySelector('#chat-join').disabled)]);
+    const guestA = await a.evaluate(() => window.CERCO_GUEST_PROFILE.getProfile());
+    const guestB = await b.evaluate(() => window.CERCO_GUEST_PROFILE.getProfile());
+    assert.match(guestA.displayName, /^Guest [a-f0-9]{8}$/);
+    assert.notEqual(guestA.guestId, guestB.guestId, 'Independent browser contexts receive separate profiles');
+    assert.equal(await a.locator('#player-display-name').innerText(), guestA.displayName);
+    assert.equal(await a.evaluate(() => localStorage.getItem('cerco_guest_id_v1')), null,
+      'A public legacy UUID is not used as the current guest identity');
+    assert.equal(await a.evaluate(async () => {
+      const db = await new Promise((resolve, reject) => {
+        const request = indexedDB.open('cerco-guest-profile-v1');
+        request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
+      });
+      const record = await new Promise((resolve, reject) => {
+        const request = db.transaction('credentials').objectStore('credentials').get('primary');
+        request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error);
+      });
+      db.close(); return Boolean(record?.recoveryToken && !Object.keys(localStorage).some(key => /recovery.?token/i.test(key)));
+    }), true, 'Recovery credential is in IndexedDB and not localStorage');
+    await a.reload();
+    await a.waitForFunction(id => window.CERCO_GUEST_PROFILE.getProfile()?.guestId === id, guestA.guestId);
+    assert.equal(await a.locator('#player-display-name').innerText(), guestA.displayName);
     await require('./shop-geometry.cjs')(a);
     results.push('Shop geometry: six viewports, full cards before next heading, scrolling and unobstructed buttons.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
@@ -330,6 +354,47 @@ async function main() {
     results.push('Desktop/tablet/mobile layouts have no horizontal page overflow.');
     assert.deepEqual(errors, []);
     assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM results').first()).n, 0);
+
+    // A separate persistent Chromium profile proves identity survives closing and
+    // reopening the whole browser, not just a document reload.
+    const os = require('node:os');
+    const persistentDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cerco-guest-profile-'));
+    let persistent;
+    try {
+      const openPersistent = async () => {
+        const context = await chromium.launchPersistentContext(persistentDir, { headless: true, chromiumSandbox: true });
+        await context.route('**/*', async route => {
+          const url = new URL(route.request().url());
+          if (url.origin === base) return route.continue();
+          if (url.origin !== 'https://cerco-api.atanatus.workers.dev') return route.abort();
+          const request = route.request(); const headers = new Headers(request.headers());
+          headers.set('Origin', origin); headers.set('CF-Connecting-IP', '192.0.2.155');
+          const response = await mf.dispatchFetch('https://local.test' + url.pathname + url.search, {
+            method: request.method(), headers, body: request.postDataBuffer() || undefined
+          });
+          const responseHeaders = Object.fromEntries(response.headers);
+          responseHeaders['access-control-allow-origin'] = base;
+          await route.fulfill({ status: response.status, headers: responseHeaders,
+            body: Buffer.from(await response.arrayBuffer()) });
+        });
+        return context;
+      };
+      persistent = await openPersistent();
+      let persistentPage = persistent.pages()[0] || await persistent.newPage();
+      await persistentPage.goto(base);
+      await persistentPage.waitForFunction(() => window.CERCO_GUEST_PROFILE?.getProfile());
+      const persistedIdentity = await persistentPage.evaluate(() => window.CERCO_GUEST_PROFILE.getProfile());
+      await persistent.close(); persistent = null;
+      persistent = await openPersistent();
+      persistentPage = persistent.pages()[0] || await persistent.newPage();
+      await persistentPage.goto(base);
+      await persistentPage.waitForFunction(id => window.CERCO_GUEST_PROFILE?.getProfile()?.guestId === id, persistedIdentity.guestId);
+      assert.equal(await persistentPage.locator('#player-display-name').innerText(), persistedIdentity.displayName);
+      results.push('One server guest profile survives closing and reopening Chromium; independent profiles remain distinct.');
+    } finally {
+      if (persistent) { await persistent.close(); persistent = null; }
+      fs.rmSync(persistentDir, { recursive: true, force: true });
+    }
     fs.writeFileSync('.local-recovery/beta081/browser-results.json', JSON.stringify({ passed: results, pageErrors: errors }, null, 2));
     results.forEach(result => console.log('PASS ' + result));
   } catch (error) {
@@ -338,6 +403,8 @@ async function main() {
       for (const context of browser.contexts()) for (const page of context.pages()) {
         console.error('Browser diagnostic:', await page.evaluate(() => ({
           chat: document.getElementById('chat-status')?.textContent,
+          profile: { state: window.CERCO_GUEST_PROFILE?.state,
+            guest: window.CERCO_GUEST_PROFILE?.getProfile() },
           session: window.CERCO_SESSION_STATUS?.(),
           game: document.getElementById('cerco-game-frame')?.contentWindow.CERCO_BRIDGE?.getSnapshot()
         })).catch(() => ({})));

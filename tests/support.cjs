@@ -9,9 +9,11 @@ catch {
 }
 exports.createRuntime = options => {
   if (options.scriptPath === 'backend/worker/index.js') {
-    options = { ...options, modules: ['index.js', 'chat.js', 'http.js'].map(name => ({
-      type: 'ESModule', path: path.resolve('backend/worker', name)
-    })) };
+    const bindings = options.bindings || {};
+    options = { ...options, bindings: { GUEST_IDENTITY_REQUIRED: 'false', ...bindings },
+      modules: ['index.js', 'chat.js', 'guest.js', 'http.js'].map(name => ({
+        type: 'ESModule', path: path.resolve('backend/worker', name)
+      })) };
     delete options.scriptPath;
   }
   return new runtime.Miniflare(runtime.convertV4MiniflareOptions ? runtime.convertV4MiniflareOptions(options) : options);
