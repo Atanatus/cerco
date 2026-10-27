@@ -258,6 +258,10 @@ Autorización agrupada solicitada: despliegue del backend/creación de DO, prueb
 sintéticas D1, push que activa Pages, secreto/activación/pruebas de chat y reversión
 de contingencia. Puede aprobarse por etapas; ninguna está ejecutada en esta sesión.
 
+La preparación posterior de Shop, disponibilidad del chat y consola de moderación
+del propietario se documenta en [Operación 38](OPERATION_38_SHOP_CHAT.md).
+Su apertura requiere una nueva autorización específica de producción.
+
 ## Reversión sin perder datos
 
 - Chat: `pause --apply` cierra la sala inmediatamente; después desplegar con
