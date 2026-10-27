@@ -30,13 +30,19 @@
 
   /* CERCO VOLUME CONTROL V081 */
   const volumeStorageKey = 'cerco.music.volume.v1';
-  const volumeContainer = document.querySelector('.music-player');
+  const volumeContainer = document.querySelector('.music-controls');
 
   if (volumeContainer) {
     const volumeWrap = document.createElement('div');
     volumeWrap.id = 'cerco-volume-control';
-    volumeWrap.setAttribute('role', 'group');
-    volumeWrap.setAttribute('aria-label', 'Music volume');
+    const volumeToggle = document.createElement('button');
+    volumeToggle.type = 'button'; volumeToggle.id = 'cerco-volume-toggle';
+    volumeToggle.setAttribute('aria-label', 'Music volume');
+    volumeToggle.setAttribute('aria-expanded', 'false');
+    volumeToggle.setAttribute('aria-controls', 'cerco-volume-popover');
+    const popover = document.createElement('div'); popover.id = 'cerco-volume-popover';
+    popover.hidden = true; popover.setAttribute('role', 'group');
+    popover.setAttribute('aria-label', 'Music volume');
 
     const volumeLabel = document.createElement('label');
     volumeLabel.htmlFor = 'cerco-volume-slider';
@@ -62,24 +68,49 @@
     } catch (_) {}
 
     audio.volume = Number(volumeSlider.value) / 100;
+    try { audio.muted = localStorage.getItem('cerco.music.muted.v1') === 'true'; } catch (_) {}
+    const mute = document.createElement('button'); mute.type = 'button'; mute.id = 'cerco-volume-mute';
+    function renderVolume() {
+      volumeToggle.textContent = audio.muted || audio.volume === 0 ? '\u{1f507}' : '\u{1f50a}';
+      mute.textContent = audio.muted ? 'Unmute' : 'Mute';
+      mute.setAttribute('aria-pressed', String(audio.muted));
+      try { localStorage.setItem('cerco.music.muted.v1', String(audio.muted)); } catch (_) {}
+    }
+    mute.addEventListener('click', () => { audio.muted = !audio.muted; renderVolume(); });
+    function closeVolume() { popover.hidden = true; volumeToggle.setAttribute('aria-expanded', 'false'); }
+    volumeToggle.addEventListener('click', () => {
+      popover.hidden = !popover.hidden;
+      volumeToggle.setAttribute('aria-expanded', String(!popover.hidden));
+      if (!popover.hidden) volumeSlider.focus();
+    });
+    document.addEventListener('pointerdown', event => { if (!volumeWrap.contains(event.target)) closeVolume(); });
+    volumeWrap.addEventListener('focusout', event => { if (!volumeWrap.contains(event.relatedTarget)) closeVolume(); });
+    volumeWrap.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { closeVolume(); volumeToggle.focus(); event.stopPropagation(); }
+    });
 
     volumeSlider.addEventListener('input', () => {
       audio.volume = Number(volumeSlider.value) / 100;
+      if (audio.volume > 0) audio.muted = false;
+      renderVolume();
       try {
         localStorage.setItem(volumeStorageKey, volumeSlider.value);
       } catch (_) {}
     });
 
-    volumeWrap.append(volumeLabel, volumeSlider);
+    popover.append(volumeLabel, volumeSlider, mute);
+    volumeWrap.append(volumeToggle, popover);
     volumeContainer.appendChild(volumeWrap);
+    renderVolume();
 
     const volumeStyle = document.createElement('style');
     volumeStyle.textContent = `
       #cerco-volume-control {
-        position: absolute;
-        right: 9px;
-        top: 9px;
-        z-index: 5;
+        position: relative;
+      }
+      #cerco-volume-popover {
+        position: absolute; bottom: 43px; right: 0;
+        z-index: 6;
         display: flex;
         align-items: center;
         gap: 7px;
@@ -90,6 +121,8 @@
         color: #e0f7ef;
         font: 11px Arial,sans-serif;
       }
+      #cerco-volume-popover[hidden] { display: none; }
+      .music-player #cerco-volume-mute { width: auto; min-width: 52px; border-radius: 4px; padding: 4px; }
       #cerco-volume-slider {
         width: 82px;
         height: 18px;

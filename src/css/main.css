@@ -3,6 +3,7 @@
   font-family: Arial, sans-serif;
 }
 
+
 * {
   box-sizing: border-box;
 }
@@ -3313,6 +3314,47 @@ select {
 .pz-skins > .pz-skins-header .pz-skins-back:focus-visible {
     outline: 2px solid #94c9b6;
     outline-offset: 2px;
+}
+
+/* CERCO beta 0.8.1 */
+.header small { font-size: 10px; font-weight: normal; letter-spacing: .12em; }
+#chat-status, .chat-rules { margin: 6px 8px; font-size: 11px; font-weight: normal; line-height: 1.4; }
+.chat-rules { max-height: 130px; overflow: auto; }
+#chat-join { margin: 4px 8px; padding: 7px; background: #20352e; color: #e1f4eb; border: 1px solid #647b70; border-radius: 4px; }
+.chat-messages .chat-message { display: flex; gap: 7px; padding: 8px; text-align: left; font-weight: normal; max-width: 100%; }
+.chat-messages .chat-message-own { border-left: 2px solid #7ebd9e; }
+.chat-avatar { flex: 0 0 25px; width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: #31473c; color: #deeee5; font-size: 10px; }
+.chat-message-content { min-width: 0; width: 100%; overflow-wrap: anywhere; }
+.chat-message-content strong { display: block; font-size: 10px; color: #b8d0c3; }
+.chat-message-content p { margin: 4px 0; white-space: pre-wrap; font-size: 12px; }
+.chat-message-content time, .chat-report { font-size: 10px; color: #b3bdb6; }
+.chat-report { border: 0; background: none; cursor: pointer; float: right; text-decoration: underline; }
+.chat-composer input:disabled { opacity: .6; }
+.cerco-skin-card { flex: 0 0 185px; min-width: 0; border: 1px solid #58635e; background: #1d2421; padding: 10px; border-radius: 6px; text-align: center; color: #e2e8e4; }
+.cerco-skin-card img { width: 100%; max-width: 160px; height: 120px; object-fit: contain; }
+.cerco-skin-card h4 { margin: 8px 0; }
+.cerco-skin-card p { font-size: 12px; font-weight: normal; line-height: 1.4; }
+.cerco-skin-card button { display: block; width: 100%; padding: 7px 4px; margin-top: 6px; background: #304a3e; border: 1px solid #799582; color: #ecf5ee; border-radius: 4px; cursor: pointer; }
+.cerco-skin-card button:disabled { background: #303532; color: #adb5af; cursor: not-allowed; }
+.pz-shop-content { grid-template-rows: auto auto; overflow-y: auto; }
+.pz-shop-gallery { flex: 0 0 auto; overflow-y: visible; min-height: 160px; }
+.pz-skins-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 210px)); }
+#cerco-skin-status { font-size: 12px; font-weight: normal; }
+.pz-skins-empty[hidden] { display: none; }
+.music-player .music-controls { opacity: 1; visibility: visible; transform: none; transition: none; gap: 6px; }
+.music-player { overflow: visible; }
+#music-visualizer-canvas { border-radius: inherit; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid #a7dcc1; outline-offset: 2px; }
+@media (max-width: 760px) {
+    html, body { overflow: auto; height: auto; min-height: 100%; }
+    .app { height: auto; min-height: 100dvh; grid-template-columns: minmax(0, 1fr); grid-template-rows: 48px minmax(540px, 75vh) auto 400px 32px; grid-template-areas: "header" "content" "right" "left" "footer"; }
+    .player-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 12px; }
+    .player-panel .player-navigation { grid-column: 1 / -1; }
+    .player-panel .music-player { grid-column: 1 / -1; height: 170px; min-height: 170px; width: 100%; }
+    .player-panel .player-avatar { max-width: 100px; justify-self: center; }
+    .player-panel .player-stats { grid-column: 1 / -1; }
+    .sidebar-left { padding: 0; }
+    .pz-shop-content { padding: 10px; }
 }
 
 @media (max-width: 520px) {

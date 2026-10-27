@@ -4,18 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CERCO | PROYECTOZ</title>
+  <title>CERCO — Public beta 0.8.1</title>
   <link rel="stylesheet" href="./src/css/main.css">
   <script src="./src/js/main.js" defer></script>
 </head>
 <body>
   <div class="app">
-    <header class="header" data-project="CERCO">CERCO</header>
+    <header class="header" data-project="CERCO">CERCO <small>0.8.1 BETA</small></header>
     <aside class="sidebar sidebar-left chat-panel">
   <div class="chat-title">
     <span>CHAT</span>
     <button type="button" id="chat-clear" title="Clear history" aria-label="Clear history"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 10v7"/><path d="M14 10v7"/></svg></button>
   </div>
+  <p id="chat-status" role="status">Public guest chat · join to connect.</p>
+  <details class="chat-rules"><summary>Chat rules &amp; privacy</summary>
+    <p>Be respectful. No harassment, spam or personal data. Messages are public, up to 300 characters, retained for up to 24 hours or the latest 100 messages. Guests are not authenticated accounts.</p>
+    <p>Guest credentials stay in this tab for up to two hours. Hashed network identifiers are retained up to 24 hours for antispam and temporary blocks. Use Report to request moderator review. Joining accepts these rules.</p>
+  </details>
+  <button type="button" id="chat-join">Join public chat</button>
   <div class="chat-messages" id="chat-messages" role="log" aria-live="polite"></div>
   <div id="chat-emoji-picker" class="chat-emoji-picker"
      role="group" aria-label="Emoji picker" hidden>
@@ -27,7 +33,7 @@
   <div id="chat-emoji-grid" class="chat-emoji-grid"></div>
 </div>
 <form class="chat-composer" id="chat-form">
-    <input id="chat-input" type="text" maxlength="500" autocomplete="off" placeholder="Message..." aria-label="Type a message" required>
+    <input id="chat-input" type="text" maxlength="300" autocomplete="off" placeholder="Join to chat…" aria-label="Type a message" required disabled>
 <button type="button" id="chat-emoji-toggle"
   aria-label="Choose emoji"
   aria-expanded="false"
@@ -155,7 +161,7 @@
         id="cerco-game-frame"
         class="cerco-game-frame"
         title="CERCO Expedition"
-        data-src="./games/CERCO/cerco_expedition_v080.html"
+        data-src="./games/CERCO/cerco_expedition_v081_skins.html"
         allow="fullscreen"
         hidden
     ></iframe>
@@ -225,22 +231,23 @@
 <footer class="footer">
   <span>&copy; 2026 Atanatus.</span>
   <span class="footer-separator" aria-hidden="true">&middot;</span>
-  <button type="button" id="cookies-open" class="footer-cookie-link" aria-haspopup="dialog">Cookies</button>
+  <button type="button" id="cookies-open" class="footer-cookie-link" aria-haspopup="dialog">Privacy &amp; storage</button>
 </footer>
   </div>
 <script src="./src/js/music-playlist.js" defer></script>
 <script src="./src/js/music-player.js" defer></script>
   <script src="./src/js/music-visualizer.js" defer></script>
 <script src="./src/js/chat-emoji.js" defer></script>
+<script src="./src/js/public-chat.js" defer></script>
 <dialog id="cookies-dialog" class="cookies-dialog" aria-labelledby="cookies-title">
   <div class="cookies-dialog-header">
     <h2 id="cookies-title">Cookies &amp; Storage</h2>
     <button type="button" id="cookies-close" aria-label="Close">X</button>
   </div>
-  <p>CERCO is currently a local development project.</p>
-  <p>The application may store local preferences or game information in your browser. Browser storage is not necessarily a cookie.</p>
-  <p>This notice is provisional. Before public launch, we will review the technologies used and provide the required privacy information and consent controls, where applicable.</p>
-  <p>No cookie consent is requested or recorded by this window.</p>
+  <p>CERCO 0.8.1 is a public beta. Reports from your browser remain unverified and do not enter official rankings.</p>
+  <p>This site stores music preferences, a local display name, guest ID and local game records. Pending reports and session credentials may remain in browser storage for up to six hours to recover delivery, with a limit of eight entries. They are removed after confirmation or discard; expired entries are cleaned when the site next runs.</p>
+  <p>The game API stores session metadata and unverified reports. Public chat is optional: messages and reports are retained up to 24 hours with bounded capacity. Guest chat credentials remain in tab memory for up to two hours. Cloudflare processes network requests; hashed network identifiers support antispam and temporary blocks.</p>
+  <p>Do not share personal or sensitive information in chat. Use the Report control for abusive content. No advertising or analytics cookies are introduced by this beta.</p>
   <button type="button" id="cookies-done">Close</button>
 </dialog>
 <script>
@@ -316,6 +323,7 @@
 </dialog>
 <!-- PROYECTOZ PROFILE PHOTO V059 -->
 <script src="./src/js/profile-photo.js"></script>
+<script src="./src/js/cerco-skins-adapter.js"></script>
 <script src="./src/js/skins.js"></script>
 <script src="./src/js/leaderboard-info.js"></script>
 <!-- PROYECTOZ FLAMING CROWN V069 -->
