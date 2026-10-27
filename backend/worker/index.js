@@ -16,6 +16,31 @@ function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
+// JSON object key order is not part of a report's identity. Array order is.
+function canonicalJson(value) {
+  const output = [];
+  const stack = [{ value }];
+  while (stack.length) {
+    const item = stack.pop();
+    if ('text' in item) { output.push(item.text); continue; }
+    const current = item.value;
+    if (current === null || typeof current !== 'object') {
+      output.push(JSON.stringify(current));
+      continue;
+    }
+    const array = Array.isArray(current);
+    const keys = array ? Object.keys(current) : Object.keys(current).sort();
+    output.push(array ? '[' : '{');
+    stack.push({ text: array ? ']' : '}' });
+    for (let i = keys.length - 1; i >= 0; i--) {
+      if (i < keys.length - 1) stack.push({ text: ',' });
+      stack.push({ value: current[keys[i]] });
+      if (!array) stack.push({ text: JSON.stringify(keys[i]) + ':' });
+    }
+  }
+  return output.join('');
+}
+
 export default {
   /* CERCO SESSION EXPIRY V1 - 72H ABSOLUTE MAXIMUM */
   async scheduled(controller, env) {
@@ -158,7 +183,8 @@ export default {
         return json({ error: 'inconsistent_report' }, 400);
       }
 
-      const auditJson = JSON.stringify(audit);
+      // Iterative serialization also handles deeply nested, size-limited JSON.
+      const auditJson = canonicalJson(audit);
       if (auditJson.length < 2 || auditJson.length > 100000) {
         return json({ error: 'invalid_audit_size' }, 413);
       }
@@ -197,7 +223,8 @@ export default {
           body.match_id
         ).run();
 
-        if (result.meta?.changes === 1) {
+        // D1 may include the lifecycle trigger's UPDATE in changes.
+        if (result.meta?.changes > 0) {
           return json({
             accepted: true,
             status: 'pending',
@@ -206,10 +233,17 @@ export default {
         }
 
         const existing = await env.DB.prepare(
-          `SELECT run_id FROM pending_run_reports WHERE match_id = ?`
+          `SELECT run_id, guest_id, score, kills, room, seed,
+                  active_seconds, audit_json
+           FROM pending_run_reports WHERE match_id = ?`
         ).bind(body.match_id).first();
 
         if (existing) {
+          if (['run_id', 'guest_id', 'score', 'kills', 'room', 'seed',
+               'active_seconds'].every(key => existing[key] === body[key]) &&
+              canonicalJson(JSON.parse(existing.audit_json)) === canonicalJson(audit)) {
+            return json({ accepted: true, status: 'pending', verified: false });
+          }
           return json({
             accepted: false,
             error: 'already_submitted'
