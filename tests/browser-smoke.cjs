@@ -32,6 +32,7 @@ async function main() {
   let browser;
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
+  let availabilityResponder = null, availabilityRequests = 0;
   let confirmLostReport;
   const lostReport = new Promise(resolve => { confirmLostReport = resolve; });
   try {
@@ -51,6 +52,14 @@ async function main() {
         if (url.origin !== 'https://cerco-api.atanatus.workers.dev') return route.abort();
         const requestHeaders = new Headers(req.headers());
         requestHeaders.set('Origin', origin); requestHeaders.set('CF-Connecting-IP', ip);
+        if (url.pathname === '/chat/status' && availabilityResponder) {
+          const planned = availabilityResponder(++availabilityRequests);
+          if (planned.delay) await new Promise(resolve => setTimeout(resolve, planned.delay));
+          try { await route.fulfill({ status: planned.status,
+            headers: { 'Access-Control-Allow-Origin': base, 'Cache-Control': 'no-store', 'Content-Type': 'application/json' },
+            body: JSON.stringify(planned.body || { error: 'temporary' }) }); } catch (_) { /* Aborted by the timeout case. */ }
+          return;
+        }
         const response = await mf.dispatchFetch('https://local.test' + url.pathname + url.search, {
           method: req.method(), headers: requestHeaders, body: req.postDataBuffer() || undefined
         });
@@ -83,11 +92,19 @@ async function main() {
     }
     console.log('Browser stage: initial load');
     const a = await pageFor('192.0.2.101'); const b = await pageFor('192.0.2.102');
+    await Promise.all([a.waitForFunction(() => !document.querySelector('#chat-join').disabled),
+      b.waitForFunction(() => !document.querySelector('#chat-join').disabled)]);
     await require('./shop-geometry.cjs')(a);
     results.push('Shop geometry: six viewports, full cards before next heading, scrolling and unobstructed buttons.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+    assert.equal(activeSockets.size, 2);
+    await new Promise(resolve => setTimeout(resolve, 1050));
+    await a.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await new Promise(resolve => setTimeout(resolve, 100));
+    assert.equal(activeSockets.size, 2, 'Status rechecks must preserve healthy WebSockets');
+    assert.equal(await a.locator('#chat-input').isDisabled(), false);
     const text = '<img src=x onerror="window.chatXss=true"> hello 👋';
     await a.locator('#chat-input').fill(text); await a.locator('#chat-input').press('Enter');
     await b.locator('.chat-message-content p').filter({ hasText: text }).waitFor();
@@ -102,6 +119,7 @@ async function main() {
     for (const c of [...activeSockets]) { c.ws.close(1012, 'Local reconnect test'); }
     await a.waitForFunction(() => document.querySelector('#chat-status').textContent.includes('Reconnecting'));
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+    assert.equal(activeSockets.size, 2, 'Keep exactly one live socket for each guest after reconnecting');
     assert.equal(await a.locator('.chat-message').count(), 2);
     results.push('WebSocket reconnect restores history without duplicate messages.');
     console.log('Browser stage: moderation and closed-room controls');
@@ -126,17 +144,70 @@ async function main() {
       headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.101' }, body: '{"acceptRules":true}' });
     assert.equal(blocked.status, 403);
     await moderate('POST', { action: 'pause' });
-    await b.waitForFunction(() => document.getElementById('chat-input').disabled && document.getElementById('chat-join').disabled);
-    await b.reload(); assert.equal(await b.locator('#chat-join').isDisabled(), true);
+    await b.waitForFunction(() => document.getElementById('chat-input').disabled &&
+      document.getElementById('chat-join').dataset.availability === 'paused');
+    assert.match(await b.locator('#chat-status').innerText(), /paused by its administrator/);
+    assert.equal(await b.locator('#chat-join').innerText(), 'Check chat status');
+    await b.locator('#chat-join').click();
+    await b.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'paused');
+    await b.reload(); await b.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'paused');
     await moderate('POST', { action: 'resume' }); await b.reload();
-    await b.waitForFunction(() => !document.getElementById('chat-join').disabled);
+    await b.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
     await b.route('**/chat/status', route => route.fulfill({ status: 503,
-      headers: { 'Access-Control-Allow-Origin': base }, body: '{}' }));
-    await b.reload(); await b.waitForFunction(() => document.getElementById('chat-status').textContent.includes('temporarily closed'));
-    assert.equal(await b.locator('#chat-join').isDisabled(), true);
+      headers: { 'Access-Control-Allow-Origin': base, 'Content-Type': 'application/json' }, body: '{}' }));
+    await b.reload(); await b.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'network-error');
+    assert.match(await b.locator('#chat-status').innerText(), /temporarily unavailable/);
+    assert.equal(await b.locator('#chat-join').innerText(), 'Retry connection');
     assert.equal(await b.locator('#chat-input').isDisabled(), true);
     await b.unroute('**/chat/status');
-    results.push('Browser reports, deletion broadcast, participant/IP ban, immediate pause/resume and fail-closed entry controls.');
+    await b.locator('#chat-join').click(); await b.waitForFunction(() => !document.getElementById('chat-input').disabled);
+    await b.locator('#chat-join').click();
+    results.push('Browser reports, deletion, ban, administrative pause/resume, transient HTTP failure and manual retry.');
+    console.log('Browser stage: status retries and network recovery');
+
+    availabilityRequests = 0;
+    availabilityResponder = n => n === 1 ? { status: 503 } : { status: 200, body: { available: true, paused: false } };
+    const retry = await pageFor('192.0.2.103');
+    await retry.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    assert.equal(availabilityRequests, 2);
+    results.push('First status request fails; bounded automatic retry succeeds on the second request.');
+    await retry.close();
+
+    availabilityRequests = 0;
+    availabilityResponder = n => n === 1 ? { status: 200, delay: 5200, body: { available: true, paused: false } }
+      : { status: 200, body: { available: true, paused: false } };
+    const timeoutPage = await pageFor('192.0.2.104');
+    await timeoutPage.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    assert.equal(availabilityRequests, 2, 'Timed-out status fetch retries successfully without closing chat');
+    results.push('Status timeout becomes a temporary error and automatic retry succeeds.');
+    await timeoutPage.close();
+
+    availabilityRequests = 0;
+    availabilityResponder = () => ({ status: 503 });
+    const noisy = await pageFor('192.0.2.105');
+    await noisy.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'network-error');
+    await new Promise(resolve => setTimeout(resolve, 5500));
+    assert(availabilityRequests <= 4, `Availability retries were excessive: ${availabilityRequests}`);
+    assert.equal(await noisy.locator('#chat-join').innerText(), 'Retry connection');
+    results.push(`Failed status checks use bounded backoff (${availabilityRequests} requests in 5.5 seconds); manual retry remains available.`);
+    await noisy.close(); availabilityResponder = null;
+
+    const onlinePage = await pageFor('192.0.2.106');
+    const onlineContext = onlinePage.context(); await onlinePage.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    availabilityRequests = 0; availabilityResponder = () => ({ status: 200, body: { available: true, paused: false } });
+    await onlineContext.setOffline(true);
+    await onlinePage.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'network-error');
+    await new Promise(resolve => setTimeout(resolve, 1200)); assert.equal(availabilityRequests, 0, 'Offline clients should not poll');
+    await onlineContext.setOffline(false);
+    await onlinePage.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    assert.equal(availabilityRequests, 1);
+    await new Promise(resolve => setTimeout(resolve, 1050));
+    const beforeFocus = availabilityRequests;
+    await onlinePage.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await onlinePage.waitForFunction(() => document.getElementById('chat-join').dataset.availability === 'available');
+    assert.equal(availabilityRequests, beforeFocus + 1, 'Returning to foreground should recheck availability');
+    results.push('Offline pauses retries; online and foreground restoration recheck the status endpoint.');
+    await onlinePage.close(); availabilityResponder = null;
     console.log('Browser stage: skins');
 
     await a.locator('[data-panel="shop"]').click();
