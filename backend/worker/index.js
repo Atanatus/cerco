@@ -1,5 +1,6 @@
 /* CERCO SESSION TOKEN V1 */
 import { routeChat } from './chat.js';
+import { authenticateGuest, routeGuest } from './guest.js';
 import { readLimitedText } from './http.js';
 export { PublicChat } from './chat.js';
 async function tokenHash(token) {
@@ -106,17 +107,35 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
           'Access-Control-Max-Age': '600',
           'Cache-Control': 'no-store',
           'Vary': 'Origin'
         }
       });
     }
-    if (url.pathname.startsWith('/chat/')) return routeChat(request, env);
+    if (url.pathname === '/guest/profile') return routeGuest(request, env);
+    if (url.pathname.startsWith('/chat/')) {
+      let guest = null;
+      if (url.pathname === '/chat/session' && request.method === 'POST') {
+        const hasAuthorization = request.headers.has('Authorization');
+        if (hasAuthorization || env.GUEST_IDENTITY_REQUIRED !== 'false') {
+          guest = await authenticateGuest(request, env);
+          if (!guest) return json({ error: 'guest_profile_required' }, 401);
+        }
+      }
+      return routeChat(request, env, guest);
+    }
     // Free entitlement is a server rule, never a browser purchase receipt.
     if (url.pathname === '/skins/inventory' && request.method === 'GET') {
-      return json({ schema: 'cerco.inventory.v1', authenticated: false,
+      let guest = null;
+      if (request.headers.has('Authorization')) {
+        guest = await authenticateGuest(request, env);
+        if (!guest) return json({ error: 'guest_profile_required' }, 401);
+      }
+      if (!guest && env.GUEST_IDENTITY_REQUIRED !== 'false') return json({ error: 'guest_profile_required' }, 401);
+      return json({ schema: 'cerco.inventory.v1', authenticated: !!guest,
+        guest_id: guest?.guest_id || null, display_name: guest?.display_name || null,
         ownedSkinIds: ['cerco.default'], equippedSkinId: 'cerco.default',
         purchasesAvailable: false });
     }
@@ -126,6 +145,12 @@ export default {
         return json({ error: 'origin_not_allowed' }, 403);
       }
       if (url.pathname === '/skins/purchase') return json({ error: 'purchases_unavailable' }, 503);
+      let guest = null;
+      if (request.headers.has('Authorization')) {
+        guest = await authenticateGuest(request, env);
+        if (!guest) return json({ error: 'guest_profile_required' }, 401);
+      }
+      if (!guest && env.GUEST_IDENTITY_REQUIRED !== 'false') return json({ error: 'guest_profile_required' }, 401);
       let body;
       try {
         const raw = await readLimitedText(request, 1024);
@@ -133,7 +158,8 @@ export default {
         body = JSON.parse(raw);
       } catch (error) { return json({ error: error.tooLarge ? 'request_too_large' : 'invalid_json' }, error.tooLarge ? 413 : 400); }
       if (body?.skinId !== 'cerco.default') return json({ error: 'skin_not_owned' }, 403);
-      return json({ equippedSkinId: 'cerco.default', cosmeticOnly: true, authenticated: false });
+      return json({ equippedSkinId: 'cerco.default', cosmeticOnly: true, authenticated: !!guest,
+        guest_id: guest?.guest_id || null });
     }
     /* CERCO PENDING INGEST V2 - UNVERIFIED ONLY */
     if (url.pathname === '/runs/pending') {
@@ -221,11 +247,15 @@ export default {
       try {
         const suppliedHash = await tokenHash(body.session_token);
         const stored = await env.DB.prepare(
-          `SELECT token_hash FROM match_session_tokens WHERE match_id = ?`
+          `SELECT t.token_hash, m.guest_id FROM match_session_tokens t
+           JOIN matches m ON m.match_id = t.match_id WHERE t.match_id = ?`
         ).bind(body.match_id).first();
 
         if (!stored || stored.token_hash !== suppliedHash) {
           return json({ error: 'invalid_session_token' }, 403);
+        }
+        if (stored.guest_id && stored.guest_id !== body.guest_id) {
+          return json({ error: 'guest_identity_mismatch' }, 403);
         }
 
         const result = await env.DB.prepare(
@@ -391,6 +421,12 @@ export default {
         return json({ error: 'origin_not_allowed' }, 403);
       }
 
+      let guest = null;
+      if (request.headers.has('Authorization') || env.GUEST_IDENTITY_REQUIRED !== 'false') {
+        guest = await authenticateGuest(request, env);
+        if (!guest) return json({ error: 'guest_profile_required' }, 401);
+      }
+
       const length = Number(request.headers.get('Content-Length') || 0);
       if (length > 1024) {
         return json({ error: 'request_too_large' }, 413);
@@ -423,9 +459,9 @@ export default {
         await env.DB.batch([
           env.DB.prepare(
             `INSERT INTO matches
-             (match_id, game_version, mode, status, started_at)
-             VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP)`
-          ).bind(matchId, body.game_version, 'expedition'),
+             (match_id, game_version, mode, status, started_at, guest_id)
+             VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP, ?)`
+          ).bind(matchId, body.game_version, 'expedition', guest?.guest_id || null),
           env.DB.prepare(
             `INSERT INTO match_session_tokens (match_id, token_hash)
              VALUES (?, ?)`
@@ -439,6 +475,7 @@ export default {
         match_id: matchId,
         session_token: sessionToken,
         status: 'active',
+        guest_id: guest?.guest_id || null,
         verified: false
       }, 201);
     }

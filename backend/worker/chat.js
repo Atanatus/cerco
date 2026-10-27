@@ -27,7 +27,7 @@ async function body(request) {
   return JSON.parse(raw);
 }
 
-export async function routeChat(request, env) {
+export async function routeChat(request, env, globalGuest = null) {
   const path = new URL(request.url).pathname;
   if (path === '/chat/moderation') {
     const key = env.CHAT_MODERATION_TOKEN;
@@ -48,9 +48,18 @@ export async function routeChat(request, env) {
   }
   if (!env.CHAT_ROOM) return response({ error: 'public_chat_unavailable' }, 503);
   if (!['/chat/status', '/chat/session', '/chat/socket', '/chat/moderation'].includes(path)) return response({ error: 'not_found' }, 404);
+  if (path === '/chat/session' && request.method === 'POST' &&
+      !globalGuest && env.GUEST_IDENTITY_REQUIRED !== 'false') return response({ error: 'guest_profile_required' }, 401);
   try {
     // One bounded public room. Never let a client allocate arbitrary objects.
-    return await env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName('cerco-public-v1')).fetch(request);
+    let roomRequest = request;
+    if (path === '/chat/session' && request.method === 'POST' && globalGuest) {
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('X-CERCO-Guest-ID', globalGuest.guest_id);
+      requestHeaders.set('X-CERCO-Guest-Name', globalGuest.display_name);
+      roomRequest = new Request(request, { headers: requestHeaders });
+    }
+    return await env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName('cerco-public-v1')).fetch(roomRequest);
   } catch (_) { return response({ error: 'public_chat_unavailable' }, 503); }
 }
 
@@ -110,20 +119,34 @@ export class PublicChat {
       let input;
       try { input = await body(request); } catch (_) { return response({ error: 'invalid_body' }, 400); }
       if (input?.acceptRules !== true) return response({ error: 'rules_required' }, 400);
+      const globalGuestId = request.headers.get('X-CERCO-Guest-ID');
+      const globalGuestName = request.headers.get('X-CERCO-Guest-Name');
+      const hasGlobalIdentity = typeof globalGuestId === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(globalGuestId) &&
+        globalGuestName === 'Guest ' + globalGuestId.slice(0, 8);
+      if (this.env.GUEST_IDENTITY_REQUIRED !== 'false' && !hasGlobalIdentity) {
+        return response({ error: 'guest_profile_required' }, 401);
+      }
       return this.update(async (data, now) => {
         if (data.paused) return { http: response({ error: 'public_chat_paused' }, 503) };
         const ipHash = await hash(data.salt + ip);
         const bucket = this.bucket(data, ipHash, now);
         if (this.banned(data, '', ipHash)) return { http: response({ error: 'participant_blocked' }, 403) };
         if (!bucket || bucket.joins >= 10 || data.guests.length >= 256) return { http: response({ error: 'chat_capacity_or_rate_limit' }, 429) };
-        bucket.joins++;
         const token = crypto.randomUUID() + crypto.randomUUID();
-        const id = crypto.randomUUID();
-        const guest = { participantId: id, displayName: 'Guest ' + id.slice(0, 8), ipHash,
-          tokenHash: await hash(token), expiresAt: now + 2 * HOUR, lastSequence: 0, seen: [], lastPost: 0, at: now, posts: 0 };
-        data.guests.push(guest);
+        const id = hasGlobalIdentity ? globalGuestId : crypto.randomUUID();
+        const displayName = hasGlobalIdentity ? globalGuestName : 'Guest ' + id.slice(0, 8);
+        let guest = data.guests.find(item => item.participantId === id);
+        if (guest) {
+          Object.assign(guest, { ipHash, tokenHash: await hash(token), expiresAt: now + 2 * HOUR });
+        } else {
+          guest = { participantId: id, displayName, ipHash,
+            tokenHash: await hash(token), expiresAt: now + 2 * HOUR, lastSequence: 0, seen: [], lastPost: 0, at: now, posts: 0 };
+          data.guests.push(guest);
+        }
+        bucket.joins++;
         return { http: response({ token, participantId: id, displayName: guest.displayName,
-          identity: 'guest', expiresAt: guest.expiresAt }, 201) };
+          guest_id: id, identity: 'guest', expiresAt: guest.expiresAt }, 201) };
       });
     }
     if (path === '/chat/socket' && request.method === 'GET' && request.headers.get('Upgrade')?.toLowerCase() === 'websocket') {
