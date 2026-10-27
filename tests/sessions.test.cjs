@@ -326,7 +326,8 @@ test('caducidad durante desconexión cancela el reintento y elimina el token', a
   save(storage, fixture());
   const c = client(async () => { sends++; throw new Error('offline'); },
     { storage, locks: sharedLocks(), Date: Clock });
-  await flush(); now += TTL; await c.tick();
+  await until(() => c.timers.size > 0);
+  now += TTL; await c.tick();
   assert.equal(sends, 1); assert.equal(outbox(storage).length, 0);
 });
 
