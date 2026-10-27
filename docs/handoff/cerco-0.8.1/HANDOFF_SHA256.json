@@ -1,0 +1,42 @@
+[
+  {
+    "name": "cerco_expedition_v081_skins.html",
+    "bytes": 124612,
+    "sha256": "d4e500359ad65647f250771c43cf6b0f0e17f0e553e1dcd1c4ec7e2fce7cc1e5"
+  },
+  {
+    "name": "CERCO_SKIN_CATALOG_v1.json",
+    "bytes": 717,
+    "sha256": "dc221c92e22d49b67c647efca58cd81610f6bdf35cedd8a315686981a7be0a22"
+  },
+  {
+    "name": "cerco_skin_original.png",
+    "bytes": 2661,
+    "sha256": "bcb9d88e66d0be41d98c2d45138634336c83143b1d7aee665b3a75cf44ade4fc"
+  },
+  {
+    "name": "cerco_skin_void_circuit.png",
+    "bytes": 11098,
+    "sha256": "4cb25c771c773ac5da99142f65e386738ed75921c018b2ddc375bb3389d5b1dd"
+  },
+  {
+    "name": "CERCO_SKINS_ATANATUS_ADAPTER.js",
+    "bytes": 2974,
+    "sha256": "b7f840ff415569da0ad781ba16bb27cd54a216f1c1c1d9e556d01f0b745efebe"
+  },
+  {
+    "name": "CERCO_0.8.1_SKINS_ATANATUS.md",
+    "bytes": 8319,
+    "sha256": "f40ed3fbdd762335555fd4a980e3b53737aa3416dbc741bab735b1e8b28a282a"
+  },
+  {
+    "name": "PASAR_AL_CHAT_DE_ATANATUS_SKINS.md",
+    "bytes": 1782,
+    "sha256": "2197e0a7cd81609c6c62f9e21e6574804b8eada4b476aea64296a0bf3fc19fe6"
+  },
+  {
+    "name": "CERCO_0.8_INTEGRATION.md",
+    "bytes": 12422,
+    "sha256": "8fc32662676f6c9092a3e1afbd53dbd6e6266eb8fdbc6b5c579764ed6461fca3"
+  }
+]

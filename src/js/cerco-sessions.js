@@ -276,7 +276,7 @@
   async function start(session) {
     try {
       const result = await post('/matches/start', {
-        game_version: '0.8.0',
+        game_version: session.gameVersion,
         mode: 'expedition'
       });
 
@@ -331,9 +331,12 @@
 
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
+      const gameVersion = detail.gameVersion || '0.8.0';
+      if (!['0.8.0', '0.8.1'].includes(gameVersion)) return;
 
       const session = {
         runId,
+        gameVersion,
         matchId: null,
         sessionToken: null,
         report: null,

@@ -1,0 +1,27 @@
+{
+  "schema": "cerco.skins.v1",
+  "gameVersion": "0.8.1",
+  "sourceOfTruth": "cerco_expedition_v081_skins.html",
+  "skins": [
+    {
+      "id": "cerco.default",
+      "name": "Original",
+      "rarity": "starter",
+      "description": "The original CERCO player cube.",
+      "free": true,
+      "cosmeticOnly": true,
+      "visualVersion": 1,
+      "previewAsset": "cerco_skin_original.png"
+    },
+    {
+      "id": "cerco.void_circuit",
+      "name": "Void Circuit",
+      "rarity": "rare",
+      "description": "Obsidian graphite, violet circuitry and a subtle neon pulse.",
+      "free": false,
+      "cosmeticOnly": true,
+      "visualVersion": 1,
+      "previewAsset": "cerco_skin_void_circuit.png"
+    }
+  ]
+}
