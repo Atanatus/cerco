@@ -6,11 +6,11 @@ const cp = require('node:child_process');
 const { createRuntime, schema, post, report } = require('./support.cjs');
 test('artefacto de reversión conserva 0.8.1 y clase DO, sin aceptar chat ni perder informes', async t => {
   cp.execFileSync(process.execPath, ['tools/prepare-beta-release.cjs']);
-  const base = '.local-recovery/beta081/release/rollback-worker';
+  const base = '.local-recovery/beta081/release-e921083/rollback-worker';
   const config = JSON.parse(fs.readFileSync(base + '/wrangler.jsonc'));
   assert.equal(config.durable_objects.bindings[0].class_name, 'PublicChat');
   assert.equal(config.vars.CHAT_ENABLED, 'false');
-  const mf = createRuntime({ modules: ['index.js', 'chat.js'].map(file => ({ type: 'ESModule', path: path.resolve(base, file) })),
+  const mf = createRuntime({ modules: ['index.js', 'chat.js', 'http.js'].map(file => ({ type: 'ESModule', path: path.resolve(base, file) })),
     compatibilityDate: '2026-10-26', d1Databases: ['DB'] });
   t.after(() => mf.dispose()); const db = await mf.getD1Database('DB'); await schema(db);
   assert.equal((await mf.dispatchFetch('https://local.test/health')).status, 200);
