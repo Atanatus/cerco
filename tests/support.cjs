@@ -9,7 +9,7 @@ catch {
 }
 exports.createRuntime = options => {
   if (options.scriptPath === 'backend/worker/index.js') {
-    options = { ...options, modules: ['index.js', 'chat.js'].map(name => ({
+    options = { ...options, modules: ['index.js', 'chat.js', 'http.js'].map(name => ({
       type: 'ESModule', path: path.resolve('backend/worker', name)
     })) };
     delete options.scriptPath;

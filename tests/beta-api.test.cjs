@@ -31,3 +31,11 @@ test('inventario real: gratis por regla del servidor; no concede Void por datos 
   assert.equal((await post(mf, '/skins/equip', { skinId: 'cerco.void_circuit', owned: true, balance: 999 })).status, 403);
   assert.equal((await post(mf, '/skins/purchase', { skinId: 'cerco.void_circuit' })).status, 503);
 });
+test('cuerpos de red: se cancela el stream al superar el límite antes de reservar memoria sin límite', async () => {
+  const { readLimitedText } = await import(require('node:url').pathToFileURL(require('node:path').resolve('backend/worker/http.js')).href);
+  let cancelled = false, produced = 0;
+  const stream = new ReadableStream({ pull(controller) { produced++; controller.enqueue(new Uint8Array(512)); }, cancel() { cancelled = true; } });
+  const request = new Request('https://local.test', { method: 'POST', body: stream, duplex: 'half' });
+  await assert.rejects(readLimitedText(request, 1024), error => error.tooLarge === true);
+  assert.equal(cancelled, true); assert.ok(produced < 6);
+});

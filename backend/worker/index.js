@@ -1,5 +1,6 @@
 /* CERCO SESSION TOKEN V1 */
 import { routeChat } from './chat.js';
+import { readLimitedText } from './http.js';
 export { PublicChat } from './chat.js';
 async function tokenHash(token) {
   const bytes = new TextEncoder().encode(token);
@@ -127,10 +128,10 @@ export default {
       if (url.pathname === '/skins/purchase') return json({ error: 'purchases_unavailable' }, 503);
       let body;
       try {
-        const raw = await request.text();
+        const raw = await readLimitedText(request, 1024);
         if (raw.length > 1024) return json({ error: 'request_too_large' }, 413);
         body = JSON.parse(raw);
-      } catch (_) { return json({ error: 'invalid_json' }, 400); }
+      } catch (error) { return json({ error: error.tooLarge ? 'request_too_large' : 'invalid_json' }, error.tooLarge ? 413 : 400); }
       if (body?.skinId !== 'cerco.default') return json({ error: 'skin_not_owned' }, 403);
       return json({ equippedSkinId: 'cerco.default', cosmeticOnly: true, authenticated: false });
     }
@@ -151,12 +152,13 @@ export default {
 
       let body;
       try {
-        const raw = await request.text();
+        const raw = await readLimitedText(request, 120000);
         if (raw.length > 120000) {
           return json({ error: 'request_too_large' }, 413);
         }
         body = JSON.parse(raw);
-      } catch (_) {
+      } catch (error) {
+        if (error.tooLarge) return json({ error: 'request_too_large' }, 413);
         return json({ error: 'invalid_json' }, 400);
       }
 
@@ -301,14 +303,15 @@ export default {
       let body;
 
       try {
-        const raw = await request.text();
+        const raw = await readLimitedText(request, 1024);
 
         if (raw.length > 1024) {
           return json({ error: 'request_too_large' }, 413);
         }
 
         body = JSON.parse(raw);
-      } catch (_) {
+      } catch (error) {
+        if (error.tooLarge) return json({ error: 'request_too_large' }, 413);
         return json({ error: 'invalid_json' }, 400);
       }
 
@@ -395,12 +398,13 @@ export default {
 
       let body;
       try {
-        const raw = await request.text();
+        const raw = await readLimitedText(request, 1024);
         if (raw.length > 1024) {
           return json({ error: 'request_too_large' }, 413);
         }
         body = JSON.parse(raw);
-      } catch (_) {
+      } catch (error) {
+        if (error.tooLarge) return json({ error: 'request_too_large' }, 413);
         return json({ error: 'invalid_json' }, 400);
       }
 
