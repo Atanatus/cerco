@@ -81,6 +81,8 @@ async function main() {
     }
     console.log('Browser stage: initial load');
     const a = await pageFor('192.0.2.101'); const b = await pageFor('192.0.2.102');
+    await require('./shop-geometry.cjs')(a);
+    results.push('Shop geometry: six viewports, full cards before next heading, scrolling and unobstructed buttons.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);
@@ -100,6 +102,39 @@ async function main() {
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     assert.equal(await a.locator('.chat-message').count(), 2);
     results.push('WebSocket reconnect restores history without duplicate messages.');
+    console.log('Browser stage: moderation and closed-room controls');
+    const moderate = async (method, packet) => {
+      const response = await mf.dispatchFetch('https://local.test/chat/moderation', {
+        method, headers: { Authorization: 'Bearer local-browser-test-only-' + 'x'.repeat(32) },
+        body: packet ? JSON.stringify(packet) : undefined
+      });
+      assert.equal(response.status, 200); return response.json();
+    };
+    await b.locator('.chat-report').first().click();
+    await b.waitForFunction(() => document.getElementById('chat-status').textContent.includes('reported'));
+    const moderation = await moderate('GET'); assert.equal(moderation.reports.length, 1);
+    const reported = moderation.messages.find(m => m.id === moderation.reports[0].messageId);
+    assert(await b.locator('.chat-avatar').first().innerText());
+    await moderate('POST', { action: 'delete', messageId: reported.id });
+    await a.waitForFunction(id => !document.querySelector(`[data-message-id="${id}"]`), reported.id);
+    await b.waitForFunction(id => !document.querySelector(`[data-message-id="${id}"]`), reported.id);
+    await moderate('POST', { action: 'ban', participantId: reported.participantId });
+    await a.waitForFunction(() => document.getElementById('chat-input').disabled);
+    const blocked = await mf.dispatchFetch('https://local.test/chat/session', { method: 'POST',
+      headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.101' }, body: '{"acceptRules":true}' });
+    assert.equal(blocked.status, 403);
+    await moderate('POST', { action: 'pause' });
+    await b.waitForFunction(() => document.getElementById('chat-input').disabled && document.getElementById('chat-join').disabled);
+    await b.reload(); assert.equal(await b.locator('#chat-join').isDisabled(), true);
+    await moderate('POST', { action: 'resume' }); await b.reload();
+    await b.waitForFunction(() => !document.getElementById('chat-join').disabled);
+    await b.route('**/chat/status', route => route.fulfill({ status: 503,
+      headers: { 'Access-Control-Allow-Origin': base }, body: '{}' }));
+    await b.reload(); await b.waitForFunction(() => document.getElementById('chat-status').textContent.includes('temporarily closed'));
+    assert.equal(await b.locator('#chat-join').isDisabled(), true);
+    assert.equal(await b.locator('#chat-input').isDisabled(), true);
+    await b.unroute('**/chat/status');
+    results.push('Browser reports, deletion broadcast, participant/IP ban, immediate pause/resume and fail-closed entry controls.');
     console.log('Browser stage: skins');
 
     await a.locator('[data-panel="shop"]').click();
@@ -108,7 +143,7 @@ async function main() {
     assert.equal(await a.getByRole('button', { name: 'Purchase coming soon', exact: true }).isDisabled(), true);
     assert.equal(await a.locator('#pz-shop-skins img').evaluateAll(images => images.every(img => img.complete && img.naturalWidth > 0)), true);
     await a.locator('#pz-shop-back').click();
-    await a.locator('#cerco-play-button').click();
+    if (await a.locator('#cerco-play-button').isVisible()) await a.locator('#cerco-play-button').click();
     await a.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
     const frame = a.frames().find(f => f.url().includes('v081_skins'));
     assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.version), '0.8.1');
