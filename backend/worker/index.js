@@ -175,6 +175,103 @@ export default {
         return json({ error: 'database_unavailable' }, 503);
       }
     }
+    /* CERCO ABANDON ENDPOINT V1 */
+    if (url.pathname === '/matches/abandon') {
+      if (request.method !== 'POST') {
+        return json({ error: 'method_not_allowed' }, 405);
+      }
+
+      if (request.headers.get('Origin') !== 'https://cerco.atanatus.com') {
+        return json({ error: 'origin_not_allowed' }, 403);
+      }
+
+      const declaredLength = Number(request.headers.get('Content-Length') || 0);
+      if (declaredLength > 1024) {
+        return json({ error: 'request_too_large' }, 413);
+      }
+
+      let body;
+
+      try {
+        const raw = await request.text();
+
+        if (raw.length > 1024) {
+          return json({ error: 'request_too_large' }, 413);
+        }
+
+        body = JSON.parse(raw);
+      } catch (_) {
+        return json({ error: 'invalid_json' }, 400);
+      }
+
+      const validUuid = value =>
+        typeof value === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+
+      if (!body ||
+          typeof body !== 'object' ||
+          Array.isArray(body) ||
+          !validUuid(body.match_id) ||
+          typeof body.session_token !== 'string' ||
+          !/^[0-9a-f]{64}$/.test(body.session_token)) {
+        return json({ error: 'invalid_abandon_request' }, 400);
+      }
+
+      try {
+        const suppliedHash = await tokenHash(body.session_token);
+
+        const stored = await env.DB.prepare(
+          `SELECT token_hash
+           FROM match_session_tokens
+           WHERE match_id = ?`
+        ).bind(body.match_id).first();
+
+        if (!stored || stored.token_hash !== suppliedHash) {
+          return json({ error: 'invalid_session_token' }, 403);
+        }
+
+        const updated = await env.DB.prepare(
+          `UPDATE matches
+           SET status = 'abandoned',
+               finished_at = CURRENT_TIMESTAMP
+           WHERE match_id = ?
+             AND status = 'active'
+             AND NOT EXISTS (
+               SELECT 1
+               FROM pending_run_reports
+               WHERE match_id = ?
+             )`
+        ).bind(body.match_id, body.match_id).run();
+
+        if (updated.meta?.changes === 1) {
+          return json({
+            abandoned: true,
+            status: 'abandoned',
+            verified: false
+          });
+        }
+
+        const existing = await env.DB.prepare(
+          `SELECT status FROM matches WHERE match_id = ?`
+        ).bind(body.match_id).first();
+
+        if (existing?.status === 'abandoned') {
+          return json({
+            abandoned: true,
+            status: 'abandoned',
+            verified: false
+          });
+        }
+
+        if (existing?.status === 'completed') {
+          return json({ error: 'match_already_completed' }, 409);
+        }
+
+        return json({ error: 'match_not_active' }, 409);
+      } catch (_) {
+        return json({ error: 'database_unavailable' }, 503);
+      }
+    }
     /* CERCO SERVER MATCH V1 */
     if (url.pathname === '/matches/start' && request.method === 'POST') {
       const origin = request.headers.get('Origin');
