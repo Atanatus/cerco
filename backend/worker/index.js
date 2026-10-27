@@ -17,6 +17,52 @@ function json(data, status = 200) {
 }
 
 export default {
+  /* CERCO SESSION EXPIRY V1 - 72H ABSOLUTE MAXIMUM */
+  async scheduled(controller, env) {
+    if (controller.cron !== '0 */6 * * *') return;
+
+    const result = await env.DB.prepare(
+      `UPDATE matches
+       SET status = 'abandoned',
+           finished_at = CURRENT_TIMESTAMP
+       WHERE match_id IN (
+         SELECT m.match_id
+         FROM matches m
+         WHERE m.status = 'active'
+           AND m.started_at IS NOT NULL
+           AND m.started_at <= datetime('now', '-72 hours')
+           AND NOT EXISTS (
+             SELECT 1
+             FROM pending_run_reports p
+             WHERE p.match_id = m.match_id
+           )
+           AND NOT EXISTS (
+             SELECT 1
+             FROM results r
+             WHERE r.match_id = m.match_id
+           )
+         ORDER BY m.started_at ASC
+         LIMIT 50
+       )
+       AND status = 'active'
+       AND NOT EXISTS (
+         SELECT 1
+         FROM pending_run_reports p
+         WHERE p.match_id = matches.match_id
+       )
+       AND NOT EXISTS (
+         SELECT 1
+         FROM results r
+         WHERE r.match_id = matches.match_id
+       )`
+    ).run();
+
+    console.info(
+      '[CERCO] Expired sessions closed:',
+      result.meta?.changes ?? 0
+    );
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
 
