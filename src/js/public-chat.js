@@ -26,6 +26,14 @@
   }
   function renderAvailability() {
     if (!stopped) return;
+    const identity = window.CERCO_GUEST_PROFILE?.getProfile();
+    if (!identity) {
+      status.textContent = window.CERCO_GUEST_PROFILE?.state === 'error'
+        ? 'Guest profile is unavailable. Check storage or connection and reload.'
+        : 'Preparing your guest profile…';
+      join.textContent = 'Loading profile…'; join.disabled = true;
+      return;
+    }
     join.disabled = false;
     if (serviceState === 'checking') {
       status.textContent = 'Checking public chat connection…';
@@ -190,12 +198,16 @@
   async function joinChat() {
     join.disabled = true; status.textContent = 'Joining public chat…';
     try {
-      const r = await fetch(API + '/chat/session', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      const profileApi = window.CERCO_GUEST_PROFILE;
+      const profile = await profileApi?.ready;
+      if (!profile) throw new Error('guest profile unavailable');
+      const authorization = await profileApi.authorizationHeaders();
+      const r = await fetch(API + '/chat/session', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authorization },
         body: '{"acceptRules":true}', signal: AbortSignal.timeout(10000) });
       if (!r.ok) throw new Error('session unavailable');
       const data = await r.json();
-      if (data.identity !== 'guest' || typeof data.token !== 'string' || data.token.length !== 72 ||
-          !/^Guest [a-f0-9]{8}$/.test(data.displayName) || typeof data.participantId !== 'string' ||
+      if (data.identity !== 'guest' || data.guest_id !== profile.guestId || data.participantId !== profile.guestId ||
+          data.displayName !== profile.displayName || typeof data.token !== 'string' || data.token.length !== 72 ||
           !Number.isFinite(data.expiresAt) || data.expiresAt <= Date.now() ||
           // Worker time is authoritative; allow small clock skew while still rejecting unreasonable lifetimes.
           data.expiresAt > Date.now() + 2 * 3600000 + GUEST_CLOCK_SKEW_MS) throw new Error('invalid guest session');
@@ -224,6 +236,7 @@
   document.getElementById('chat-clear').addEventListener('click', () => {
     messages.clear(); render(); status.textContent = 'Your view was cleared; public messages were not deleted.';
   });
+  window.addEventListener('cerco:guest-profile', renderAvailability);
   function refreshOnReturn() {
     if (document.visibilityState === 'hidden' || !navigator.onLine) return;
     if (Date.now() - lastReturnCheck < 1000) return;

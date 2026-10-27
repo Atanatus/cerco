@@ -10,7 +10,9 @@
   let currentRunId = null;
   let currentSession = null;
 
-  function guestId() {
+  // Only the pre-profile test/legacy path uses the old public browser UUID.
+  // Current CERCO always awaits its server-backed profile before starting a match.
+  function legacyGuestId() {
     const key = 'cerco_guest_id_v1';
 
     try {
@@ -27,7 +29,7 @@
     }
   }
 
-  const guest = guestId();
+  const guestProfile = window.CERCO_GUEST_PROFILE || null;
   const MAX_ATTEMPTS = 4;
   const RETRY_DELAYS = [1000, 3000, 10000];
   const OUTBOX_PREFIX = 'cerco_terminal_v1:';
@@ -119,7 +121,7 @@
     }, RETRY_DELAYS[session.attempts - 1]);
   }
 
-  async function post(path, payload) {
+  async function post(path, payload, authorization = null) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
 
@@ -129,7 +131,7 @@
         response = await fetch(API + path, {
           method: 'POST',
           mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(authorization ? { Authorization: authorization } : {}) },
           body: JSON.stringify(payload),
           signal: controller.signal
         });
@@ -166,13 +168,13 @@
     return typeof id === 'string' && id.length > 0 && id.length <= 150;
   }
 
-  function reportFrom(detail) {
+  function reportFrom(detail, guestId) {
     const audit = detail.audit;
-    if (!audit || typeof audit !== 'object') return null;
+    if (!audit || typeof audit !== 'object' || !uuid(guestId)) return null;
 
     const report = {
       match_id: null,
-      guest_id: guest,
+      guest_id: guestId,
       run_id: detail.runId,
       score: detail.score,
       kills: detail.kills,
@@ -275,19 +277,31 @@
   }
   async function start(session) {
     try {
+      let identity = null;
+      let authorization = null;
+      if (guestProfile) {
+        identity = await guestProfile.ready;
+        if (!identity) throw new Error('Guest profile unavailable');
+        // Keep the stable identity on the run before awaiting the network. A very
+        // short expedition can finish while /matches/start is still in flight.
+        session.guestId = identity.guestId;
+        authorization = await guestProfile.getAccessToken();
+      }
       const result = await post('/matches/start', {
         game_version: session.gameVersion,
         mode: 'expedition'
-      });
+      }, authorization ? 'Bearer ' + authorization : null);
 
       if (result.status !== 'active' ||
           !uuid(result.match_id) ||
           typeof result.session_token !== 'string' ||
-          !/^[0-9a-f]{64}$/.test(result.session_token)) {
+          !/^[0-9a-f]{64}$/.test(result.session_token) ||
+          (identity && result.guest_id !== identity.guestId)) {
         throw new Error('Invalid server session');
       }
 
       session.matchId = result.match_id;
+      session.guestId = identity ? identity.guestId : (uuid(result.guest_id) ? result.guest_id : legacyGuestId());
       if (session.stopped) return;
       session.sessionToken = result.session_token;
 
@@ -338,6 +352,7 @@
         runId,
         gameVersion,
         matchId: null,
+        guestId: null,
         sessionToken: null,
         report: null,
         finished: false,
@@ -387,7 +402,7 @@
     if (message.event !== 'run_finished') return;
     if (session.finished || session.abandoned) return;
 
-    const report = reportFrom(detail);
+    const report = reportFrom(detail, session.guestId || (!guestProfile ? legacyGuestId() : null));
 
     if (!report) {
       console.warn('[CERCO] Finished run without audit report.');

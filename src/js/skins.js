@@ -53,8 +53,12 @@
     panel.querySelector('.pz-skins-content').appendChild(status);
 
     async function api(path, skinId) {
+        const profile = window.CERCO_GUEST_PROFILE;
+        const identity = await profile?.ready;
+        if (!identity) throw new Error('Guest profile unavailable');
+        const authorization = await profile.authorizationHeaders();
         const response = await fetch(API + path, { method: skinId ? 'POST' : 'GET',
-            headers: skinId ? { 'Content-Type': 'application/json' } : {},
+            headers: skinId ? { 'Content-Type': 'application/json', ...authorization } : authorization,
             body: skinId ? JSON.stringify({ skinId }) : undefined,
             signal: AbortSignal.timeout(5000) });
         if (!response.ok) throw new Error('Skin service unavailable');
@@ -65,7 +69,8 @@
         try {
             // Every equip is authorized by the server, never by browser inventory.
             const authorization = await api('/skins/equip', skinId);
-            if (authorization.equippedSkinId !== skinId || authorization.cosmeticOnly !== true) throw new Error();
+            if (authorization.equippedSkinId !== skinId || authorization.cosmeticOnly !== true ||
+                authorization.guest_id !== window.CERCO_GUEST_PROFILE.getProfile()?.guestId || authorization.authenticated !== true) throw new Error();
             const result = await adapter.equip(authorization.equippedSkinId);
             if (result.skinId !== skinId || result.cosmeticOnly !== true) throw new Error();
             equipped = skinId;
@@ -118,6 +123,7 @@
             adapter = new window.CercoSkinsAdapter(frame);
             const [live, state, inventory] = await Promise.all([adapter.catalog(), adapter.equipped(), api('/skins/inventory')]);
             if (live.schema !== 'cerco.skins.v1' || live.gameVersion !== '0.8.1' || state.cosmeticOnly !== true ||
+                inventory.authenticated !== true || inventory.guest_id !== window.CERCO_GUEST_PROFILE.getProfile()?.guestId ||
                 !inventory.ownedSkinIds?.includes('cerco.default')) throw new Error();
             // Paid IDs from local events/storage never authorize equipment.
             await equip('cerco.default');
