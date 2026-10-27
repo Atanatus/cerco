@@ -2202,16 +2202,19 @@ main:has(> .cerco-game-host) {
 .pz-shop-content {
     flex: 1 1 0;
     min-height: 0;
-    display: grid;
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     gap: 12px;
     padding: 12px 14px;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .pz-shop-category {
-    min-height: 0;
+    flex: 0 0 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -2241,8 +2244,9 @@ main:has(> .cerco-game-host) {
 }
 
 .pz-shop-gallery {
-    flex: 1 1 0;
-    min-height: 0;
+    flex: 0 0 auto;
+    min-width: 0;
+    min-height: 160px;
     display: flex;
     align-items: stretch;
     gap: 14px;
@@ -2271,7 +2275,7 @@ main:has(> .cerco-game-host) {
 .pz-shop-placeholder {
     flex: 0 0 100%;
     min-width: 0;
-    height: 100%;
+    min-height: 160px;
     border: 1px dashed #373737;
     background: #171717;
     display: flex;
@@ -3321,10 +3325,10 @@ select {
 #chat-status, .chat-rules { margin: 6px 8px; font-size: 11px; font-weight: normal; line-height: 1.4; }
 .chat-rules { max-height: 130px; overflow: auto; }
 #chat-join { margin: 4px 8px; padding: 7px; background: #20352e; color: #e1f4eb; border: 1px solid #647b70; border-radius: 4px; }
-.chat-messages .chat-message { display: flex; gap: 7px; padding: 8px; text-align: left; font-weight: normal; max-width: 100%; }
+.chat-messages .chat-message { display: flex; height: auto; gap: 7px; padding: 8px; text-align: left; font-weight: normal; max-width: 100%; }
 .chat-messages .chat-message-own { border-left: 2px solid #7ebd9e; }
 .chat-avatar { flex: 0 0 25px; width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: #31473c; color: #deeee5; font-size: 10px; }
-.chat-message-content { min-width: 0; width: 100%; overflow-wrap: anywhere; }
+.chat-message-content { display: flow-root; min-width: 0; width: 100%; overflow-wrap: anywhere; }
 .chat-message-content strong { display: block; font-size: 10px; color: #b8d0c3; }
 .chat-message-content p { margin: 4px 0; white-space: pre-wrap; font-size: 12px; }
 .chat-message-content time, .chat-report { font-size: 10px; color: #b3bdb6; }
@@ -3336,8 +3340,6 @@ select {
 .cerco-skin-card p { font-size: 12px; font-weight: normal; line-height: 1.4; }
 .cerco-skin-card button { display: block; width: 100%; padding: 7px 4px; margin-top: 6px; background: #304a3e; border: 1px solid #799582; color: #ecf5ee; border-radius: 4px; cursor: pointer; }
 .cerco-skin-card button:disabled { background: #303532; color: #adb5af; cursor: not-allowed; }
-.pz-shop-content { grid-template-rows: auto auto; overflow-y: auto; }
-.pz-shop-gallery { flex: 0 0 auto; overflow-y: visible; min-height: 160px; }
 .pz-skins-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 210px)); }
 #cerco-skin-status { font-size: 12px; font-weight: normal; }
 .pz-skins-empty[hidden] { display: none; }
