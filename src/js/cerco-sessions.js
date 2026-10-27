@@ -116,6 +116,46 @@
     }
   }
 
+  /* CERCO ABANDON CLIENT V1 */
+  async function abandon(session) {
+    if (!session.abandoned ||
+        session.abandoning ||
+        session.abandonSent ||
+        session.submitted) {
+      return;
+    }
+
+    if (!session.matchId || !session.sessionToken) return;
+
+    session.abandoning = true;
+
+    try {
+      const result = await post('/matches/abandon', {
+        match_id: session.matchId,
+        session_token: session.sessionToken
+      });
+
+      if (result.abandoned !== true ||
+          result.status !== 'abandoned' ||
+          result.verified !== false) {
+        throw new Error('Unexpected abandon response');
+      }
+
+      session.abandonSent = true;
+
+      console.info(
+        '[CERCO] Expedition marked as ABANDONED:',
+        session.matchId
+      );
+    } catch (error) {
+      console.warn(
+        '[CERCO] Abandonment not confirmed; game unaffected.',
+        error
+      );
+    } finally {
+      session.abandoning = false;
+    }
+  }
   async function start(session) {
     try {
       const result = await post('/matches/start', {
@@ -138,8 +178,10 @@
         session.matchId
       );
 
-      // Handles runs that finish before the start request resolves.
-      if (session.finished) {
+      // Handles abandonment or completion before session creation resolves.
+      if (session.abandoned) {
+        await abandon(session);
+      } else if (session.finished) {
         await submit(session);
       }
     } catch (error) {
@@ -179,6 +221,8 @@
         report: null,
         finished: false,
         abandoned: false,
+        abandoning: false,
+        abandonSent: false,
         submitting: false,
         submitted: false
       };
@@ -209,6 +253,7 @@
       if (!session.finished) {
         session.abandoned = true;
         session.finished = true;
+        void abandon(session);
       }
       return;
     }
@@ -237,6 +282,7 @@
                       !currentSession?.submitted &&
                       !currentSession?.abandoned,
       report_stored: !!currentSession?.submitted,
+      abandon_stored: !!currentSession?.abandonSent,
       verified: false
     }),
     configurable: false
