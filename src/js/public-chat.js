@@ -52,6 +52,18 @@
     socket = null; guest = null; clearPending(); messages.clear(); render();
     status.textContent = label; join.textContent = 'Join public chat'; join.disabled = false;
   }
+  function closeRoom() {
+    leave('Public chat temporarily closed. Please come back later.');
+    join.textContent = 'Chat temporarily closed'; join.disabled = true;
+  }
+  async function checkAvailability() {
+    try {
+      const r = await fetch(API + '/chat/status', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+      if (!r.ok || (await r.json()).available !== true) { closeRoom(); return; }
+      status.textContent = 'Public guest chat · join to connect.';
+      join.textContent = 'Join public chat'; join.disabled = false;
+    } catch (_) { closeRoom(); }
+  }
   function transmit() {
     if (!pending || !connected) return;
     if (++pending.attempts > 4) { leave('Message delivery unconfirmed. Rejoin to check public history.'); return; }
@@ -91,8 +103,8 @@
       clearTimeout(authTimeout); clearTimeout(ackTimer);
       if (socket !== ws || stopped) return;
       connected = false; controls(); render();
-      if (event.code === 1008) { leave('Guest session expired or blocked. Please review the chat rules.'); return; }
-      if (++reconnects > 5) { leave('Public chat unavailable. Rejoin later; no local messages were sent.'); return; }
+      if (event.code === 1008) { leave('Guest session expired or blocked. Please review the chat rules.'); void checkAvailability(); return; }
+      if (++reconnects > 5) { closeRoom(); return; }
       status.textContent = 'Connection lost. Reconnecting…';
       reconnectTimer = setTimeout(connect, Math.min(1000 * 2 ** (reconnects - 1), 15000));
     });
@@ -112,7 +124,7 @@
       guest = data; stopped = false; reconnects = 0;
       expiryTimer = setTimeout(() => leave('Guest session expired. Join again.'), guest.expiresAt - Date.now());
       connect();
-    } catch (_) { leave('Public chat unavailable. No local substitute is used. Please try later.'); }
+    } catch (_) { closeRoom(); }
   });
   form.addEventListener('submit', event => {
     event.preventDefault(); const text = input.value.trim();
@@ -124,5 +136,5 @@
     messages.clear(); render(); status.textContent = 'Your view was cleared; public messages were not deleted.';
   });
   window.addEventListener('pagehide', () => leave());
-  setInterval(render, 60000); controls();
+  setInterval(render, 60000); controls(); void checkAvailability();
 })();
