@@ -87,6 +87,27 @@ test('chat: pausa de moderación cierra participantes y bloquea nuevas conexione
     headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.34' }, body: '{"acceptRules":true}' })).status, 503);
   assert.equal((await moderate('resume')).status, 200); await join(mf, '192.0.2.34');
 });
+test('chat: dos conexiones que reenvían simultáneamente crean exactamente un mensaje', async t => {
+  const mf = runtime(); t.after(() => mf.dispose()); const guest = await join(mf, '192.0.2.66');
+  const a = await socket(mf, '192.0.2.66', guest.token); const b = await socket(mf, '192.0.2.66', guest.token);
+  const p = { type: 'message', clientId: crypto.randomUUID(), sequence: 1, text: 'One durable message' };
+  a.send(p); b.send(p);
+  const events = await Promise.all([a.next(), a.next(), b.next(), b.next()]);
+  assert.equal(events.filter(e => e.type === 'message').length, 2); // Same broadcast to each socket.
+  assert.equal(new Set(events.filter(e => e.type === 'message').map(e => e.message.id)).size, 1);
+  assert.equal(events.filter(e => e.type === 'ack').length, 2);
+  const r = await mf.dispatchFetch('https://local.test/chat/moderation', { headers: { Authorization: 'Bearer ' + admin } });
+  assert.equal((await r.json()).messages.length, 1);
+  a.ws.close(1000, 'done'); b.ws.close(1000, 'done');
+});
+test('chat: creaciones concurrentes no evaden la cuota por IP', async t => {
+  const mf = runtime(); t.after(() => mf.dispose());
+  const responses = await Promise.all(Array.from({ length: 15 }, () => mf.dispatchFetch('https://local.test/chat/session', {
+    method: 'POST', headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.67' }, body: '{"acceptRules":true}'
+  })));
+  assert.equal(responses.filter(r => r.status === 201).length, 10);
+  assert.equal(responses.filter(r => r.status === 429).length, 5);
+});
 test('chat: retención y tamaño acotados; secuencias antiguas no resucitan mensajes; estado sobrevive reinicio', async () => {
   const { PublicChat } = await import(require('node:url').pathToFileURL(require('node:path').resolve('backend/worker/chat.js')).href);
   let now = Date.now(); const realNow = Date.now; Date.now = () => now;

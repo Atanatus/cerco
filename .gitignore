@@ -2,3 +2,5 @@
 # Cloudflare local cache
 /backend/worker/.wrangler/
 /.local-recovery/
+/node_modules/
+/.wrangler/
