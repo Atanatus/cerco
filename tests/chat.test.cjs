@@ -32,6 +32,29 @@ test('chat público deshabilitado y origen ajeno: nunca simula un chat local', a
   assert.equal((await mf.dispatchFetch('https://local.test/chat/session', { method: 'POST', headers: { Origin: origin } })).status, 503);
   assert.equal((await mf.dispatchFetch('https://local.test/chat/session', { method: 'POST' })).status, 403);
 });
+
+test('chat availability: fail closed without flag, binding or moderation secret; no guest credentials', async t => {
+  const closed = runtime(false); t.after(() => closed.dispose());
+  const request = mf => mf.dispatchFetch('https://local.test/chat/status', { headers: { Origin: origin } });
+  assert.deepEqual(await (await request(closed)).json(), { available: false });
+  for (const options of [
+    { bindings: { CHAT_ENABLED: 'true', CHAT_MODERATION_TOKEN: admin } },
+    { durableObjects: { CHAT_ROOM: { className: 'PublicChat', useSQLite: true } }, bindings: { CHAT_ENABLED: 'true' } },
+    { durableObjects: { CHAT_ROOM: { className: 'PublicChat', useSQLite: true } }, bindings: { CHAT_ENABLED: 'true', CHAT_MODERATION_TOKEN: 'short' } }
+  ]) {
+    const incomplete = createRuntime({ modules: true, scriptPath: 'backend/worker/index.js', compatibilityDate: '2026-10-26', ...options });
+    t.after(() => incomplete.dispose());
+    assert.deepEqual(await (await request(incomplete)).json(), { available: false });
+    assert.equal((await incomplete.dispatchFetch('https://local.test/chat/session', { method: 'POST', headers: { Origin: origin } })).status, 503);
+  }
+  assert.equal((await closed.dispatchFetch('https://local.test/chat/status', { headers: { Origin: 'https://evil.example' } })).status, 403);
+  const enabled = runtime(); t.after(() => enabled.dispose());
+  assert.deepEqual(await (await request(enabled)).json(), { available: true });
+  const moderation = action => enabled.dispatchFetch('https://local.test/chat/moderation', { method: 'POST',
+    headers: { Authorization: 'Bearer ' + admin }, body: JSON.stringify({ action }) });
+  await moderation('pause'); assert.deepEqual(await (await request(enabled)).json(), { available: false });
+  await moderation('resume'); assert.deepEqual(await (await request(enabled)).json(), { available: true });
+});
 test('chat: identidades del servidor, cruce, duplicados, reconexión, límites y moderación', async t => {
   const mf = runtime(); t.after(() => mf.dispose());
   const g1 = await join(mf, '192.0.2.1'); const g2 = await join(mf, '192.0.2.2');

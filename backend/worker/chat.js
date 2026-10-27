@@ -36,13 +36,18 @@ export async function routeChat(request, env) {
         await hash(supplied) !== await hash('Bearer ' + key)) return response({ error: 'forbidden' }, 403);
   } else {
     if (request.headers.get('Origin') !== ORIGIN) return response({ error: 'origin_not_allowed' }, 403);
+    if (path === '/chat/status' && request.method === 'GET' &&
+        (env.CHAT_ENABLED !== 'true' || !env.CHAT_ROOM ||
+        typeof env.CHAT_MODERATION_TOKEN !== 'string' || env.CHAT_MODERATION_TOKEN.length < 32)) {
+      return response({ available: false });
+    }
     if (env.CHAT_ENABLED !== 'true' || !env.CHAT_ROOM ||
         typeof env.CHAT_MODERATION_TOKEN !== 'string' || env.CHAT_MODERATION_TOKEN.length < 32) {
       return response({ error: 'public_chat_unavailable' }, 503);
     }
   }
   if (!env.CHAT_ROOM) return response({ error: 'public_chat_unavailable' }, 503);
-  if (!['/chat/session', '/chat/socket', '/chat/moderation'].includes(path)) return response({ error: 'not_found' }, 404);
+  if (!['/chat/status', '/chat/session', '/chat/socket', '/chat/moderation'].includes(path)) return response({ error: 'not_found' }, 404);
   try {
     // One bounded public room. Never let a client allocate arbitrary objects.
     return await env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName('cerco-public-v1')).fetch(request);
@@ -96,6 +101,9 @@ export class PublicChat {
   async fetch(request) {
     const path = new URL(request.url).pathname;
     if (path === '/chat/moderation') return this.moderate(request);
+    if (path === '/chat/status' && request.method === 'GET') {
+      return this.update(data => ({ http: response({ available: !data.paused }) }));
+    }
     const ip = request.headers.get('CF-Connecting-IP');
     if (!ip) return response({ error: 'public_chat_unavailable' }, 503);
     if (path === '/chat/session' && request.method === 'POST') {
