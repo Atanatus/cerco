@@ -76,6 +76,17 @@ test('chat: cuota de identidades por IP, cuerpo acotado y sesión sin reglas rec
   assert.equal((await req('{}')).status, 400);
   assert.equal((await req('x'.repeat(2049))).status, 400);
 });
+test('chat: pausa de moderación cierra participantes y bloquea nuevas conexiones hasta reanudar', async t => {
+  const mf = runtime(); t.after(() => mf.dispose());
+  const guest = await join(mf, '192.0.2.33'); const a = await socket(mf, '192.0.2.33', guest.token);
+  const closed = new Promise(resolve => a.ws.addEventListener('close', resolve));
+  const moderate = action => mf.dispatchFetch('https://local.test/chat/moderation', { method: 'POST',
+    headers: { Authorization: 'Bearer ' + admin }, body: JSON.stringify({ action }) });
+  assert.equal((await moderate('pause')).status, 200); await closed;
+  assert.equal((await mf.dispatchFetch('https://local.test/chat/session', { method: 'POST',
+    headers: { Origin: origin, 'CF-Connecting-IP': '192.0.2.34' }, body: '{"acceptRules":true}' })).status, 503);
+  assert.equal((await moderate('resume')).status, 200); await join(mf, '192.0.2.34');
+});
 test('chat: retención y tamaño acotados; secuencias antiguas no resucitan mensajes; estado sobrevive reinicio', async () => {
   const { PublicChat } = await import(require('node:url').pathToFileURL(require('node:path').resolve('backend/worker/chat.js')).href);
   let now = Date.now(); const realNow = Date.now; Date.now = () => now;
@@ -90,12 +101,12 @@ test('chat: retención y tamaño acotados; secuencias antiguas no resucitan mens
   room = { salt: 'salt', guests: [{ participantId: id, displayName: 'Guest 12345678', expiresAt: now + 7200000,
     lastSequence: 0, seen: [], at: now, posts: 0, lastPost: 0 }], ips: [], messages: [], reports: [], bans: [], global: { at: now, count: 0 } };
   try {
-    let actor = new PublicChat(ctx); let first;
+    let actor = new PublicChat(ctx, { CHAT_ENABLED: 'true' }); let first;
     for (let i = 1; i <= 105; i++) {
       const p = { type: 'message', clientId: crypto.randomUUID(), sequence: i, text: 'bounded ' + i };
       if (i === 1) first = p;
       await actor.webSocketMessage(ws, JSON.stringify(p)); now += 7000;
-      if (i === 50) actor = new PublicChat(ctx); // Reconstructed object reads persisted state/attachments.
+      if (i === 50) actor = new PublicChat(ctx, { CHAT_ENABLED: 'true' }); // Reconstructed object reads persisted state/attachments.
     }
     assert.equal(room.messages.length, 100); assert.equal(room.guests[0].seen.length, 8);
     assert.equal(room.guests[0].lastSequence, 105);

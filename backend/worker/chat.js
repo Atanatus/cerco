@@ -50,13 +50,13 @@ export async function routeChat(request, env) {
 }
 
 export class PublicChat {
-  constructor(ctx) { this.ctx = ctx; }
+  constructor(ctx, env = {}) { this.ctx = ctx; this.env = env; }
 
   async update(action) {
     return this.ctx.blockConcurrencyWhile(async () => {
       const now = Date.now();
       const data = await this.ctx.storage.get('room') || {
-        salt: crypto.randomUUID(), guests: [], ips: [], messages: [], reports: [], bans: [], global: { at: now, count: 0 }
+        salt: crypto.randomUUID(), paused: false, guests: [], ips: [], messages: [], reports: [], bans: [], global: { at: now, count: 0 }
       };
       for (const key of ['guests', 'ips', 'messages', 'reports', 'bans']) {
         data[key] = data[key].filter(item => item.expiresAt > now);
@@ -103,6 +103,7 @@ export class PublicChat {
       try { input = await body(request); } catch (_) { return response({ error: 'invalid_body' }, 400); }
       if (input?.acceptRules !== true) return response({ error: 'rules_required' }, 400);
       return this.update(async (data, now) => {
+        if (data.paused) return { http: response({ error: 'public_chat_paused' }, 503) };
         const ipHash = await hash(data.salt + ip);
         const bucket = this.bucket(data, ipHash, now);
         if (this.banned(data, '', ipHash)) return { http: response({ error: 'participant_blocked' }, 403) };
@@ -119,6 +120,7 @@ export class PublicChat {
     }
     if (path === '/chat/socket' && request.method === 'GET' && request.headers.get('Upgrade')?.toLowerCase() === 'websocket') {
       return this.update(async (data, now) => {
+        if (data.paused) return { http: response({ error: 'public_chat_paused' }, 503) };
         const ipHash = await hash(data.salt + ip);
         const bucket = this.bucket(data, ipHash, now);
         if (this.banned(data, '', ipHash)) return { http: response({ error: 'participant_blocked' }, 403) };
@@ -139,10 +141,12 @@ export class PublicChat {
 
   async webSocketMessage(ws, raw) {
     try {
+      if (this.env.CHAT_ENABLED !== 'true') { ws.close(1008, 'Chat disabled'); return; }
       if (typeof raw !== 'string' || raw.length > 2048) { ws.close(1008, 'Invalid frame'); return; }
       let packet;
       try { packet = JSON.parse(raw); } catch (_) { ws.close(1008, 'Invalid JSON'); return; }
       await this.update(async (data, now) => {
+        if (data.paused) { ws.close(1008, 'Chat paused'); return; }
         const a = ws.deserializeAttachment();
         if (now - a.window >= 60000) Object.assign(a, { window: now, frames: 0 });
         if (++a.frames > 30 || a.expiresAt <= now || this.banned(data, a.participantId, a.ipHash)) {
@@ -210,13 +214,18 @@ export class PublicChat {
 
   async moderate(request) {
     if (request.method === 'GET') {
-      return this.update(data => ({ http: response({ messages: data.messages, reports: data.reports,
+      return this.update(data => ({ http: response({ paused: !!data.paused, messages: data.messages, reports: data.reports,
         bans: data.bans.filter(b => b.key.startsWith('guest:')).map(b => ({ participantId: b.key.slice(6), expiresAt: b.expiresAt })) }) }));
     }
     if (request.method !== 'POST') return response({ error: 'method_not_allowed' }, 405);
     let p;
     try { p = await body(request); } catch (_) { return response({ error: 'invalid_body' }, 400); }
     return this.update((data, now) => {
+      if (p?.action === 'pause' || p?.action === 'resume') {
+        data.paused = p.action === 'pause';
+        if (data.paused) for (const ws of this.ctx.getWebSockets()) ws.close(1008, 'Chat paused');
+        return { http: response({ ok: true, paused: data.paused }) };
+      }
       if (p?.action === 'delete' && uuid(p.messageId)) {
         data.messages = data.messages.filter(m => m.id !== p.messageId);
         data.reports = data.reports.filter(r => r.messageId !== p.messageId);
@@ -240,7 +249,7 @@ export class PublicChat {
   async alarm() {
     await this.update((data, now) => {
       for (const ws of this.ctx.getWebSockets()) {
-        if (ws.deserializeAttachment().expiresAt <= now) ws.close(1008, 'Session expired');
+        if (this.env.CHAT_ENABLED !== 'true' || data.paused || ws.deserializeAttachment().expiresAt <= now) ws.close(1008, 'Session expired or chat disabled');
       }
       return { broadcast: { type: 'history', messages: data.messages } };
     });
