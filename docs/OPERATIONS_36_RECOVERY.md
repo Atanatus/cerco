@@ -1,5 +1,9 @@
 # Operación 36: endurecimiento y recuperación local
 
+Para la beta 0.8.1, el plan vigente es [BETA_0.8.1.md](BETA_0.8.1.md).
+Sustituye las instrucciones de publicación/reversión de esta etapa: añade un
+Durable Object y conserva compatibilidad 0.8.0/0.8.1 al revertir.
+
 ## Estado y alcance
 
 Base Git inspeccionada: `c3e4bb3`; las operaciones 34/35 estaban sin commit.
