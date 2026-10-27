@@ -44,9 +44,17 @@ retorno a primer plano, backoff limitado, WebSockets sin duplicados, mensajería
 XSS, denuncias, retirada, bloqueo, juego, informes, skins y música. Chromium enruta
 toda escritura a Miniflare y D1/DO temporales.
 
+La validación pública confirmó el timeout inicial seguido de una respuesta real,
+la recuperación del botón sin recargar, y el reintento manual. La entrada de dos
+invitados en producción quedó limitada por HTTP 429 del control antispam por IP
+durante la prueba; no se eludió la cuota ni se enviaron mensajes. La prueba de dos
+invitados y reconexión sí pasa localmente en Chromium.
+
 ## Publicación
 
-Los cambios están solo en el repositorio local. Publicar primero el Worker y revisar
-`/chat/status`; luego publicar el frontend y validar timeout, reconexión y
-moderación. No se necesitan nuevas migraciones D1. Ante una incidencia, se puede
-pausar la sala sin afectar al juego ni borrar contenido.
+Worker publicado en `6ec38c27-f3ef-481b-802a-fc1104803639`; `CHAT_ENABLED=true`,
+secreto administrativo, Durable Object y D1 siguen enlazados, y Cron conserva
+`0 */6 * * *`. `/health` responde bien y `/chat/status` devuelve disponible, no
+pausado. GitHub Pages sirve los recursos del commit `ee6630f`. No se ejecutaron
+migraciones D1. Una incidencia administrativa permite pausar la sala sin afectar
+al juego ni borrar contenido.
