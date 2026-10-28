@@ -3,7 +3,7 @@
   "main": "index.js",
   "compatibility_date": "2026-10-26",
   "workers_dev": true,
-  "vars": { "CHAT_ENABLED": "true", "GUEST_IDENTITY_REQUIRED": "true" },
+  "vars": { "CHAT_ENABLED": "true", "GUEST_IDENTITY_REQUIRED": "false" },
   "durable_objects": {
     "bindings": [{ "name": "CHAT_ROOM", "class_name": "PublicChat" }]
   },

@@ -2,6 +2,11 @@
 
 ## Contrato
 
+El orden de publicación de este documento queda actualizado por
+[OPERATION_42_SAFE_RELEASE.md](OPERATION_42_SAFE_RELEASE.md): primero Worker en
+modo compatible, después frontend y la exigencia estricta solo tras superar su
+puerta de compatibilidad.
+
 El UUID historico `cerco_guest_id_v1` no autoriza operaciones nuevas. El cliente
 conserva una ruta de compatibilidad para pruebas locales, pero el Worker con
 `GUEST_IDENTITY_REQUIRED=true` rechaza sesiones sin credencial. Los navegadores

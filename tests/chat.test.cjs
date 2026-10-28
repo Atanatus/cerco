@@ -5,7 +5,7 @@ const admin = 'local-test-only-' + 'x'.repeat(40);
 test('production Worker configuration keeps public chat enabled and retains DO/Cron bindings', () => {
   const config = JSON.parse(require('node:fs').readFileSync('backend/worker/wrangler.jsonc'));
   assert.equal(config.vars.CHAT_ENABLED, 'true');
-  assert.equal(config.vars.GUEST_IDENTITY_REQUIRED, 'true');
+  assert.equal(config.vars.GUEST_IDENTITY_REQUIRED, 'false', 'first rollout keeps older clients working');
   assert.equal(config.durable_objects.bindings[0].class_name, 'PublicChat');
   assert.deepEqual(config.triggers.crons, ['0 */6 * * *']);
   assert.equal(config.d1_databases[0].database_name, 'cerco-production');
