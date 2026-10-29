@@ -6,7 +6,8 @@ export const json=(data,status=200)=>new Response(JSON.stringify(data),{status,h
   'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','Access-Control-Allow-Origin':ORIGIN,
   'X-Content-Type-Options':'nosniff','Vary':'Origin'}});
 export async function economyAccess(request,env) {
-  if(request.headers.get('Origin')!==ORIGIN)return {error:json({error:'origin_not_allowed'},403)};
+  const origin=request.headers.get('Origin');
+  if(origin!==ORIGIN && !(request.method==='GET' && origin===null))return {error:json({error:'origin_not_allowed'},403)};
   const guest=await authenticateGuest(request,env);
   if(!guest)return {error:json({error:'guest_profile_required'},401)};
   const now=Date.now(),window=60000;

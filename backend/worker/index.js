@@ -3,6 +3,7 @@ import { routeChat } from './chat.js';
 import { authenticateGuest, routeGuest } from './guest.js';
 import { readLimitedText } from './http.js';
 import {routeEconomy,reconcileEconomy} from './economy.js';
+import {routeCommerce} from './commerce.js';
 export { PublicChat } from './chat.js';
 async function tokenHash(token) {
   const bytes = new TextEncoder().encode(token);
@@ -117,6 +118,9 @@ export default {
     }
     if (url.pathname === '/guest/profile') return routeGuest(request, env);
     if (url.pathname.startsWith('/economy/')) return routeEconomy(request,env);
+    if (['/shop/catalog','/shop/purchase','/profile-picture/equip'].includes(url.pathname) ||
+        (['/skins/inventory','/skins/equip','/skins/purchase'].includes(url.pathname) && request.headers.has('Authorization')))
+      return routeCommerce(request,env);
     if (url.pathname.startsWith('/chat/')) {
       let guest = null;
       if (url.pathname === '/chat/session' && request.method === 'POST') {

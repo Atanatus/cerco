@@ -34,6 +34,9 @@ export function validateEconomy(a,session,elapsedSeconds) {
       c.trust!=='client_reported_unverified' || a.final?.styleCoinsVerified!==false ||
       !Array.isArray(c.spawns) || !Array.isArray(c.receipts) || !Array.isArray(c.rooms) || !Array.isArray(c.bands) ||
       !Array.isArray(a.rooms) || c.spawns.length>512 || c.receipts.length>512 || a.rooms.length>1000) return reject('invalid_economy');
+  if(!c.spawns.every(v=>validCoin(v,a.runId)) || !c.receipts.every(v=>validCoin(v,a.runId,true)) ||
+     c.rooms.length>1000 || c.bands.length>1000 ||
+     ![...c.rooms,...c.bands,...a.rooms].every(v=>v && typeof v==='object' && !Array.isArray(v))) return reject('invalid_economy');
   const spawned=new Map(), received=new Map(), bands=new Map(), rooms=new Map();let spawnedValue=0,total=0,previousTime=0,previousId=0;
   for (const coin of c.spawns) {
     if (!validCoin(coin,a.runId) || spawned.has(coin.dropId)) return reject('invalid_spawn');
@@ -44,7 +47,10 @@ export function validateEconomy(a,session,elapsedSeconds) {
     const room=a.rooms.find(r=>r.room===coin.room && r.type==='combat');
     const eligible=Object.entries(room?.killBuckets||{}).filter(([key])=>key.endsWith('|normal')).reduce((sum,[,n])=>sum+(integer(n,0,100000000)?n:0),0);
     const matchingKill=Object.entries(room?.killBuckets||{}).some(([key,n])=>key.startsWith(coin.enemyType+'|')&&key.endsWith('|normal')&&integer(n,1,100000000));
-    if (!room || !matchingKill || coin.room>a.final.room || coin.eligibleKillNumberInRoom>eligible ||
+    const activeCoins=[...spawned.values()].filter(s=>s.room===coin.room && coin.spawnedAtActiveSeconds-s.spawnedAtActiveSeconds<18 &&
+      !c.receipts.some(r=>r.dropId===s.dropId && r.collectedAtActiveSeconds<=coin.spawnedAtActiveSeconds)).length;
+    if (!room || !seconds(room.startedActiveSeconds) || !seconds(room.finishedActiveSeconds) || activeCoins>=12 ||
+        !matchingKill || coin.room>a.final.room || coin.eligibleKillNumberInRoom>eligible ||
         coin.spawnedAtActiveSeconds<room.startedActiveSeconds || coin.spawnedAtActiveSeconds>room.finishedActiveSeconds ||
         [...spawned.values()].some(s=>s.room===coin.room && s.eligibleKillNumberInRoom===coin.eligibleKillNumberInRoom)) return reject('ineligible_kill');
     previousTime=coin.spawnedAtActiveSeconds;previousId=id;spawned.set(coin.dropId,coin);bands.set(p.band,used+coin.value);

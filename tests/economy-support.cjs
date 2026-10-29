@@ -31,3 +31,13 @@ exports.events=(a)=>a.cosmeticEconomy.spawns.flatMap((coin,i)=>[
  {event:'cosmetic_coin_collected',detail:{runId:a.runId,gameVersion:a.gameVersion,ruleset:a.ruleset,eventSeq:i*2+4,seedReplay:false,currencyId:coin.currencyId,coin:a.cosmeticEconomy.receipts[i],creditable:false,trust:a.trust}}]);
 exports.authorize=async(db,id)=>db.prepare(`INSERT INTO cosmetic_authorizations(match_id,report_hash,amount,authority,evidence_ref)
  SELECT match_id,report_hash,amount,'isolated-test-authority','synthetic-fixture' FROM cosmetic_sessions WHERE match_id=?`).bind(id).run();
+// Test harness only: an explicitly synthetic authority, never a production funding route.
+exports.fund=async(api,g,amount)=>{
+ const s=await api.start(g);
+ await api.db.prepare("UPDATE matches SET status='completed' WHERE match_id=?").bind(s.match_id).run();
+ await api.db.prepare("UPDATE cosmetic_sessions SET state='coherent',amount=?,report_hash=? WHERE match_id=?")
+  .bind(amount,'a'.repeat(64),s.match_id).run();
+ await exports.authorize(api.db,s.match_id);
+ const {settleAuthorized}=await import(require('node:url').pathToFileURL(require('node:path').resolve('backend/worker/economy.js')).href);
+ await settleAuthorized(api.db,s.match_id);
+};

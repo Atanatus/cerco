@@ -34,3 +34,13 @@ Contrato de API (mismo origen permitido y Bearer Guest existente, nunca UUID com
 Errores: 400 formato/evento/contrato, 401 credencial, 403 origen o propiedad, 409 conflicto/sesión cerrada, 413 límite, 429 cuota, 503 servicio. No existe endpoint para financiar, aprobar o liquidar.
 
 La reconciliación recalcula valores y límites, distingue spawns de recogidas, caducidad, salas y bajas elegibles, replays, secuencias y sumas por banda/sala. Recupera recibos faltantes desde la auditoría final íntegra sin duplicar eventos de transporte; cualquier discrepancia con recibos ya aceptados rechaza la recompensa. La auditoría sin final derrota queda sin liquidar. Ninguna comprobación de coherencia se presenta como verificación.
+
+## Checkpoint D: comercio
+
+`0007_cosmetic_commerce.sql` añade catálogo, categorías, compras, inventario y equipamiento. Solo existen Original y Void Circuit. PROFILE PICTURES tiene precio de categoría 1.250 ✦ y ningún artículo publicado. Las pruebas usan una imagen ficticia únicamente en la D1 efímera para comprobar el modelo genérico; no se incluye en migraciones ni en el catálogo real.
+
+`GET /shop/catalog`, `POST /shop/purchase` (`productId`, `operationKey` de 16–80 caracteres), `GET /skins/inventory`, `POST /skins/equip` (`skinId` o `productId`) y `POST /profile-picture/equip` (`productId`) comparten la autenticación Guest y la cuota económica. `/skins/purchase` es alias compatible del mismo controlador, no una segunda implementación. GET autenticado sin Origin conserva compatibilidad con clientes nativos; los cambios exigen Origin exacto. Peticiones de compra/equipamiento limitadas a 2 KiB.
+
+El servidor selecciona el precio y saldo dentro de la sentencia de compra. Sus triggers crean ledger, descuento e inventario en una transacción; cualquier error revierte todo. Una clave de compra exitosa devuelve la misma operación; reutilizarla para otro producto da 409. Fondos insuficientes no crean una compra: un reintento futuro puede tener éxito cuando exista saldo confirmado. Propiedad ya poseída no se cobra. Artículos inactivos conservan propiedad histórica, pero dejan de ser equipables; la respuesta recupera Original como alternativa.
+
+El equipamiento persiste por Guest/categoría y la base también valida propiedad. Las asignaciones legítimas `server_grant` se respetan. No existe ruta pública para crearlas. La recuperación de Guest y sus credenciales no cambia al comprar ni equipar.

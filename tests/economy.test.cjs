@@ -44,6 +44,8 @@ test('economic filter recalculates all evidence and rejects manipulated/ineligib
  const mutations={
   replay:a=>a.seedReplay=true,abandon:a=>a.result='abandoned',incomplete:a=>a.result=null,
   wrongRun:a=>a.runId='other',wrongRuleset:a=>a.ruleset='CERCO-0.8.2',
+  missingRoomTimes:a=>delete a.rooms[0].finishedActiveSeconds,
+  malformedReceipt:a=>a.cosmeticEconomy.receipts=[null],malformedRoom:a=>a.rooms=[null],
   expired:a=>a.cosmeticEconomy.receipts[0].collectedAtActiveSeconds=25,
   beforeSpawn:a=>a.cosmeticEconomy.receipts[0].collectedAtActiveSeconds=0,
   duplicate:a=>a.cosmeticEconomy.receipts.push(a.cosmeticEconomy.receipts[0]),
