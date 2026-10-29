@@ -24,8 +24,7 @@ test('CERCO 0.8.3 keeps protocol and skin contract while Style Coins stay unveri
   assert.match(html, /Eight discrete directions, including true diagonals/);
 });
 
-test('platform selects versioned 0.8.3 without removing the 0.8.1 rollback artifact', () => {
-  const index = fs.readFileSync('index.html', 'utf8');
-  assert.match(index, /data-src="\.\/games\/CERCO\/cerco_expedition_v083_mobile\.html"/);
+test('historical 0.8.3 and 0.8.1 rollback artifacts remain available', () => {
+  assert.equal(fs.existsSync('games/CERCO/cerco_expedition_v083_mobile.html'), true);
   assert.equal(fs.existsSync('games/CERCO/cerco_expedition_v081_skins.html'), true);
 });

@@ -37,7 +37,7 @@ async function main() {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const shots = path.resolve('.local-recovery/op45b/screenshots'); fs.mkdirSync(shots, { recursive: true });
+  const shots = path.resolve('.local-recovery/op46/screenshots'); fs.mkdirSync(shots, { recursive: true });
   let browser;
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
@@ -284,9 +284,9 @@ async function main() {
     await a.locator('#pz-shop-back').click();
     if (await a.locator('#cerco-play-button').isVisible()) await a.locator('#cerco-play-button').click();
     await a.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
-    const frame = a.frames().find(f => f.url().includes('v083_mobile'));
-    assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.version), '0.8.3');
-    assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.getCapabilities().ruleset), 'CERCO-0.8.2');
+    const frame = a.frames().find(f => f.url().includes('v090'));
+    assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.version), '0.9.0');
+    assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.getCapabilities().ruleset), 'CERCO-0.9.0');
     assert.equal(await frame.locator('#touchControls').evaluate(el => el.hidden), true,
       'touch controls stay hidden in a desktop context');
     const snapshot = await frame.evaluate(() => window.CERCO_BRIDGE.getSnapshot());
@@ -327,7 +327,7 @@ async function main() {
     await a.waitForFunction(() => !!window.CERCO_SESSION_STATUS().match_id);
     console.log('Browser server session created');
     const matchId = await a.evaluate(() => window.CERCO_SESSION_STATUS().match_id);
-    assert.equal((await db.prepare('SELECT game_version FROM matches WHERE match_id = ?').bind(matchId).first()).game_version, '0.8.3');
+    assert.equal((await db.prepare('SELECT game_version FROM matches WHERE match_id = ?').bind(matchId).first()).game_version, '0.9.0');
     loseNextReport = true;
     await frame.evaluate(() => {
       const audit = window.CERCO_BRIDGE.getRunReport();
@@ -357,14 +357,58 @@ async function main() {
     await a.waitForFunction(() => !Object.keys(localStorage).some(k => k.startsWith('cerco_terminal_v1:')));
     assert.deepEqual(await db.prepare('SELECT * FROM pending_run_reports WHERE match_id = ?').bind(matchId).first(), beforeRecovery);
     assert.equal((await db.prepare('SELECT status FROM pending_run_reports WHERE match_id = ?').bind(matchId).first()).status, 'pending');
-    results.push('Actual 0.8.3 start, lost response after D1 commit and browser reload recover the exact pending-only report; Style Coins remain uncredited.');
+    results.push('Actual 0.9.0 start, lost response after D1 commit and browser reload recover the exact pending-only report; Style Coins remain uncredited.');
 
     console.log('Browser stage: touch game');
+    // Controlled local scenario: instrument the response in memory, never the release HTML.
+    // This exercises real game functions for late enemies and terminal events without
+    // claiming that the fixture is legitimate gameplay or server-verified currency.
+    const scenario = await pageFor('192.0.2.153');
+    await scenario.route('**/cerco_expedition_v090.html', route => {
+      const html=fs.readFileSync('games/CERCO/cerco_expedition_v090.html','utf8');
+      const hook="window.__scenario={state,prepareStage,spawnEnemy,killEnemy,enemyFire,finishRun};";
+      return route.fulfill({contentType:'text/html',body:html.replace('// The release file exposes no developer-only game controls.',hook)});
+    });
+    await scenario.locator('#cerco-play-button').click();
+    const sf=scenario.frameLocator('#cerco-game-frame');
+    await sf.locator('#start').click();
+    await scenario.waitForFunction(()=>!!window.CERCO_SESSION_STATUS().match_id);
+    await scenario.locator('#cerco-fullscreen').click();
+    await scenario.waitForFunction(()=>!!document.fullscreenElement);
+    await scenario.locator('#cerco-fullscreen').click();
+    const enemyAudit=await sf.locator('body').evaluate(()=>{
+      const h=window.__scenario;h.prepareStage(11,false);
+      for(const type of ['seeker','blighter']){
+        if(!h.spawnEnemy(type))throw new Error('Cannot spawn scenario enemy');
+        const z=h.state.mobs.find(z=>z.type===type);
+        if(type==='seeker'){h.enemyFire(z);if(!h.state.enemyShots.some(s=>s.homing))throw new Error('Missing homing shot');}
+        h.killEnemy(z);
+      }
+      return window.CERCO_BRIDGE.getRunReport();
+    });
+    assert.equal(enemyAudit.killsByType.seeker,1);assert.equal(enemyAudit.killsByType.blighter,1);
+    assert.equal(enemyAudit.scoreBreakdown.baseKills,505);
+    await scenario.screenshot({path:path.join(shots,'game090-combat-fixture.png')});
+    await sf.locator('body').evaluate(()=>{window.__scenario.finishRun();window.__scenario.finishRun();});
+    await scenario.waitForFunction(()=>window.CERCO_SESSION_STATUS().report_stored);
+    const finishedId=await scenario.evaluate(()=>window.CERCO_SESSION_STATUS().match_id);
+    const terminal=await db.prepare('SELECT audit_json,status FROM pending_run_reports WHERE match_id=?').bind(finishedId).first();
+    assert.equal(JSON.parse(terminal.audit_json).result,'defeat');assert.equal(terminal.status,'pending');
+    assert.equal((await db.prepare('SELECT COUNT(*) n FROM pending_run_reports WHERE match_id=?').bind(finishedId).first()).n,1);
+    await scenario.screenshot({path:path.join(shots,'game090-defeat.png')});
+    await sf.locator('#again').click();
+    await scenario.waitForFunction(old=>window.CERCO_SESSION_STATUS().match_id && window.CERCO_SESSION_STATUS().match_id!==old,finishedId);
+    await sf.locator('body').press('r');await sf.locator('#yesReset').click();
+    await scenario.waitForFunction(()=>window.CERCO_SESSION_STATUS().abandon_stored);
+    await scenario.evaluate(()=>document.getElementById('cerco-game-frame').contentWindow.location.reload());
+    await scenario.waitForFunction(()=>window.CERCO_SESSION_STATUS().run_id===null);
+    await scenario.close();
+    results.push('0.9.0 controlled local game scenario: new enemies, 505 base points, homing shots, fullscreen, actual defeat/duplicate finish, abandon and iframe invalidation pass.');
     const mobile = await pageFor('192.0.2.151', { width: 390, height: 844 },
       { isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
     await mobile.locator('#cerco-play-button').click();
     await mobile.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
-    const mobileFrame = mobile.frames().find(f => f.url().includes('v083_mobile'));
+    const mobileFrame = mobile.frames().find(f => f.url().includes('v090'));
     await mobileFrame.locator('#start').click();
     await mobileFrame.locator('#touchControls:not([hidden])').waitFor();
     await mobileFrame.locator('#pauseBtn').click();
@@ -379,6 +423,15 @@ async function main() {
     assert.equal(touchGeometry.overflowX, false);
     assert.equal(touchGeometry.overflowY, false);
     for (const r of touchGeometry.controls) assert.ok(r.left >= 0 && r.top >= 0 && r.right <= 390 && r.bottom <= 844);
+    assert.equal(await mobile.evaluate(()=>{
+      const frame=document.getElementById('cerco-game-frame'),fr=frame.getBoundingClientRect();
+      const action=document.getElementById('cerco-fullscreen').getBoundingClientRect();
+      return ['#touchJoy','#touchFire','#touchSprint'].every(selector=>{
+        const r=frame.contentDocument.querySelector(selector).getBoundingClientRect();
+        const bottom=fr.top+r.bottom*(fr.height/frame.clientHeight);
+        return bottom<=action.top && r.bottom<=frame.clientHeight;
+      });
+    }),true,'platform fullscreen control must remain outside all touch controls');
     const touchPoints = await mobile.evaluate(async () => {
       const frame=document.getElementById('cerco-game-frame'), doc=frame.contentDocument;
       const scaleX=frame.clientWidth/doc.documentElement.clientWidth, scaleY=frame.clientHeight/doc.documentElement.clientHeight;
@@ -410,22 +463,24 @@ async function main() {
     assert.ok(Number(stamina.split('/')[0].trim()) < 100, 'held SPRINT consumes stamina');
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     await cdp.detach();
+    await mobile.screenshot({path:path.join(shots,'game090-touch-portrait.png')});
     await mobile.close();
-    results.push('0.8.3 touch controls render and remain within a 390×844 viewport without page scrolling; joystick, FIRE and SPRINT accept touch pointers.');
+    results.push('0.9.0 touch controls render and remain within a 390×844 viewport without page scrolling; joystick, FIRE and SPRINT accept touch pointers.');
 
     const landscape = await pageFor('192.0.2.152', { width: 844, height: 390 },
       { isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
     await landscape.locator('#cerco-play-button').click();
     await landscape.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
-    const landscapeFrame = landscape.frames().find(f => f.url().includes('v083_mobile'));
+    const landscapeFrame = landscape.frames().find(f => f.url().includes('v090'));
     await landscapeFrame.locator('#start').click();
     await landscapeFrame.locator('#touchControls:not([hidden])').waitFor();
     const landscapeOK = await landscapeFrame.evaluate(() => ['#touchJoy','#touchFire','#touchSprint'].every(s => {
       const r=document.querySelector(s).getBoundingClientRect(); return r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;
     }) && document.documentElement.scrollWidth<=innerWidth && document.documentElement.scrollHeight<=innerHeight);
     assert.equal(landscapeOK, true);
+    await landscape.screenshot({path:path.join(shots,'game090-touch-landscape.png')});
     await landscape.close();
-    results.push('0.8.3 touch controls fit the 844×390 landscape viewport without document overflow.');
+    results.push('0.9.0 touch controls fit the 844×390 landscape viewport without document overflow.');
     console.log('Browser stage: music and responsive');
 
     const volume = a.locator('#cerco-volume-toggle');
@@ -494,7 +549,7 @@ async function main() {
     assert.equal(await row.innerText(),'CHECKING…');
     assert.equal(await a.locator('.pz-top-crown').isVisible(),false);
     await a.screenshot({path:path.join(shots,'throne-loading.png'),fullPage:true});
-    const actualEmpty=await mf.dispatchFetch('https://local.test/leaderboards?kind=guest&metric=score');
+    const actualEmpty=await mf.dispatchFetch('https://local.test/leaderboards?kind=guest&metric=score&ruleset=CERCO-0.9.0');
     const emptyRanking=await actualEmpty.json();assert.deepEqual(emptyRanking.entries,[]);
     await replyRanking(ranking,200,emptyRanking);
     await a.waitForFunction(()=>document.getElementById('pz-leaderboards').dataset.rankingState==='empty');
@@ -505,7 +560,7 @@ async function main() {
     await a.locator('#pz-lb-back').click();await a.locator('[data-lb-mode="personal"]').click();
     assert.equal(await row.innerText(),'—');assert.equal(await a.locator('.pz-golden-rank').count(),0);
     await a.locator('#pz-lb-back').click();ranking=await openUniversal();
-    await replyRanking(ranking,200,{leaderboard:'guest',metric:'score',entries:[{display_name:'Guest 1234abcd',best_value:4321}]});
+    await replyRanking(ranking,200,{leaderboard:'guest',metric:'score',ruleset:'CERCO-0.9.0',entries:[{display_name:'Guest 1234abcd',best_value:4321}]});
     await a.waitForFunction(()=>document.getElementById('pz-leaderboards').dataset.rankingState==='ready');
     assert.equal(await row.innerText(),'Guest 1234abcd · 4,321');
     assert.equal(await a.locator('.pz-top-crown').isVisible(),true);

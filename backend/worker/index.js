@@ -15,7 +15,7 @@ const headers = {
   'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
   'X-Content-Type-Options': 'nosniff'
 };
-const gameVersions = ['0.8.0', '0.8.1', '0.8.3'];
+const gameVersions = ['0.8.0', '0.8.1', '0.8.3', '0.9.0'];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers });
@@ -225,8 +225,8 @@ export default {
           !gameVersions.includes(audit.gameVersion) ||
           (audit.gameVersion === '0.8.1' &&
             (audit.ruleset !== 'CERCO-0.7.0' || audit.schema !== 'cerco.audit.v1')) ||
-          (audit.gameVersion === '0.8.3' &&
-            (audit.ruleset !== 'CERCO-0.8.2' || audit.schema !== 'cerco.audit.v2' ||
+          (['0.8.3', '0.9.0'].includes(audit.gameVersion) &&
+            (audit.ruleset !== (audit.gameVersion === '0.9.0' ? 'CERCO-0.9.0' : 'CERCO-0.8.2') || audit.schema !== 'cerco.audit.v2' ||
              audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
              audit.cosmeticEconomy?.serverWalletCredited !== false ||
              audit.final?.styleCoinsVerified !== false)) ||
@@ -495,6 +495,10 @@ export default {
     if (url.pathname === '/leaderboards') {
       const kind = url.searchParams.get('kind') || 'guest';
       const metric = url.searchParams.get('metric') || 'score';
+      // Old clients retain their original ruleset. New clients explicitly select theirs.
+      const ruleset = url.searchParams.get('ruleset') || 'CERCO-0.7.0';
+      const versions = { 'CERCO-0.7.0': ['0.8.0', '0.8.1'], 'CERCO-0.8.2': ['0.8.3'], 'CERCO-0.9.0': ['0.9.0'] }[ruleset];
+      if (!Array.isArray(versions)) return json({ error: 'invalid_ruleset' }, 400);
 
       if (!['guest', 'registered'].includes(kind)) {
         return json({ error: 'invalid_kind' }, 400);
@@ -506,16 +510,21 @@ export default {
 
       try {
         const result = await env.DB.prepare(
-          `SELECT player_id, display_name, best_value
-           FROM leaderboard_entries
-           WHERE leaderboard_kind = ? AND metric_key = ?
-           ORDER BY best_value DESC, player_id ASC
+          `SELECT p.player_id, p.display_name, MAX(r.metric_value) AS best_value
+           FROM results r JOIN players p ON p.player_id = r.player_id
+           JOIN matches m ON m.match_id = r.match_id
+           WHERE p.kind = ? AND r.metric_key = ? AND r.verification_status = 'verified'
+             AND m.status = 'completed' AND p.disabled_at IS NULL
+             AND m.game_version IN (${versions.map(() => '?').join(',')})
+           GROUP BY p.player_id, p.display_name
+           ORDER BY best_value DESC, p.player_id ASC
            LIMIT 50`
-        ).bind(kind, metric).all();
+        ).bind(kind, metric, ...versions).all();
 
         return json({
           leaderboard: kind,
           metric,
+          ruleset,
           entries: result.results || []
         });
       } catch (_) {

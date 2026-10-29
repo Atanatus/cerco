@@ -4,16 +4,16 @@ const { createRuntime, schema, post, report } = require('./support.cjs');
 test('beta API: 0.8.0, 0.8.1 y 0.8.3 conservan contratos y no verifican resultados', async t => {
   const mf = createRuntime({ modules: true, scriptPath: 'backend/worker/index.js', compatibilityDate: '2026-10-26', d1Databases: ['DB'] });
   t.after(() => mf.dispose()); const db = await mf.getD1Database('DB'); await schema(db);
-  for (const version of ['0.8.0', '0.8.1', '0.8.3']) {
+  for (const version of ['0.8.0', '0.8.1', '0.8.3', '0.9.0']) {
     const start = await post(mf, '/matches/start', { game_version: version, mode: 'expedition' });
     assert.equal(start.status, 201);
     const p = report(await start.json());
-    p.audit = { schema: version === '0.8.3' ? 'cerco.audit.v2' : 'cerco.audit.v1',
-      ruleset: version === '0.8.3' ? 'CERCO-0.8.2' : 'CERCO-0.7.0', gameVersion: version,
+    p.audit = { schema: ['0.8.3', '0.9.0'].includes(version) ? 'cerco.audit.v2' : 'cerco.audit.v1',
+      ruleset: ['0.8.3', '0.9.0'].includes(version) ? (version === '0.9.0' ? 'CERCO-0.9.0' : 'CERCO-0.8.2') : 'CERCO-0.7.0', gameVersion: version,
       trust: 'client_reported_unverified', runId: p.run_id, seed: p.seed,
       final: { score: p.score, kills: p.kills, room: p.room }, activeSeconds: p.active_seconds,
       diagnosticChecks: { scoreAddsUp: true, killsAddUp: true, creditsAddUp: true } };
-    if (version === '0.8.3') {
+    if (['0.8.3', '0.9.0'].includes(version)) {
       p.audit.final.styleCoinsVerified = false;
       p.audit.cosmeticEconomy = { schema: 'cerco.cosmetics.v1', collected: 999999,
         trust: 'client_reported_unverified', serverWalletCredited: false };

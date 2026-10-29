@@ -104,7 +104,7 @@
             const timer = setTimeout(() => controller.abort(), 8000);
             request = { controller, timer };
 
-            fetch('https://cerco-api.atanatus.workers.dev/leaderboards?kind=guest&metric=score',
+            fetch('https://cerco-api.atanatus.workers.dev/leaderboards?kind=guest&metric=score&ruleset=CERCO-0.9.0',
                 { cache: 'no-store', signal: controller.signal })
                 .then(response => {
                     if (!response.ok) throw new Error('API unavailable');
@@ -114,7 +114,7 @@
                     if (generation !== requestedGeneration || mode !== 'universal' || panel.hidden) return;
 
                     if (data.leaderboard !== 'guest' ||
-                        data.metric !== 'score' || !Array.isArray(data.entries) || data.entries.length > 50 ||
+                        data.metric !== 'score' || data.ruleset !== 'CERCO-0.9.0' || !Array.isArray(data.entries) || data.entries.length > 50 ||
                         !data.entries.every(entry => entry && typeof entry.display_name === 'string' &&
                             entry.display_name.trim().length > 0 && entry.display_name.length <= 200 &&
                             typeof entry.best_value === 'number' && Number.isFinite(entry.best_value) && entry.best_value >= 0)) {

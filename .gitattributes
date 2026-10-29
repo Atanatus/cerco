@@ -1,0 +1,4 @@
+# Preserve the byte-exact developer handoff, including on Windows checkout.
+games/CERCO/cerco_expedition_v090.html -text
+# The supplied Markdown uses two trailing spaces for explicit line breaks.
+docs/handoff/0.9.0/*.md whitespace=-blank-at-eol

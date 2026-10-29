@@ -31,7 +31,7 @@ function app({honorAbort=true}={}){
     state:()=>el('pz-leaderboards').dataset.rankingState};
 }
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
-const data=entries=>({leaderboard:'guest',metric:'score',entries});
+const data=entries=>({leaderboard:'guest',metric:'score',ruleset:'CERCO-0.9.0',entries});
 test('universal: loading is neutral; only a confirmed empty response offers the throne',async()=>{
   const a=app();a.universal.click();
   assert.equal(a.first(),'CHECKING…');assert.equal(a.state(),'loading');

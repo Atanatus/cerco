@@ -121,8 +121,8 @@
         if (adapter) adapter.destroy();
         try {
             adapter = new window.CercoSkinsAdapter(frame);
-            const [live, state, inventory] = await Promise.all([adapter.catalog(), adapter.equipped(), api('/skins/inventory')]);
-            if (live.schema !== 'cerco.skins.v1' || !['0.8.1', '0.8.3'].includes(live.gameVersion) || state.cosmeticOnly !== true ||
+            const [live, state, inventory, capabilities] = await Promise.all([adapter.catalog(), adapter.equipped(), api('/skins/inventory'), adapter.capabilities()]);
+            if (capabilities.protocol !== 1 || capabilities.game !== 'CERCO' || live.schema !== 'cerco.skins.v1' || !['0.8.1', '0.8.3', '0.9.0'].includes(live.gameVersion) || state.cosmeticOnly !== true ||
                 inventory.authenticated !== true || inventory.guest_id !== window.CERCO_GUEST_PROFILE.getProfile()?.guestId ||
                 !inventory.ownedSkinIds?.includes('cerco.default')) throw new Error();
             // Paid IDs from local events/storage never authorize equipment.

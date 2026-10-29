@@ -15,7 +15,9 @@
       }
       this.pending = new Map();
       this.onMessage = this.onMessage.bind(this);
+      this.onLoad = () => this.cancelPending('CERCO frame reloaded');
       window.addEventListener('message', this.onMessage);
+      iframe.addEventListener('load', this.onLoad);
     }
     onMessage(event) {
       if (event.source !== this.frame.contentWindow || event.origin !== this.origin) return;
@@ -23,6 +25,10 @@
       if (!data || data.source !== 'CERCO' || data.protocol !== 1 || typeof data.requestId !== 'string') return;
       const slot = this.pending.get(data.requestId);
       if (!slot) return;
+      try {
+        if (!data.detail || typeof data.detail !== 'object' || Array.isArray(data.detail) ||
+            JSON.stringify(data.detail).length > 600000) return;
+      } catch (_) { return; }
       if (data.event !== slot.expectedEvent) return;
       if (slot.query && data.query !== slot.query) return;
       this.pending.delete(data.requestId);
@@ -48,6 +54,7 @@
       });
     }
     async catalog() { return this.send('cerco_query', {query:'skin_catalog'}, 'query_result'); }
+    async capabilities() { return this.send('cerco_query', {query:'capabilities'}, 'query_result'); }
     async equipped() { return this.send('cerco_query', {query:'skin_state'}, 'query_result'); }
     async preview(skinId, size=256) {
       return this.send('cerco_query', {query:'skin_preview', skinId, size}, 'query_result');
@@ -58,13 +65,17 @@
       if (!result || !result.ok) throw new Error(result?.error || 'CERCO rejected this skin');
       return result;
     }
-    destroy() {
-      window.removeEventListener('message', this.onMessage);
+    cancelPending(reason) {
       for (const slot of this.pending.values()) {
         clearTimeout(slot.timeoutId);
-        slot.reject(new Error('CERCO skins adapter destroyed'));
+        slot.reject(new Error(reason));
       }
       this.pending.clear();
+    }
+    destroy() {
+      window.removeEventListener('message', this.onMessage);
+      this.frame.removeEventListener('load', this.onLoad);
+      this.cancelPending('CERCO skins adapter destroyed');
     }
   }
   window.CercoSkinsAdapter = CercoSkinsAdapter;

@@ -172,8 +172,8 @@
     const audit = detail.audit;
     if (!audit || typeof audit !== 'object' || !uuid(guestId)) return null;
     if (audit.gameVersion !== gameVersion ||
-        (gameVersion === '0.8.3' && (audit.schema !== 'cerco.audit.v2' ||
-          audit.ruleset !== 'CERCO-0.8.2' || audit.trust !== 'client_reported_unverified' ||
+        (['0.8.3', '0.9.0'].includes(gameVersion) && (audit.schema !== 'cerco.audit.v2' ||
+          audit.ruleset !== (gameVersion === '0.9.0' ? 'CERCO-0.9.0' : 'CERCO-0.8.2') || audit.trust !== 'client_reported_unverified' ||
           audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
           audit.cosmeticEconomy?.serverWalletCredited !== false ||
           audit.final?.styleCoinsVerified !== false))) return null;
@@ -345,6 +345,9 @@
     }
 
     const detail = message.detail;
+    try {
+      if (Array.isArray(detail) || JSON.stringify(detail).length > 120000) return;
+    } catch (_) { return; }
     const runId = detail.runId;
 
     if (!validRunId(runId)) return;
@@ -352,7 +355,8 @@
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
       const gameVersion = detail.gameVersion || '0.8.0';
-      if (!['0.8.0', '0.8.1', '0.8.3'].includes(gameVersion)) return;
+      if (!['0.8.0', '0.8.1', '0.8.3', '0.9.0'].includes(gameVersion)) return;
+      if (gameVersion === '0.9.0' && (detail.ruleset !== 'CERCO-0.9.0' || detail.auditSchema !== 'cerco.audit.v2')) return;
 
       const session = {
         runId,
@@ -391,7 +395,7 @@
       return;
     }
 
-    const session = sessions.get(runId);
+    const session = runId === currentRunId ? sessions.get(runId) : null;
     if (!session) return;
 
     if (message.event === 'run_abandoned') {
@@ -421,6 +425,14 @@
     session.expiresAt = session.createdAt + RETENTION_MS;
 
     void submit(session);
+  });
+
+  // A new frame document must not reuse a former run or its outstanding commands.
+  frame.addEventListener('load', () => {
+    for (const session of sessions.values()) {
+      if (!session.finished) { session.stopped = true; session.sessionToken = null; }
+    }
+    sessions.clear(); currentRunId = null; currentSession = null;
   });
 
   // Recovery never becomes the current game session and never calls /matches/start.

@@ -181,7 +181,8 @@ test('Worker con D1 local aislada: informes, autenticación, carreras y regresio
 function client(fetcher, options = {}) {
   const timers = new Map(); let next = 1; let listener;
   let sweep;
-  const frame = { contentWindow: {} };
+  let onLoad;
+  const frame = { contentWindow: {}, addEventListener: (_, fn) => { onLoad = fn; } };
   const window = { location: { origin }, addEventListener: (_, fn) => { listener = fn; } };
   vm.runInNewContext(fs.readFileSync('src/js/cerco-sessions.js', 'utf8'), {
     window, document: { getElementById: () => frame }, crypto,
@@ -192,7 +193,7 @@ function client(fetcher, options = {}) {
     setInterval: fn => { sweep = fn; return 1; },
     clearTimeout: id => timers.delete(id)
   });
-  return { status: () => window.CERCO_SESSION_STATUS(), timers, sweep: () => sweep(),
+  return { status: () => window.CERCO_SESSION_STATUS(), timers, sweep: () => sweep(), reloadFrame: () => onLoad(),
     emit: (event, detail, overrides = {}) => listener({ origin, source: frame.contentWindow,
       data: { source: 'CERCO', protocol: 1, event, detail }, ...overrides }),
     tick: async () => { const [id, timer] = timers.entries().next().value; timers.delete(id); timer.fn(); await flush(); } };
@@ -424,6 +425,19 @@ test('origen, ventana y protocolo de mensajes: rechaza eventos ajenos', async ()
   c.emit('run_started', detail, { source: {} });
   c.emit('run_started', detail, { data: { source: 'CERCO', protocol: 2, event: 'run_started', detail } });
   await flush(); assert.equal(calls, 0); assert.equal(c.status().run_id, null);
+});
+
+test('iframe reload invalidates an in-flight start and rejects messages from its former run', async () => {
+  let resolveStart, calls=0;
+  const c=client(()=>{calls++;return new Promise(resolve=>{resolveStart=resolve;});});
+  c.emit('run_started',{runId:'old'});c.reloadFrame();
+  resolveStart(started());await flush();
+  c.emit('run_abandoned',{runId:'old'});await flush();
+  assert.equal(c.status().run_id,null);assert.equal(c.status().match_id,null);assert.equal(calls,1);
+  c.emit('run_started',{runId:'wrong-contract',gameVersion:'0.9.0',ruleset:'CERCO-0.8.2'});
+  c.emit('run_started',{runId:'oversized',junk:'x'.repeat(120001)});
+  const circular={runId:'cyclic'};circular.self=circular;c.emit('run_started',circular);
+  await flush();assert.equal(calls,1);
 });
 
 test('timeout durante lectura del cuerpo y JSON truncado se recuperan de forma acotada', async () => {
