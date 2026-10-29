@@ -168,9 +168,15 @@
     return typeof id === 'string' && id.length > 0 && id.length <= 150;
   }
 
-  function reportFrom(detail, guestId) {
+  function reportFrom(detail, guestId, gameVersion) {
     const audit = detail.audit;
     if (!audit || typeof audit !== 'object' || !uuid(guestId)) return null;
+    if (audit.gameVersion !== gameVersion ||
+        (gameVersion === '0.8.3' && (audit.schema !== 'cerco.audit.v2' ||
+          audit.ruleset !== 'CERCO-0.8.2' || audit.trust !== 'client_reported_unverified' ||
+          audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
+          audit.cosmeticEconomy?.serverWalletCredited !== false ||
+          audit.final?.styleCoinsVerified !== false))) return null;
 
     const report = {
       match_id: null,
@@ -346,7 +352,7 @@
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
       const gameVersion = detail.gameVersion || '0.8.0';
-      if (!['0.8.0', '0.8.1'].includes(gameVersion)) return;
+      if (!['0.8.0', '0.8.1', '0.8.3'].includes(gameVersion)) return;
 
       const session = {
         runId,
@@ -402,7 +408,7 @@
     if (message.event !== 'run_finished') return;
     if (session.finished || session.abandoned) return;
 
-    const report = reportFrom(detail, session.guestId || (!guestProfile ? legacyGuestId() : null));
+    const report = reportFrom(detail, session.guestId || (!guestProfile ? legacyGuestId() : null), session.gameVersion);
 
     if (!report) {
       console.warn('[CERCO] Finished run without audit report.');
