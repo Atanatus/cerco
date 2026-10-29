@@ -250,137 +250,6 @@ html, body {
   flex-direction: column;
   min-height: 0;
 }
-
-.music-player {
-  flex: 0 0 auto;
-  margin-top: auto;
-  width: 100%;
-  padding: 3px;
-  border-top: 1px solid #D4D4D4;
-  background: #fff;
-  color: #000;
-  font-size: 11px;
-  font-weight: normal;
-}
-
-.music-track {
-  padding: 3px;
-  border: 1px solid #D4D4D4;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.music-type {
-  min-height: 24px;
-  padding: 3px;
-  border: 1px solid #D4D4D4;
-  border-top: 0;
-  overflow-wrap: anywhere;
-}
-
-.music-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 25px;
-  border: 1px solid #D4D4D4;
-  border-top: 0;
-}
-
-.music-controls button {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #000;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.music-controls button:hover {
-  background: #e5e5e5;
-}
-
-.music-controls button:disabled {
-  opacity: .35;
-  cursor: default;
-}
-
-#music-toggle {
-  border: 1px solid #D4D4D4;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-}
-
-/* PROYECTOZ MUSIC V010 - EXPANDED CONTENT */
-
-.music-player {
-  display: flex;
-  flex-direction: column;
-  justify-content: initial;
-  flex: 0 0 auto;
-  min-height: 0;
-  height: 170px;
-  padding: 5px;
-  font-size: 13px;
-}
-
-.music-track {
-  flex: 0 0 42px;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  padding: 6px 8px;
-  font-size: 13px;
-}
-
-.music-type {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  font-size: 12px;
-}
-
-.music-controls {
-  flex: 0 0 52px;
-  min-height: 0;
-  gap: 14px;
-}
-
-.music-controls button {
-  width: 38px;
-  height: 38px;
-  font-size: 19px;
-}
-
-#music-toggle {
-  width: 38px;
-  height: 38px;
-  border-width: 1px;
-}
-
-@media (max-height: 500px) {
-  .music-player {
-    height: 135px;
-  }
-
-  .music-track {
-    flex-basis: 34px;
-  }
-
-  .music-controls {
-    flex-basis: 42px;
-  }
-}
 /* PROYECTOZ AVATAR V012 - STRICT SQUARE */
 
 .player-avatar {
@@ -438,11 +307,6 @@ html, body {
   width: 100%;
   min-height: 30px;
   margin: 0;
-}
-
-.music-player {
-  margin-top: 0;
-  flex-shrink: 0;
 }
 
 @media (max-height: 550px) {
@@ -531,16 +395,12 @@ html, body {
   border-color: var(--border-structural);
 }
 .player-name,
-.player-stats,
-.music-player {
+.player-stats {
   border-color: var(--border-structural);
 }
 .player-avatar,
 .player-progress,
-.player-navigation button,
-.music-track,
-.music-type,
-.music-controls {
+.player-navigation button {
   border-color: var(--border-internal);
 }
 .player-navigation button:hover {
@@ -602,30 +462,23 @@ main,
 }
 .player-name,
 .player-stats,
-.player-navigation,
-.music-player {
+.player-navigation {
   background: var(--pz-panel);
   color: var(--pz-text);
   border-color: var(--pz-border);
 }
-
-.player-avatar,
-.music-track,
-.music-type,
-.music-controls {
+.player-avatar {
   background: var(--pz-surface);
   color: var(--pz-text);
   border-color: var(--pz-border-soft);
 }
 .player-navigation button,
-.music-controls button,
 #player-edit-name {
   background: var(--pz-surface);
   color: var(--pz-text);
   border-color: var(--pz-border);
 }
 .player-navigation button:hover,
-.music-controls button:hover,
 #player-edit-name:hover {
   background: var(--pz-hover);
   color: #FFFFFF;
@@ -726,185 +579,6 @@ input:focus-visible {
     min-height: 25px;
   }
 }
-
-/* ===== CELTIC PULSE V027 ===== */
-
-.music-player {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: #080f0e;
-}
-
-#music-visualizer-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.music-player > :not(#music-visualizer-canvas) {
-    position: relative;
-    z-index: 1;
-}
-
-.music-player .music-track,
-.music-player .music-type {
-    background: rgba(7, 17, 16, 0.40);
-    border-color: rgba(99, 171, 150, 0.16);
-    backdrop-filter: blur(3px);
-}
-
-.music-player .music-controls {
-    background: rgba(7, 17, 16, 0.30);
-    border-color: rgba(99, 171, 150, 0.16);
-}
-
-.music-player .music-controls button {
-    background: rgba(10, 23, 21, 0.66);
-    border-color: rgba(105, 185, 156, 0.20);
-    color: #e0f7ef;
-}
-
-.music-player .music-controls button:hover {
-    background: rgba(27, 76, 64, 0.80);
-    color: #ffffff;
-}
-
-.music-player #music-toggle {
-    border-color: rgba(116, 220, 181, 0.48);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    #music-visualizer-canvas {
-        opacity: 0.55;
-    }
-}
-/* PROYECTOZ MUSIC CLEAN V032 */
-
-/* Remove the secondary music label entirely */
-.music-player .music-type {
-    display: none !important;
-}
-
-/* Remove blur and translucent panels */
-.music-player .music-track,
-.music-player .music-controls {
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-/* Keep the track title legible */
-.music-player .music-track {
-    border: 0;
-    color: #e8fff5;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-/* Let the visualizer remain sharp behind the controls */
-.music-player .music-controls {
-    border: 0;
-}
-/* PROYECTOZ IMMERSIVE CONTROLS V033 */
-
-/* Preserve the full visualizer surface */
-.music-player {
-    position: relative;
-    overflow: hidden;
-}
-
-/* Track title stays visible */
-.music-player .music-track {
-    position: relative;
-    z-index: 2;
-    background: transparent;
-    border: 0;
-    pointer-events: none;
-}
-
-/* Controls overlay the visualizer without occupying its layout */
-.music-player .music-controls {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 8px;
-    z-index: 3;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-
-    height: 44px;
-    background: transparent;
-    border: 0;
-
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(6px);
-
-    transition:
-        opacity 220ms ease,
-        transform 220ms ease,
-        visibility 220ms ease;
-}
-
-/* Reveal controls on hover or keyboard focus */
-.music-player:hover .music-controls,
-.music-player:focus-within .music-controls {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-/* Compact translucent buttons */
-.music-player .music-controls button {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    padding: 0;
-
-    background: rgba(4, 18, 17, 0.72);
-    color: #e9fff5;
-    border: 1px solid rgba(110, 235, 185, 0.25);
-    border-radius: 50%;
-
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-/* Main play/pause button */
-.music-player #music-toggle {
-    width: 40px;
-    height: 40px;
-    border-color: rgba(116, 240, 190, 0.55);
-}
-
-/* Hover feedback */
-.music-player .music-controls button:hover {
-    background: rgba(21, 95, 76, 0.9);
-    border-color: rgba(139, 255, 210, 0.8);
-}
-
-/* Touch devices must retain accessible controls */
-@media (hover: none) {
-    .music-player .music-controls {
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-    }
-}
-
-/* Avoid unnecessary animation for reduced-motion users */
-@media (prefers-reduced-motion: reduce) {
-    .music-player .music-controls {
-        transition: none;
-    }
-}
 /* CERCO PIXEL TYPOGRAPHY V035 */
 
 /* Readable pixel-art font */
@@ -954,19 +628,6 @@ button {
     font-size: 15px;
 }
 
-/* Music title */
-.music-player .music-track {
-    font-family: var(--cerco-font);
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-}
-
-/* Preserve recognizable playback symbols */
-.music-controls button {
-    font-family: Arial, sans-serif;
-}
-
 /* CERCO PIXEL OPERATOR V036 */
 
 @font-face {
@@ -1014,16 +675,6 @@ button,
     font-family: var(--cerco-font);
     font-size: 20px;
     font-weight: 400;
-}
-
-.music-player .music-track {
-    font-family: var(--cerco-font);
-    font-size: 16px;
-    font-weight: 400;
-}
-
-.music-player .music-controls button {
-    font-family: Arial, sans-serif;
 }
 
 /* CERCO SIDEBAR FIT V038 */
@@ -1089,18 +740,7 @@ button,
     align-self: center;
 }
 
-/* Music area remains untouched and anchored */
-.music-player {
-    flex: 0 0 170px;
-    height: 170px;
-    min-height: 0;
-}
-
 @media (max-height: 500px) {
-    .music-player {
-        flex-basis: 135px;
-        height: 135px;
-    }
 
     .player-navigation {
         gap: 2px;
@@ -3059,16 +2699,12 @@ select {
 .pz-skins-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 210px)); }
 #cerco-skin-status { font-size: 12px; font-weight: normal; }
 .pz-skins-empty[hidden] { display: none; }
-.music-player .music-controls { opacity: 1; visibility: visible; transform: none; transition: none; gap: 6px; }
-.music-player { overflow: visible; }
-#music-visualizer-canvas { border-radius: inherit; }
 button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid #a7dcc1; outline-offset: 2px; }
 @media (max-width: 760px) {
     html, body { overflow: auto; height: auto; min-height: 100%; }
     .app { height: auto; min-height: 100dvh; grid-template-columns: minmax(0, 1fr); grid-template-rows: 48px minmax(540px, 75vh) auto 400px 32px; grid-template-areas: "header" "content" "right" "left" "footer"; }
     .player-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 12px; }
     .player-panel .player-navigation { grid-column: 1 / -1; }
-    .player-panel .music-player { grid-column: 1 / -1; height: 170px; min-height: 170px; width: 100%; }
     .player-panel .player-avatar { max-width: 100px; justify-self: center; }
     .player-panel .player-stats { grid-column: 1 / -1; }
     .sidebar-left { padding: 0; }

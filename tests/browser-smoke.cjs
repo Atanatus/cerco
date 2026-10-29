@@ -24,7 +24,15 @@ async function main() {
     const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.mp3': 'audio/mpeg' };
     fs.readFile(target, (error, data) => {
       if (error) { res.writeHead(404); res.end(); return; }
-      res.writeHead(200, { 'Content-Type': (types[path.extname(target)] || 'application/octet-stream') }); res.end(data);
+      const headers = { 'Content-Type': (types[path.extname(target)] || 'application/octet-stream'), 'Accept-Ranges': 'bytes' };
+      const range = /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || '');
+      if (range) {
+        const start=Number(range[1]), end=range[2]?Math.min(Number(range[2]),data.length-1):data.length-1;
+        if(start>end||start>=data.length){res.writeHead(416,{'Content-Range':`bytes */${data.length}`});res.end();return;}
+        res.writeHead(206,{...headers,'Content-Length':end-start+1,'Content-Range':`bytes ${start}-${end}/${data.length}`});
+        res.end(data.subarray(start,end+1)); return;
+      }
+      res.writeHead(200, { ...headers, 'Content-Length': data.length }); res.end(data);
     });
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -433,12 +441,62 @@ async function main() {
     assert.equal(await a.locator('#cerco-volume-slider').inputValue(), '24');
     assert.equal(await a.evaluate(() => localStorage.getItem('cerco.music.muted.v1')), 'true');
     results.push('Volume popup, mute, persisted volume, Escape and keyboard focus work.');
+    console.log('Browser stage: playlist decoding and real timeline');
+    const playlist = await a.evaluate(() => window.PROYECTOZ_TRACKS);
+    assert.deepEqual(playlist.map(t => Number(t.src.match(/Track(\d+)\.mp3/)[1])), [1,2,3,4,5,6,8,9]);
+    await a.evaluate(() => window.PROYECTOZ_MUSIC.pause());
+    await a.locator('#music-toggle').click();
+    const decoded = [];
+    for (const [i, track] of playlist.entries()) {
+      console.log('Browser decoding', track.src);
+      assert.equal(await a.locator('#music-track').innerText(), track.title);
+      await a.waitForFunction(() => {
+        const p=window.PROYECTOZ_MUSIC.getPlayback(); return p.duration>1 && p.currentTime>.05 && !p.paused;
+      }, null, { timeout: 15000 });
+      decoded.push({ title: track.title, ...await a.evaluate(() => window.PROYECTOZ_MUSIC.getPlayback()) });
+      if(i<playlist.length-1) await a.locator('#music-next').click();
+    }
+    await a.locator('#music-prev').click();
+    assert.equal(await a.locator('#music-track').innerText(), 'Highland Blue');
+    await a.locator('#music-next').click();
+    await a.waitForFunction(() => window.PROYECTOZ_MUSIC.getPlayback().duration>1);
+    await a.evaluate(() => window.PROYECTOZ_MUSIC.pause());
+    await a.waitForTimeout(100);
+    const pausedCanvas = await a.locator('#music-visualizer-canvas').evaluate(c => c.toDataURL());
+    const pausedAt = await a.evaluate(() => window.PROYECTOZ_MUSIC.getPlayback().currentTime);
+    await a.waitForTimeout(250);
+    assert.equal(await a.locator('#music-visualizer-canvas').evaluate(c => c.toDataURL()), pausedCanvas);
+    assert.equal(await a.evaluate(() => window.PROYECTOZ_MUSIC.getPlayback().currentTime), pausedAt);
+    const duration = await a.evaluate(() => window.PROYECTOZ_MUSIC.getPlayback().duration);
+    await a.locator('#music-seek').fill(String(Math.floor(duration/2)));
+    await a.waitForFunction(d => Math.abs(window.PROYECTOZ_MUSIC.getPlayback().currentTime - Math.floor(d/2))<1, duration);
+    await a.locator('#music-seek').focus(); await a.keyboard.press('ArrowRight');
+    assert.ok(await a.evaluate(d => window.PROYECTOZ_MUSIC.getPlayback().currentTime > Math.floor(d/2), duration));
+    await a.locator('#music-toggle').click();
+    await a.waitForTimeout(150);
+    assert.notEqual(await a.locator('#music-visualizer-canvas').evaluate(c => c.toDataURL()), pausedCanvas);
+    await a.locator('#music-seek').fill(String(Math.max(0,Math.floor((duration-.3)*10)/10)));
+    await a.waitForFunction(() => window.PROYECTOZ_MUSIC.getTrack().title==='A River of Stone' && window.PROYECTOZ_MUSIC.getState()==='playing');
+    fs.writeFileSync(path.join(shots,'audio-decoding.json'), JSON.stringify(decoded,null,2));
+    results.push('All eight real MP3s decode and play; Previous/Next, native ended continuation, real-time seek and visualizer Play/Pause work.');
     fs.mkdirSync('.local-recovery/beta081/screenshots', { recursive: true });
     await a.locator('#cerco-play-button').click();
     await a.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
-    for (const size of [{ width: 1366, height: 900 }, { width: 820, height: 700 }, { width: 390, height: 844 }]) {
+    for (const size of [{ width: 1366, height: 768 }, {width:1920,height:1080}, {width:1024,height:768},
+      {width:768,height:1024}, { width: 820, height: 700 }, { width: 390, height: 844 }]) {
       await a.setViewportSize(size);
       assert.equal(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Horizontal overflow at ' + size.width);
+      await a.locator('#music-track').evaluate(el => { el.textContent='Last Train to Jongno · Cypress and Silk'; });
+      const musicGeometry = await a.evaluate(() => {
+        const rect=s=>document.querySelector(s).getBoundingClientRect();
+        const title=rect('.music-heading'), controls=rect('.music-controls'), progress=rect('.music-progress'), player=rect('#music-player');
+        const buttons=['#music-prev','#music-toggle','#music-next','#cerco-volume-toggle'].map(rect);
+        return title.bottom<=controls.top && controls.bottom<=progress.top && progress.bottom<=player.bottom &&
+          buttons.every((r,i)=>r.left>=player.left&&r.right<=player.right&&Math.abs(r.top-buttons[0].top)<1&&(!i||r.left>=buttons[i-1].right)) &&
+          document.getElementById('music-track').scrollHeight<=document.getElementById('music-track').clientHeight;
+      });
+      assert.equal(musicGeometry,true,'Music title/controls/progress geometry at '+size.width);
+      await a.screenshot({path:path.join(shots,`layout-${size.width}x${size.height}.png`),fullPage:true});
       await a.screenshot({ path: `.local-recovery/beta081/screenshots/${size.width}.png`, fullPage: true });
     }
     results.push('Desktop/tablet/mobile layouts have no horizontal page overflow.');
@@ -496,6 +554,8 @@ async function main() {
           profile: { state: window.CERCO_GUEST_PROFILE?.state,
             guest: window.CERCO_GUEST_PROFILE?.getProfile() },
           session: window.CERCO_SESSION_STATUS?.(),
+          music: {state: window.PROYECTOZ_MUSIC?.getState(), track: window.PROYECTOZ_MUSIC?.getTrack()?.src,
+            playback: window.PROYECTOZ_MUSIC?.getPlayback?.()},
           game: document.getElementById('cerco-game-frame')?.contentWindow.CERCO_BRIDGE?.getSnapshot()
         })).catch(() => ({})));
       }

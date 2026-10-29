@@ -17,7 +17,10 @@
     type: document.getElementById('music-type'),
     previous: document.getElementById('music-prev'),
     next: document.getElementById('music-next'),
-    toggle: document.getElementById('music-toggle')
+    toggle: document.getElementById('music-toggle'),
+    seek: document.getElementById('music-seek'),
+    elapsed: document.getElementById('music-elapsed'),
+    duration: document.getElementById('music-duration')
   };
 
   if (Object.values(ui).some(element => !element)) {
@@ -27,6 +30,31 @@
 
   const audio = new Audio();
   audio.preload = 'auto';
+
+  function timestamp(seconds) {
+    if (!Number.isFinite(seconds) || seconds < 0) return '—:—';
+    return Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
+  }
+  function renderTimeline() {
+    const known = Number.isFinite(audio.duration) && audio.duration > 0;
+    const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    ui.seek.disabled = !known;
+    ui.seek.max = String(known ? audio.duration : 0);
+    ui.seek.value = String(known ? Math.min(current, audio.duration) : 0);
+    ui.elapsed.textContent = timestamp(current);
+    ui.duration.textContent = timestamp(audio.duration);
+    ui.seek.setAttribute('aria-valuetext', known ? timestamp(current) + ' of ' + timestamp(audio.duration) : 'Duration unavailable');
+  }
+  ui.seek.addEventListener('input', () => {
+    if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+    const target = Number(ui.seek.value);
+    if (!Number.isFinite(target)) return;
+    try { audio.currentTime = Math.max(0, Math.min(target, audio.duration)); } catch (_) { /* Media may have just changed. */ }
+    renderTimeline();
+  });
+  for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'emptied', 'seeked', 'ended']) {
+    audio.addEventListener(event, renderTimeline);
+  }
 
   /* CERCO VOLUME CONTROL V081 */
   const volumeStorageKey = 'cerco.music.volume.v1';
@@ -103,37 +131,6 @@
     volumeContainer.appendChild(volumeWrap);
     renderVolume();
 
-    const volumeStyle = document.createElement('style');
-    volumeStyle.textContent = `
-      #cerco-volume-control {
-        position: relative;
-      }
-      #cerco-volume-popover {
-        position: absolute; bottom: 43px; right: 0;
-        z-index: 6;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 5px 8px;
-        border: 1px solid rgba(116,220,181,.30);
-        border-radius: 6px;
-        background: rgba(4,15,13,.85);
-        color: #e0f7ef;
-        font: 11px Arial,sans-serif;
-      }
-      #cerco-volume-popover[hidden] { display: none; }
-      .music-player #cerco-volume-mute { width: auto; min-width: 52px; border-radius: 4px; padding: 4px; }
-      #cerco-volume-slider {
-        width: 82px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: #70e3ac;
-      }
-      @media (max-width: 600px) {
-        #cerco-volume-slider { width: 58px; }
-      }
-    `;
-    document.head.appendChild(volumeStyle);
   }
 
   let index = 0;
@@ -183,6 +180,7 @@
 
     audio.src = tracks[index].src;
     audio.load();
+    renderTimeline();
     render();
   }
 
@@ -373,7 +371,9 @@
     next: () => changeTrack(1),
     previous: () => changeTrack(-1),
     getState: () => state,
-    getTrack: () => tracks[index] || null
+    getTrack: () => tracks[index] || null,
+    getPlayback: () => Object.freeze({ currentTime: audio.currentTime,
+      duration: Number.isFinite(audio.duration) ? audio.duration : null, paused: audio.paused })
   });
 
   render();
