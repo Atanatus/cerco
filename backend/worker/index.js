@@ -15,7 +15,7 @@ const headers = {
   'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
   'X-Content-Type-Options': 'nosniff'
 };
-const gameVersions = ['0.8.0', '0.8.1'];
+const gameVersions = ['0.8.0', '0.8.1', '0.8.3'];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers });
@@ -225,6 +225,11 @@ export default {
           !gameVersions.includes(audit.gameVersion) ||
           (audit.gameVersion === '0.8.1' &&
             (audit.ruleset !== 'CERCO-0.7.0' || audit.schema !== 'cerco.audit.v1')) ||
+          (audit.gameVersion === '0.8.3' &&
+            (audit.ruleset !== 'CERCO-0.8.2' || audit.schema !== 'cerco.audit.v2' ||
+             audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
+             audit.cosmeticEconomy?.serverWalletCredited !== false ||
+             audit.final?.styleCoinsVerified !== false)) ||
           audit.seed !== body.seed ||
           !audit.final ||
           audit.final.score !== body.score ||
