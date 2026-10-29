@@ -8,6 +8,8 @@
   const form = document.getElementById('chat-form'), input = document.getElementById('chat-input');
   const list = document.getElementById('chat-messages'), status = document.getElementById('chat-status');
   const join = document.getElementById('chat-join');
+  const panel = document.querySelector('.chat-panel'), signal = document.getElementById('chat-signal');
+  const focusReset = document.getElementById('chat-focus-reset');
   if (!form || !input || !list || !status || !join) return;
   const send = form.querySelector('[type="submit"]');
   let guest = null, socket = null, connected = false, stopped = true;
@@ -15,14 +17,35 @@
   let serviceState = 'checking', statusRequest = null, statusTimer = null;
   let statusFailures = 0, lastStatusCheck = 0, lastReturnCheck = 0;
   const messages = new Map();
+  const messageNodes = new Map();
+  let focusedParticipant = null, focusTimer;
+  const empty = document.createElement('p'); empty.className = 'chat-empty';
   try { localStorage.removeItem('proyectoz.chat.v1'); } catch (_) {}
 
-  function controls() { input.disabled = !connected; send.disabled = !connected || !!pending; }
+  function signalState(next) {
+    if (!panel || !signal) return;
+    panel.dataset.connection = next;
+    const labels = { checking: 'CHECKING', available: 'READY', connecting: 'CONNECTING',
+      live: 'LIVE', paused: 'PAUSED', 'network-error': 'OFFLINE', reconnecting: 'RECONNECTING' };
+    signal.textContent = labels[next] || 'CHECKING';
+    signal.setAttribute('aria-label', 'Connection: ' + (labels[next] || 'checking').toLowerCase());
+  }
+  function syncSignal() {
+    // LIVE requires the authenticated server welcome, never just an HTTP status.
+    signalState(connected ? 'live' : !stopped ? (reconnects || !socket ? 'reconnecting' : 'connecting') : serviceState);
+  }
+  function controls() {
+    input.disabled = !connected; send.disabled = !connected || !!pending;
+    input.placeholder = connected ? 'Send a signal…' : 'Join to chat…';
+    const emoji = document.getElementById('chat-emoji-toggle'); if (emoji) emoji.disabled = !connected;
+    syncSignal();
+  }
   function clearPending() { pending = null; clearTimeout(ackTimer); controls(); }
   function setServiceState(next) {
     serviceState = next;
     join.dataset.availability = next;
     renderAvailability();
+    syncSignal();
   }
   function renderAvailability() {
     if (!stopped) return;
@@ -59,19 +82,42 @@
         !Number.isFinite(m.expiresAt) || m.expiresAt <= Date.now()) return;
     messages.set(m.id, m);
   }
+  function highlight(participant, name) {
+    clearTimeout(focusTimer);
+    focusedParticipant = focusedParticipant === participant ? null : participant;
+    if (focusReset) {
+      focusReset.hidden = !focusedParticipant;
+      focusReset.textContent = focusedParticipant ? 'Focus: ' + name + ' · clear ×' : 'Clear focus';
+    }
+    if (focusedParticipant) focusTimer = setTimeout(() => highlight(focusedParticipant, ''), 30000);
+    render();
+  }
+  focusReset?.addEventListener('click', () => highlight(focusedParticipant, ''));
+  panel?.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && focusedParticipant) highlight(focusedParticipant, '');
+  });
   function render() {
+    const nearEnd = list.scrollHeight - list.clientHeight - list.scrollTop < 60;
     for (const [id, m] of messages) if (m.expiresAt <= Date.now()) messages.delete(id);
     while (messages.size > 100) messages.delete(messages.keys().next().value);
-    const elements = [];
+    for (const [id, node] of messageNodes) if (!messages.has(id)) { node.remove(); messageNodes.delete(id); }
+    empty.textContent = connected ? 'Channel open. Start the conversation.' : 'Your public channel awaits. Join when you’re ready.';
+    if (!messages.size) { if (!empty.isConnected) list.append(empty); } else empty.remove();
     for (const m of messages.values()) {
-      const item = document.createElement('article');
-      item.className = 'chat-message' + (m.participantId === guest?.participantId ? ' chat-message-own' : '');
-      item.dataset.messageId = m.id;
+      let item = messageNodes.get(m.id);
+      if (!item) {
+      item = document.createElement('article');
+      item.className = 'chat-message'; item.dataset.messageId = m.id;
       const avatar = document.createElement('span'); avatar.className = 'chat-avatar';
       avatar.textContent = 'G' + m.displayName.slice(6, 7).toUpperCase(); avatar.setAttribute('aria-hidden', 'true');
       const content = document.createElement('div'); content.className = 'chat-message-content';
-      const name = document.createElement('strong'); name.textContent = m.displayName + ' · guest';
+      const name = document.createElement('button'); name.type = 'button'; name.className = 'chat-sender';
+      name.textContent = m.displayName;
+      name.setAttribute('aria-label', 'Highlight messages by ' + m.displayName);
+      name.addEventListener('click', () => highlight(m.participantId, m.displayName));
       const text = document.createElement('p'); text.textContent = m.text;
+      const meta = document.createElement('div'); meta.className = 'chat-message-meta';
+      const ownership = document.createElement('span'); ownership.className = 'chat-ownership';
       const time = document.createElement('time'); time.dateTime = new Date(m.createdAt).toISOString();
       time.textContent = new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const report = document.createElement('button'); report.type = 'button'; report.textContent = 'Report';
@@ -80,15 +126,26 @@
       report.addEventListener('click', () => {
         if (connected) socket.send(JSON.stringify({ type: 'report', messageId: m.id, reason: 'abuse' }));
       });
-      content.append(name, text, time, report); item.append(avatar, content); elements.push(item);
+      meta.append(ownership, time, report);
+      content.append(name, text, meta); item.append(avatar, content);
+      messageNodes.set(m.id, item); list.append(item);
+      }
+      const own = m.participantId === guest?.participantId;
+      item.classList.toggle('chat-message-own', own);
+      item.querySelector('.chat-ownership').textContent = own ? 'YOU ↗' : 'GUEST';
+      const focused = !!focusedParticipant && focusedParticipant === m.participantId;
+      item.dataset.focused = String(focused);
+      item.querySelector('.chat-sender').setAttribute('aria-pressed', String(focused));
+      item.querySelector('.chat-report').disabled = !connected;
     }
-    list.replaceChildren(...elements); list.scrollTop = list.scrollHeight;
+    if (nearEnd) list.scrollTop = list.scrollHeight;
   }
   function leave(label = 'Public chat disconnected. Join again when ready.') {
     stopped = true; connected = false;
     clearTimeout(reconnectTimer); clearTimeout(stableTimer); clearTimeout(ackTimer); clearTimeout(expiryTimer);
     if (socket) socket.close(1000, 'Leaving');
     socket = null; guest = null; clearPending(); messages.clear(); render();
+    if (focusedParticipant) highlight(focusedParticipant, '');
     status.textContent = label;
     renderAvailability();
   }
@@ -189,6 +246,7 @@
       serviceState = 'reconnecting';
       status.textContent = 'Chat connection lost. Reconnecting…';
       join.textContent = 'Reconnecting…'; join.disabled = true; join.dataset.availability = 'reconnecting';
+      syncSignal();
       clearTimeout(reconnectTimer);
       const delay = Math.min(1000 * 2 ** Math.min(reconnects - 1, 5), 30000);
       reconnectTimer = setTimeout(connect, delay);
@@ -197,6 +255,7 @@
   }
   async function joinChat() {
     join.disabled = true; status.textContent = 'Joining public chat…';
+    signalState('connecting');
     try {
       const profileApi = window.CERCO_GUEST_PROFILE;
       const profile = await profileApi?.ready;
@@ -258,5 +317,5 @@
   window.addEventListener('pageshow', refreshOnReturn);
   document.addEventListener('visibilitychange', refreshOnReturn);
   window.addEventListener('pagehide', () => leave('Guest session ended. Join again when ready.'));
-  setInterval(render, 60000); controls(); void checkAvailability({ force: true });
+  setInterval(render, 60000); controls(); render(); void checkAvailability({ force: true });
 })();

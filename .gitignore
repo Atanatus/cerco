@@ -4,3 +4,6 @@
 /.local-recovery/
 /node_modules/
 /.wrangler/
+
+# Local Wrangler logs accidentally created under a Windows reserved name.
+/NUL/

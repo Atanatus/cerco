@@ -29,6 +29,7 @@ async function main() {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
+  const shots = path.resolve('.local-recovery/op45b/screenshots'); fs.mkdirSync(shots, { recursive: true });
   let browser;
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
@@ -145,10 +146,23 @@ async function main() {
     assert.equal(await b.locator('.chat-message img').count(), 0);
     assert.equal(await a.locator('.chat-message-own').count(), 1);
     assert.equal(await b.locator('.chat-message-own').count(), 0);
-    assert.match(await b.locator('.chat-message-content strong').innerText(), /^Guest .*guest$/);
+    assert.match(await b.locator('.chat-sender').innerText(), /^Guest [a-f0-9]{8}$/);
+    assert.equal(await b.locator('.chat-ownership').innerText(), 'GUEST');
+    assert.equal(await b.locator('#chat-signal').innerText(), 'LIVE');
     await b.locator('#chat-input').fill('Two browsers are connected.'); await b.locator('#chat-input').press('Enter');
     await a.locator('.chat-message-content p').filter({ hasText: 'Two browsers' }).waitFor();
     results.push('Two independent Chromium contexts exchange messages; XSS stays text; identity/avatars/time/own messages correct.');
+    await a.locator('.chat-sender').first().focus();
+    await a.keyboard.press('Enter');
+    assert.equal(await a.locator('.chat-message[data-focused="true"]').count(), 1);
+    assert.equal(await a.locator('.chat-message').count(), 2, 'Highlight never hides other guests');
+    await a.screenshot({ path: path.join(shots, 'signal-focused-desktop.png'), fullPage: true });
+    await a.keyboard.press('Escape');
+    assert.equal(await a.locator('.chat-message[data-focused="true"]').count(), 0);
+    assert.equal(await a.locator('#chat-focus-reset').isVisible(), false);
+    await a.locator('#chat-emoji-toggle').click();
+    await a.screenshot({ path: path.join(shots, 'signal-emoji-desktop.png'), fullPage: true });
+    await a.keyboard.press('Escape');
     console.log('Browser stage: reconnect');
     for (const c of [...activeSockets]) { c.ws.close(1012, 'Local reconnect test'); }
     await a.waitForFunction(() => document.querySelector('#chat-status').textContent.includes('Reconnecting'));
@@ -164,7 +178,8 @@ async function main() {
       });
       assert.equal(response.status, 200); return response.json();
     };
-    await b.locator('.chat-report').first().click();
+    await b.locator('.chat-report').first().focus();
+    await b.keyboard.press('Enter');
     await b.waitForFunction(() => document.getElementById('chat-status').textContent.includes('reported'));
     const moderation = await moderate('GET'); assert.equal(moderation.reports.length, 1);
     const reported = moderation.messages.find(m => m.id === moderation.reports[0].messageId);
