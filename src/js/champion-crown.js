@@ -12,21 +12,18 @@
     }
 
     function updatePodiumCrowns() {
-        panel.querySelectorAll('.pz-lb-podium strong').forEach(function (title) {
-            if (title.textContent.trim() !== 'TOP #1') return;
-            if (title.querySelector('.pz-top-crown')) return;
+        panel.querySelectorAll('.pz-lb-podium strong').forEach(function (title, index) {
+            if (index !== 0) return;
+            let crown = title.querySelector('.pz-top-crown');
+            if (!crown) {
 
-            const crown = document.createElement('span');
+            crown = document.createElement('span');
             crown.className = 'pz-top-crown';
             crown.textContent = '\uD83D\uDC51';
             crown.setAttribute('aria-hidden', 'true');
-            crown.style.display = 'inline-block';
-            crown.style.marginRight = '6px';
-            crown.style.verticalAlign = 'middle';
-            crown.style.fontSize = '1.15em';
-            crown.style.lineHeight = '1';
-
             title.prepend(crown);
+            }
+            crown.hidden = panel.dataset.lbMode !== 'universal' || panel.dataset.rankingState !== 'ready';
         });
     }
 
@@ -38,8 +35,8 @@
             crown.remove();
         });
 
-        const universal =
-            heading.textContent.trim() === 'UNIVERSAL LEADERBOARD';
+        const universal = panel.dataset.lbMode === 'universal' &&
+            ['ready', 'empty'].includes(panel.dataset.rankingState);
 
         firstRow.classList.toggle('pz-golden-rank', universal);
     }

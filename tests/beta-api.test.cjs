@@ -35,6 +35,8 @@ test('beta API: 0.8.0, 0.8.1 y 0.8.3 conservan contratos y no verifican resultad
     cosmeticEconomy: { trust: 'client_reported_unverified', serverWalletCredited: false }, };
   assert.equal((await post(mf, '/runs/pending', bad)).status, 400, 'reject mismatched 0.8.3 contract');
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM results').first()).n, 0);
+  const leaderboard = await mf.dispatchFetch('https://local.test/leaderboards?kind=guest&metric=score');
+  assert.deepEqual((await leaderboard.json()).entries, [], 'pending reports cannot occupy the universal throne');
 });
 test('inventario real: gratis por regla del servidor; no concede Void por datos del cliente', async t => {
   const mf = createRuntime({ modules: true, scriptPath: 'backend/worker/index.js', compatibilityDate: '2026-10-26' });

@@ -2239,6 +2239,8 @@ select {
 /* PROYECTOZ GOLDEN RANK V075 */
 
 /* Only the first row of the Universal leaderboard */
+.pz-lb-podium .pz-top-crown { display: inline-block; margin-right: 6px; vertical-align: middle; overflow: visible; color: #e7b64d; font: 18px/1.2 'Segoe UI Emoji','Apple Color Emoji',sans-serif; }
+.pz-lb-podium .pz-top-crown[hidden] { display: none; }
 #pz-lb-column-a > li.pz-golden-rank {
     color: #e7b64d !important;
     animation: pz-golden-glow 2.8s ease-in-out infinite;

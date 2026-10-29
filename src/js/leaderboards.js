@@ -25,31 +25,45 @@
         podium.some(x => !x)) return;
 
     let mode = null;
+    let generation = 0, request = null;
+
+    function cancelRequest() {
+        generation++;
+        if (request) { clearTimeout(request.timer); request.controller.abort(); request = null; }
+    }
 
     function clearPodium() {
         podium.forEach(el => el.textContent = '—');
     }
 
-    function populateEmptyRanks() {
+    function renderRanks(entries, state) {
+        panel.dataset.lbMode = mode || '';
+        panel.dataset.rankingState = state;
         columnA.replaceChildren();
         columnB.replaceChildren();
 
         for (let rank = 1; rank <= 30; rank++) {
             const li = document.createElement('li');
             const value = document.createElement('span');
-            /* PROYECTOZ CLAIM THE THRONE V076 */
-            value.textContent = (rank === 1 && mode === 'universal')
-                ? 'CLAIM THE THRONE'
-                : '—';
+            const entry = entries[rank - 1];
+            value.textContent = entry
+                ? entry.display_name + ' · ' + entry.best_value.toLocaleString('en-US')
+                : rank === 1 && mode === 'universal'
+                    ? state === 'empty' ? 'CLAIM THE THRONE' : state === 'loading' ? 'CHECKING…' : 'UNKNOWN'
+                    : '—';
 
             li.appendChild(value);
 
             (rank <= 15 ? columnA : columnB).appendChild(li);
         }
+        podium.forEach((el, i) => { el.textContent = entries[i]?.display_name || '—'; });
     }
 
     function showMenu() {
+        cancelRequest();
         mode = null;
+        panel.dataset.lbMode = '';
+        panel.dataset.rankingState = 'idle';
         heading.textContent = 'LEADERBOARDS';
         menu.hidden = false;
         results.hidden = true;
@@ -60,6 +74,7 @@
     function showMode(nextMode) {
         if (nextMode !== 'universal' && nextMode !== 'personal') return;
 
+        cancelRequest();
         mode = nextMode;
         menu.hidden = true;
         results.hidden = false;
@@ -79,60 +94,49 @@
             ? 'ONLINE RANKING PENDING'
             : 'PERSONAL RECORDS PENDING';
 
-        populateEmptyRanks();
-        clearPodium();
+        renderRanks([], universal ? 'loading' : 'personal');
 
         /* CERCO ONLINE LEADERBOARD V1 */
         if (universal) {
             status.textContent = 'CONNECTING TO CERCO...';
-            const requestedMode = mode;
+            const requestedGeneration = generation;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 8000);
+            request = { controller, timer };
 
-            fetch('https://cerco-api.atanatus.workers.dev/leaderboards?kind=guest&metric=score')
+            fetch('https://cerco-api.atanatus.workers.dev/leaderboards?kind=guest&metric=score',
+                { cache: 'no-store', signal: controller.signal })
                 .then(response => {
                     if (!response.ok) throw new Error('API unavailable');
                     return response.json();
                 })
                 .then(data => {
-                    if (mode !== requestedMode || panel.hidden) return;
+                    if (generation !== requestedGeneration || mode !== 'universal' || panel.hidden) return;
 
                     if (data.leaderboard !== 'guest' ||
-                        !Array.isArray(data.entries)) {
+                        data.metric !== 'score' || !Array.isArray(data.entries) || data.entries.length > 50 ||
+                        !data.entries.every(entry => entry && typeof entry.display_name === 'string' &&
+                            entry.display_name.trim().length > 0 && entry.display_name.length <= 200 &&
+                            typeof entry.best_value === 'number' && Number.isFinite(entry.best_value) && entry.best_value >= 0)) {
                         throw new Error('Invalid response');
                     }
 
                     const entries = data.entries.slice(0, 30);
-                    columnA.replaceChildren();
-                    columnB.replaceChildren();
-
-                    for (let rank = 1; rank <= 30; rank++) {
-                        const li = document.createElement('li');
-                        const value = document.createElement('span');
-                        const entry = entries[rank - 1];
-
-                        value.textContent = entry
-                            ? String(entry.display_name) + ' · ' +
-                              Number(entry.best_value).toLocaleString('en-US')
-                            : '—';
-
-                        li.appendChild(value);
-                        (rank <= 15 ? columnA : columnB).appendChild(li);
-                    }
-
-                    podium.forEach((el, i) => {
-                        const entry = entries[i];
-                        el.textContent = entry
-                            ? String(entry.display_name)
-                            : '—';
-                    });
+                    renderRanks(entries, entries.length ? 'ready' : 'empty');
 
                     status.textContent = entries.length
                         ? 'CERCO · GUEST RANKING'
                         : 'NO VERIFIED RECORDS YET';
                 })
                 .catch(() => {
-                    if (mode === requestedMode && !panel.hidden) {
-                        status.textContent = 'RANKING TEMPORARILY UNAVAILABLE';
+                    if (generation === requestedGeneration && mode === 'universal' && !panel.hidden) {
+                        renderRanks([], 'unavailable');
+                        status.textContent = 'RANKING UNAVAILABLE · RESULTS UNKNOWN';
                     }
+                })
+                .finally(() => {
+                    clearTimeout(timer);
+                    if (generation === requestedGeneration) request = null;
                 });
         }
     }
