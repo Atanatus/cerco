@@ -264,6 +264,8 @@ async function main() {
     const frame = a.frames().find(f => f.url().includes('v083_mobile'));
     assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.version), '0.8.3');
     assert.equal(await frame.evaluate(() => window.CERCO_BRIDGE.getCapabilities().ruleset), 'CERCO-0.8.2');
+    assert.equal(await frame.locator('#touchControls').evaluate(el => el.hidden), true,
+      'touch controls stay hidden in a desktop context');
     const snapshot = await frame.evaluate(() => window.CERCO_BRIDGE.getSnapshot());
     const preview = await a.evaluate(async () => {
       const adapter = new window.CercoSkinsAdapter(document.getElementById('cerco-game-frame'));
@@ -374,8 +376,15 @@ async function main() {
     assert.equal(await mobileFrame.locator('#touchFire').evaluate(el => el.classList.contains('isAiming')), true);
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[
-      {id:3,x:touchPoints.sprint.x,y:touchPoints.sprint.y,radiusX:4,radiusY:4,force:1}]});
+      {id:3,x:touchPoints.joy.x,y:touchPoints.joy.y,radiusX:4,radiusY:4,force:1},
+      {id:4,x:touchPoints.sprint.x,y:touchPoints.sprint.y,radiusX:4,radiusY:4,force:1}]});
     assert.equal(await mobileFrame.locator('#touchSprint').evaluate(el => el.classList.contains('isHeld')), true);
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[
+      {id:3,x:touchPoints.joy.x+20,y:touchPoints.joy.y,radiusX:4,radiusY:4,force:1},
+      {id:4,x:touchPoints.sprint.x,y:touchPoints.sprint.y,radiusX:4,radiusY:4,force:1}]});
+    await mobile.waitForTimeout(500);
+    const stamina = await mobileFrame.locator('#staminaText').innerText();
+    assert.ok(Number(stamina.split('/')[0].trim()) < 100, 'held SPRINT consumes stamina');
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     await cdp.detach();
     await mobile.close();
