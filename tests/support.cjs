@@ -11,7 +11,7 @@ exports.createRuntime = options => {
   if (options.scriptPath === 'backend/worker/index.js') {
     const bindings = options.bindings || {};
     options = { ...options, bindings: { GUEST_IDENTITY_REQUIRED: 'false', ...bindings },
-      modules: ['index.js', 'chat.js', 'guest.js', 'http.js'].map(name => ({
+      modules: ['index.js', 'chat.js', 'guest.js', 'http.js', 'economy.js', 'cosmetic-validation.js'].map(name => ({
         type: 'ESModule', path: path.resolve('backend/worker', name)
       })) };
     delete options.scriptPath;

@@ -2,6 +2,7 @@
 import { routeChat } from './chat.js';
 import { authenticateGuest, routeGuest } from './guest.js';
 import { readLimitedText } from './http.js';
+import {routeEconomy,reconcileEconomy} from './economy.js';
 export { PublicChat } from './chat.js';
 async function tokenHash(token) {
   const bytes = new TextEncoder().encode(token);
@@ -115,6 +116,7 @@ export default {
       });
     }
     if (url.pathname === '/guest/profile') return routeGuest(request, env);
+    if (url.pathname.startsWith('/economy/')) return routeEconomy(request,env);
     if (url.pathname.startsWith('/chat/')) {
       let guest = null;
       if (url.pathname === '/chat/session' && request.method === 'POST') {
@@ -290,6 +292,7 @@ export default {
 
         // D1 may include the lifecycle trigger's UPDATE in changes.
         if (result.meta?.changes > 0) {
+          if (audit.gameVersion === '0.9.0') await reconcileEconomy(env.DB,body.match_id,audit);
           return json({
             accepted: true,
             status: 'pending',
@@ -307,6 +310,7 @@ export default {
           if (['run_id', 'guest_id', 'score', 'kills', 'room', 'seed',
                'active_seconds'].every(key => existing[key] === body[key]) &&
               canonicalJson(JSON.parse(existing.audit_json)) === canonicalJson(audit)) {
+            if (audit.gameVersion === '0.9.0') await reconcileEconomy(env.DB,body.match_id,audit);
             return json({ accepted: true, status: 'pending', verified: false });
           }
           return json({
@@ -455,6 +459,9 @@ export default {
       }
 
       const matchId = crypto.randomUUID();
+      const economic = body.game_version === '0.9.0' && body.client_run_id !== undefined;
+      if (economic && (!guest || typeof body.client_run_id !== 'string' || body.client_run_id.length < 1 ||
+          body.client_run_id.length > 150 || body.ruleset !== 'CERCO-0.9.0')) return json({error:'invalid_economic_session'},400);
       const randomBytes = crypto.getRandomValues(new Uint8Array(32));
       const sessionToken = Array.from(randomBytes,
         byte => byte.toString(16).padStart(2, '0')).join('');
@@ -470,7 +477,9 @@ export default {
           env.DB.prepare(
             `INSERT INTO match_session_tokens (match_id, token_hash)
              VALUES (?, ?)`
-          ).bind(matchId, hashedToken)
+          ).bind(matchId, hashedToken),
+          ...(economic ? [env.DB.prepare(`INSERT INTO cosmetic_sessions(match_id,guest_id,run_id,ruleset)
+            VALUES(?,?,?,?)`).bind(matchId,guest.guest_id,body.client_run_id,body.ruleset)] : [])
         ]);
       } catch (_) {
         return json({ error: 'database_unavailable' }, 503);
