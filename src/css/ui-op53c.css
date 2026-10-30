@@ -1,0 +1,111 @@
+/* CERCO OP53C — Default picture and paid preview only. */
+
+.player-panel .player-avatar {
+  background-image: url("../../assets/profile-pictures/ProfilePic1.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* The placeholder text is superseded by the actual default image. */
+.player-panel .player-avatar > span {
+  visibility: hidden;
+}
+
+/* Server-confirmed picture remains above the fallback. */
+.player-panel .player-avatar img[data-equipped-picture] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.player-panel .player-avatar .pz-photo-change {
+  z-index: 2;
+}
+
+/* Default picture remains visible in the existing selection modal. */
+.pz-avatar-gallery .cerco-picture-default {
+  display: flex;
+  flex: 0 0 124px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid #637d80;
+  border-radius: 5px;
+  background: #15242c;
+  color: #e2f2ef;
+  text-align: center;
+}
+
+.pz-avatar-gallery .cerco-picture-default img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.pz-avatar-gallery .cerco-picture-default figcaption {
+  font: 400 12px/1.2 var(--cerco-font);
+  white-space: nowrap;
+}
+
+/* A default picture exists even when no paid item is owned. */
+.pz-avatar-gallery .pz-avatar-empty {
+  display: none !important;
+}
+
+/* Paid picture: presentation only, no purchase interaction. */
+#pz-shop-avatars .cerco-picture-preview {
+  display: flex;
+  flex: 0 0 clamp(180px, 18vw, 238px);
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #53676c;
+  border-radius: 5px;
+  background: #17252c;
+  color: #e6f3ee;
+  text-align: center;
+}
+
+#pz-shop-avatars .cerco-picture-preview img {
+  display: block;
+  width: min(100%, 160px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+#pz-shop-avatars .cerco-picture-preview h4 {
+  margin: 3px 0 0;
+  font: 400 15px/1.25 var(--cerco-font);
+}
+
+#pz-shop-avatars .cerco-picture-preview p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#pz-shop-avatars .cerco-picture-preview .cerco-picture-note {
+  color: #a9bec2;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  #pz-shop-avatars .cerco-picture-preview {
+    flex-basis: min(72vw, 238px);
+  }
+}

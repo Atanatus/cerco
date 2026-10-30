@@ -48,6 +48,17 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
  assert.match(await voidCard.innerText(),/3,000 ✦/);
  assert.match(await page.locator('#cosmetic-picture-price').innerText(),/1,250 ✦ · COMING SOON/);
  assert.equal(await page.locator('#pz-shop-avatars button').count(),0);
+ assert.equal(await page.locator('[data-profile-picture-preview="ProfilePic2"]').count(),1);
+ assert.equal(
+   await page.locator('[data-profile-picture-preview="ProfilePic2"] img').getAttribute('src'),
+   './assets/profile-pictures/ProfilePic2.png'
+ );
+ assert.equal(
+   await page.locator('.player-avatar').evaluate(
+     el => getComputedStyle(el).backgroundImage.includes('ProfilePic1.png')
+   ),
+   true
+ );
  await shot('economy-shop-zero');
  assert.equal((await call('/shop/purchase',{productId:'cerco.void_circuit',operationKey:crypto.randomUUID()})).status,409);
  assert.equal((await call('/skins/equip',{skinId:'cerco.void_circuit'})).status,403);
@@ -147,7 +158,11 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
   await page.locator('#pz-shop-back').click();await page.locator('[data-panel="settings"]').click();await ready();
   await shot(`economy-skins-${width}x${height}`);await page.locator('#pz-skins-back').click();
   await openWallet();await shot(`economy-profile-${width}x${height}`);await closeWallet();
-  await page.locator('#pz-photo-change').click();assert.equal(await page.locator('#pz-avatar-gallery img').count(),0);
+  await page.locator('#pz-photo-change').click();assert.equal(await page.locator('#pz-avatar-gallery img').count(),1);
+  assert.equal(
+    await page.locator('#pz-avatar-gallery .cerco-picture-default img').getAttribute('src'),
+    './assets/profile-pictures/ProfilePic1.png'
+  );
   await page.locator('#pz-avatar-modal-close').focus();await page.keyboard.press('Escape');
   assert.equal(await page.locator('#pz-avatar-modal').evaluate(e=>e.open),false);
  }
