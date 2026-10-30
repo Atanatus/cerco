@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="./src/css/main.css">
   <link rel="stylesheet" href="./src/css/signal.css">
   <link rel="stylesheet" href="./src/css/music-player.css">
+  <link rel="stylesheet" href="./src/css/cosmetics.css">
   <script src="./src/js/guest-profile.js" defer></script>
+  <script src="./src/js/economy-client.js" defer></script>
   <script src="./src/js/main.js" defer></script>
 </head>
 <body>
@@ -133,9 +135,10 @@
     </header>
 
     <div class="pz-shop-content">
+        <p id="cosmetic-shop-status" role="status">Loading cosmetics…</p>
         <section class="pz-shop-category" aria-label="Skins">
             <div class="pz-shop-category-heading">
-                <h3><span>SKINS</span></h3>
+                <h3><span>GAME SKINS</span></h3>
             </div>
             <div class="pz-shop-gallery" id="pz-shop-skins" tabindex="0" aria-label="Skins gallery">
                 <div class="pz-shop-placeholder">
@@ -147,6 +150,7 @@
         <section class="pz-shop-category" aria-label="Profile pictures">
             <div class="pz-shop-category-heading">
                 <h3><span>PROFILE PICTURES</span></h3>
+                <p id="cosmetic-picture-price"></p>
             </div>
             <div class="pz-shop-gallery" id="pz-shop-avatars" tabindex="0" aria-label="Profile pictures gallery">
                 <div class="pz-shop-placeholder">
@@ -222,6 +226,12 @@
     <button type="button" data-panel="shop">SHOP</button>
     <button type="button" data-panel="settings">SKINS</button>
   </nav>
+  <section class="cosmetic-wallet" aria-label="Style Coins wallet">
+    <h3>STYLE COINS <span aria-hidden="true">✦</span></h3>
+    <p id="cosmetic-wallet" role="status">Loading balance…</p>
+    <p id="cosmetic-receipt-status" role="status">Rewards require verification before spending.</p>
+    <button type="button" id="cosmetic-refresh">REFRESH BALANCE</button>
+  </section>
   <section class="music-player" id="music-player" aria-label="Music player">
     <canvas id="music-visualizer-canvas" aria-hidden="true"></canvas>
     <div class="music-heading">
@@ -256,8 +266,8 @@
     <button type="button" id="cookies-close" aria-label="Close">X</button>
   </div>
   <p>CERCO 0.9.0 is a public beta. Reports from your browser remain unverified and do not enter official rankings.</p>
-  <p>This site stores music preferences and local game records. Your guest recovery credential is kept in IndexedDB on this browser until its site data is removed; CERCO assigns your stable guest ID and name on its server and stores only a hash of the recovery credential. Removing site data loses access to that guest profile and a later visit creates another one. Pending reports and expedition session credentials may remain in local storage for up to six hours to recover delivery, with a limit of eight entries. They are removed after confirmation or discard; expired entries are cleaned when the site next runs.</p>
-  <p>The game API stores guest profile metadata, session metadata and unverified reports. Public chat is optional: messages and reports are retained up to 24 hours with bounded capacity. Short-lived chat credentials remain in memory for up to two hours. A guest profile is not a registered account and does not prove ownership of paid skins. Cloudflare processes network requests; hashed network identifiers support antispam and temporary blocks.</p>
+  <p>This site stores music preferences and local game records. Your guest recovery credential is kept in IndexedDB on this browser until its site data is removed; CERCO assigns your stable guest ID and name on its server and stores only a hash of the recovery credential. Removing site data loses access to that guest profile and a later visit creates another one. Pending reports and purchase retry keys may remain in local storage for up to six hours, with a limit of eight entries each. Guest expedition tickets are kept separately in IndexedDB. Retry data is removed after confirmation or expiry; cleanup runs when the site is open.</p>
+  <p>The game API stores guest profile metadata, sessions, unverified reports, cosmetic balances, purchases, inventory and equipment. Style Coins awaiting verification cannot be spent. Cosmetic ownership is checked by the server using your Guest credential; a guest profile is not a registered account. Public chat is optional: messages and reports are retained up to 24 hours with bounded capacity. Short-lived chat credentials remain in memory for up to two hours. Cloudflare processes network requests; hashed network identifiers support antispam and temporary blocks.</p>
   <p>Do not share personal or sensitive information in chat. Use the Report control for abusive content. No advertising or analytics cookies are introduced by this beta.</p>
   <button type="button" id="cookies-done">Close</button>
 </dialog>
@@ -335,7 +345,7 @@
 <!-- PROYECTOZ PROFILE PHOTO V059 -->
 <script src="./src/js/profile-photo.js"></script>
 <script src="./src/js/cerco-skins-adapter.js"></script>
-<script src="./src/js/skins.js"></script>
+<script src="./src/js/skins.js" defer></script>
 <script src="./src/js/leaderboard-info.js"></script>
 <!-- PROYECTOZ FLAMING CROWN V069 -->
 <script src="./src/js/champion-crown.js"></script>

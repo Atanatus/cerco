@@ -37,7 +37,9 @@ async function main() {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const shots = path.resolve('.local-recovery/op46/screenshots'); fs.mkdirSync(shots, { recursive: true });
+  const artifactDir = path.resolve('.local-recovery/op47/browser-' + Date.now());
+  const shots = path.join(artifactDir,'screenshots'); fs.mkdirSync(shots, { recursive: true });
+  console.log('Browser artifacts:', artifactDir);
   let browser;
   const errors = []; const results = []; const activeSockets = new Set();
   let loseNextReport = false;
@@ -112,6 +114,12 @@ async function main() {
       console.log('Browser navigating local page');
       await page.goto(base); console.log('Browser local page loaded'); return page;
     }
+    if (process.argv.includes('--economy-only')) {
+      await require('./browser-economy.cjs')({pageFor,db,mf,base,shots,results});
+      assert.deepEqual(errors, []);
+      fs.writeFileSync(path.join(artifactDir,'browser-results.json'), JSON.stringify({passed:results,pageErrors:errors},null,2));
+      results.forEach(result=>console.log('PASS '+result)); return;
+    }
     console.log('Browser stage: initial load');
     const a = await pageFor('192.0.2.101'); const b = await pageFor('192.0.2.102');
     await Promise.all([a.waitForFunction(() => !document.querySelector('#chat-join').disabled),
@@ -137,7 +145,7 @@ async function main() {
     await a.reload();
     await a.waitForFunction(id => window.CERCO_GUEST_PROFILE.getProfile()?.guestId === id, guestA.guestId);
     assert.equal(await a.locator('#player-display-name').innerText(), guestA.displayName);
-    await require('./shop-geometry.cjs')(a);
+    await require('./shop-geometry.cjs')(a, shots);
     results.push('Shop geometry: six viewports, full cards before next heading, scrolling and unobstructed buttons.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
@@ -279,7 +287,7 @@ async function main() {
     await a.locator('[data-panel="shop"]').click();
     await a.locator('#pz-shop-skins .cerco-skin-card').first().waitFor();
     assert.equal(await a.locator('#pz-shop-skins .cerco-skin-card').count(), 2);
-    assert.equal(await a.getByRole('button', { name: 'Purchase coming soon', exact: true }).isDisabled(), true);
+    assert.equal(await a.getByRole('button', { name: 'INSUFFICIENT FUNDS', exact: true }).isDisabled(), true);
     assert.equal(await a.locator('#pz-shop-skins img').evaluateAll(images => images.every(img => img.complete && img.naturalWidth > 0)), true);
     await a.locator('#pz-shop-back').click();
     if (await a.locator('#cerco-play-button').isVisible()) await a.locator('#cerco-play-button').click();
@@ -318,6 +326,7 @@ async function main() {
     await a.waitForFunction(() => document.getElementById('cerco-skin-status').textContent.includes('Original equipped'));
     await a.locator('#pz-skins-back').click();
     results.push('Official skin cards/previews, free inventory, authorized default equip and cosmetic stat invariance correct.');
+    await require('./browser-economy.cjs')({pageFor,db,mf,base,shots,results});
     console.log('Browser stage: game sessions');
 
     // Start via the shipped game's actual menu, then test terminal protocol recovery.
@@ -339,6 +348,9 @@ async function main() {
     console.log('Browser terminal message emitted');
     await a.waitForFunction(() => Object.keys(localStorage).some(k => k.startsWith('cerco_terminal_v1:')) &&
       !window.CERCO_SESSION_STATUS().report_stored);
+    assert.equal(await a.evaluate(() => Object.keys(localStorage).filter(k=>k.startsWith('cerco_terminal_v1:')).every(k=>{
+      const record=JSON.parse(localStorage.getItem(k));return record.version===2 && !('sessionToken' in record);
+    })),true,'Current Guest outbox never stores match tickets in localStorage');
     // Persistence precedes network delivery: wait for the committed response to
     // be dropped before reading the D1 snapshot or reloading the browser.
     let reportWait;
@@ -585,7 +597,6 @@ async function main() {
     await a.locator('#pz-lb-back').click();await a.locator('#pz-lb-back').click();
     await a.unroute('**/leaderboards?*');
     results.push('Universal throne distinguishes loading, confirmed empty, champion, invalid/HTTP/timeout failures and PERSONAL; only a real API entry gets a crown.');
-    fs.mkdirSync('.local-recovery/beta081/screenshots', { recursive: true });
     await a.locator('#cerco-play-button').click();
     await a.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
     for (const size of [{ width: 1366, height: 768 }, {width:1920,height:1080}, {width:1024,height:768},
@@ -603,7 +614,6 @@ async function main() {
       });
       assert.equal(musicGeometry,true,'Music title/controls/progress geometry at '+size.width);
       await a.screenshot({path:path.join(shots,`layout-${size.width}x${size.height}.png`),fullPage:true});
-      await a.screenshot({ path: `.local-recovery/beta081/screenshots/${size.width}.png`, fullPage: true });
     }
     results.push('Desktop/tablet/mobile layouts have no horizontal page overflow.');
     assert.deepEqual(errors, []);
@@ -638,18 +648,35 @@ async function main() {
       await persistentPage.goto(base);
       await persistentPage.waitForFunction(() => window.CERCO_GUEST_PROFILE?.getProfile());
       const persistedIdentity = await persistentPage.evaluate(() => window.CERCO_GUEST_PROFILE.getProfile());
+      const credential = await persistentPage.evaluate(async()=>({guest_id:window.CERCO_GUEST_PROFILE.getProfile().guestId,
+        access_token:await window.CERCO_GUEST_PROFILE.getAccessToken()}));
+      const fundingApi={db,start:async g=>{
+        const runId=crypto.randomUUID(),response=await mf.dispatchFetch('https://local.test/matches/start',{method:'POST',
+          headers:{Origin:origin,'Content-Type':'application/json',Authorization:'Bearer '+g.access_token},
+          body:JSON.stringify({game_version:'0.9.0',mode:'expedition',client_run_id:runId,ruleset:'CERCO-0.9.0'})});
+        return {...await response.json(),runId};
+      }};
+      await require('./economy-support.cjs').fund(fundingApi,credential,3000);
+      await persistentPage.evaluate(async()=>{
+        await window.CERCO_COSMETICS.refresh();await window.CERCO_COSMETICS.purchase('cerco.void_circuit');
+        await window.CERCO_COSMETICS.equip('cerco.void_circuit');
+      });
       await persistent.close(); persistent = null;
       persistent = await openPersistent();
       persistentPage = persistent.pages()[0] || await persistent.newPage();
       await persistentPage.goto(base);
       await persistentPage.waitForFunction(id => window.CERCO_GUEST_PROFILE?.getProfile()?.guestId === id, persistedIdentity.guestId);
       assert.equal(await persistentPage.locator('#player-display-name').innerText(), persistedIdentity.displayName);
-      results.push('One server guest profile survives closing and reopening Chromium; independent profiles remain distinct.');
+      await persistentPage.waitForFunction(()=>window.CERCO_COSMETICS.getState()?.inventory.equippedSkinId==='cerco.void_circuit');
+      await persistentPage.locator('#cerco-play-button').click();
+      await persistentPage.waitForFunction(()=>document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE?.getSkinState().skinId==='cerco.void_circuit');
+      await persistentPage.screenshot({path:path.join(shots,'economy-browser-reopened.png')});
+      results.push('Guest identity, purchased inventory and equipped Void Circuit survive closing and reopening Chromium; independent profiles remain distinct.');
     } finally {
       if (persistent) { await persistent.close(); persistent = null; }
       fs.rmSync(persistentDir, { recursive: true, force: true });
     }
-    fs.writeFileSync('.local-recovery/beta081/browser-results.json', JSON.stringify({ passed: results, pageErrors: errors }, null, 2));
+    fs.writeFileSync(path.join(artifactDir,'browser-results.json'), JSON.stringify({ passed: results, pageErrors: errors }, null, 2));
     results.forEach(result => console.log('PASS ' + result));
   } catch (error) {
     console.error('Browser check failed:', error.message);

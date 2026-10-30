@@ -1,0 +1,23 @@
+/* Server-backed wallet and the existing SHOP/SKINS panels. */
+.player-panel { overflow-y: auto; }
+.player-panel .player-navigation { flex: 1 0 auto; min-height: 154px; grid-template-rows: repeat(3, minmax(44px, 1fr)); }
+.player-panel .player-navigation > button { min-height: 44px; }
+.cosmetic-wallet { flex: 0 0 auto; min-width: 0; padding: 12px; border: 1px solid #697456; border-radius: 8px; background: #181f19; color: #f0ebcc; text-align: left; }
+.cosmetic-wallet h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .08em; color: #ffe397; }
+.cosmetic-wallet p { margin: 6px 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+#cosmetic-wallet { font-family: Arial, sans-serif; font-size: 13px; font-variant-numeric: tabular-nums; }
+#cosmetic-receipt-status { color: #c2ccb9; }
+.cosmetic-wallet button, .cerco-skin-card button { min-height: 44px; white-space: normal; }
+.cosmetic-wallet button { width: 100%; margin-top: 8px; border: 1px solid #899c76; border-radius: 4px; background: #31452d; color: #f3f6e8; font-size: 11px; cursor: pointer; }
+.cosmetic-wallet button:focus-visible, .cerco-skin-card button:focus-visible { outline: 3px solid #ffe397; outline-offset: 2px; }
+#cosmetic-shop-status, #cerco-skin-status { font-size: 12px; line-height: 1.5; color: #e1e8d5; overflow-wrap: anywhere; margin: 8px 0; }
+#cosmetic-picture-price { color: #ffe397; font-size: 12px; }
+.cerco-skin-card .cosmetic-price { color: #ffe397; font-weight: 700; font-size: 14px; }
+.pz-shop-content { overflow-y: auto; }
+.pz-shop-category { flex-shrink: 0; }
+.pz-shop-gallery { align-items: stretch; min-height: 0; }
+.cerco-skin-card { display: flex; flex-direction: column; }
+.cerco-skin-card > p:not(.cosmetic-price) { flex-grow: 1; }
+.player-avatar img[data-equipped-picture] { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.player-avatar:has(img[data-equipped-picture]) > span { visibility: hidden; }
+@media (max-width: 760px) { .cosmetic-wallet { grid-column: 1 / -1; } }

@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-module.exports = async function checkShopGeometry(page) {
+module.exports = async function checkShopGeometry(page, artifactDir = '.local-recovery/op47/geometry-' + Date.now()) {
   const results = [];
   await page.locator('#cerco-play-button').click();
   await page.waitForFunction(() => !!document.getElementById('cerco-game-frame').contentWindow.CERCO_BRIDGE);
@@ -24,8 +24,8 @@ module.exports = async function checkShopGeometry(page) {
         pageOverflow: document.documentElement.scrollWidth > innerWidth };
     });
     results.push({ width, height, ...geometry });
-    fs.mkdirSync('.local-recovery/op38', { recursive: true });
-    fs.writeFileSync('.local-recovery/op38/shop-geometry.json', JSON.stringify(results, null, 2));
+    fs.mkdirSync(artifactDir, { recursive: true });
+    fs.writeFileSync(artifactDir + '/shop-geometry.json', JSON.stringify(results, null, 2));
     assert(geometry.headingTop >= geometry.cardsBottom, `Shop overlap ${width}x${height}: ${JSON.stringify(geometry)}`);
     assert(geometry.galleryBottom >= geometry.cardsBottom, 'Gallery must contain the full skin cards');
     assert(!geometry.pageOverflow, 'Shop must not cause page horizontal overflow');
@@ -40,7 +40,7 @@ module.exports = async function checkShopGeometry(page) {
       }), `Skin button covered at ${width}x${height}`);
       if (await button.isEnabled()) await button.click({ trial: true });
     }
-    await page.screenshot({ path: `.local-recovery/op38/shop-${width}x${height}.png` });
+    await page.screenshot({ path: `${artifactDir}/shop-${width}x${height}.png` });
   }
   await page.locator('#pz-shop-back').click();
   await page.setViewportSize({ width: 1366, height: 900 });

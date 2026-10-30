@@ -1,6 +1,21 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
 const {setup,fund}=require('./economy-support.cjs');
 const key=()=>crypto.randomUUID();
+test('commerce/economy writes require exact Origin and server Guest credentials',async t=>{
+ const {mf,guest}=await setup(t),g=await guest();
+ for(const route of ['/shop/purchase','/skins/purchase','/skins/equip','/profile-picture/equip','/economy/receipts']){
+  for(const origin of [null,'https://evil.test']){
+   const r=await mf.dispatchFetch('https://local.test'+route,{method:'POST',headers:{Authorization:'Bearer '+g.access_token,
+    ...(origin?{Origin:origin}:{}),'Content-Type':'application/json'},body:JSON.stringify({guestId:g.guest_id,productId:'cerco.default',operationKey:key()})});
+   assert.equal(r.status,403,route);
+  }
+  const r=await mf.dispatchFetch('https://local.test'+route,{method:'POST',headers:{Origin:require('./support.cjs').origin,'Content-Type':'application/json'},
+   body:JSON.stringify({guestId:g.guest_id,productId:'cerco.void_circuit',operationKey:key()})});
+  assert.ok([401,403,503].includes(r.status),'legacy paid-item denial or authenticated route refusal');
+ }
+ const read=await mf.dispatchFetch('https://local.test/skins/inventory',{headers:{Authorization:'Bearer '+g.access_token}});
+ assert.equal(read.status,200,'authenticated native GET without Origin stays compatible');
+});
 test('commerce: real catalog, server price, idempotent purchase, persistent inventory/equipment and no local entitlement',async t=>{
  const api=await setup(t),{db,call,guest}=api,g=await guest(),other=await guest();
  const buy=body=>call('/shop/purchase',body,g.access_token);
