@@ -1,0 +1,62 @@
+/* CERCO OP55 — Inverted header layout.
+   CERCO left / navigation right / wallet far right.
+   Existing nodes, listeners and buttons are preserved. */
+
+/* Desktop: identity anchored to the left. */
+.app > .header .cerco-header-brand {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  right: auto;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: max-content;
+  max-width: calc(100% - 80px);
+  margin: 0;
+  text-align: left;
+}
+
+/* Desktop: navigation occupies the space before WALLET. */
+.app > .header .cerco-global-nav {
+  position: absolute;
+  top: 50%;
+  left: auto;
+  right: 64px;
+  bottom: auto;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  width: max-content;
+  margin: 0;
+}
+
+/* The original wallet position remains unchanged. */
+
+/* Compact screens: two-row header, no overlap.
+   CERCO upper-left, WALLET upper-right,
+   global navigation on the lower row, aligned right. */
+@media (max-width: 680px) {
+  .app > .header .cerco-header-brand {
+    top: 5px;
+    left: 12px;
+    right: auto;
+    transform: none;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .app > .header .cerco-global-nav {
+    top: auto;
+    bottom: 6px;
+    left: auto;
+    right: 12px;
+    transform: none;
+    justify-content: flex-end;
+    width: max-content;
+  }
+}

@@ -174,8 +174,8 @@ async function main() {
           !document.querySelector('.player-panel .player-navigation'),
         count: nav.querySelectorAll(':scope > button').length,
         labels: Array.from(nav.children, el => el.textContent.trim()),
-        center: Math.abs((b.left+b.right)/2-(h.left+h.right)/2)<3,
-        separated: n.right+6<=b.left && b.right+6<=w.left,
+        leftAligned: Math.abs(b.left-(h.left+16))<3,
+        separated: b.right+8<=n.left && n.right+8<=w.left,
         musicRaised: m.top>=s.bottom-2 && m.top<=s.bottom+20,
         walletPresent: wallet.getAttribute('aria-controls')==='cosmetic-wallet-dialog'
       };
@@ -184,12 +184,12 @@ async function main() {
     assert.equal(header52.moved,true,'Original navigation moved into header');
     assert.equal(header52.count,3,'Exactly three navigation buttons');
     assert.deepEqual(header52.labels,['LEADERBOARDS','SHOP','SKINS']);
-    assert.equal(header52.center,true,'CERCO logo remains centered');
+    assert.equal(header52.leftAligned,true,'CERCO logo aligned left');
     assert.equal(header52.separated,true,'Header controls do not overlap');
     assert.equal(header52.musicRaised,true,'Music follows player statistics');
     assert.equal(header52.walletPresent,true,'Wallet trigger remains unchanged');
 
-    results.push('OP52: original navigation in header; CERCO centered; wallet right; music raised.');
+    results.push('OP55: CERCO left; navigation right; wallet far right; music raised.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);
@@ -680,8 +680,13 @@ async function main() {
           r.bottom<=h.bottom+2);
 
         const separated=innerWidth<=680
-          ? n.top>=b.bottom-2 && n.top>=w.bottom-2
-          : n.right<=b.left-3 && b.right<=w.left-3;
+          ? b.left>=h.left+8 &&
+            b.right+6<=w.left &&
+            n.top>=b.bottom-2 &&
+            n.top>=w.bottom-2 &&
+            n.right<=h.right-7
+          : b.right+8<=n.left &&
+            n.right+8<=w.left;
 
         const ordered=areas.every((r,i)=>
           i===0 || r.left>=areas[i-1].right-2);
