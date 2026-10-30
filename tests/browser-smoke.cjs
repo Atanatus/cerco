@@ -189,6 +189,46 @@ async function main() {
     assert.equal(header52.musicRaised,true,'Music follows player statistics');
     assert.equal(header52.walletPresent,true,'Wallet trigger remains unchanged');
 
+    const walletShape = await a.evaluate(() => {
+      const navButton = document.querySelector(
+        '.header .cerco-global-nav > button'
+      );
+      const wallet = document.getElementById('cosmetic-wallet-open');
+      const icon = wallet?.querySelector('svg');
+
+      if (!navButton || !wallet || !icon) return false;
+
+      const navStyle = getComputedStyle(navButton);
+      const walletStyle = getComputedStyle(wallet);
+      const iconStyle = getComputedStyle(icon);
+
+      const navMatrix = new DOMMatrixReadOnly(navStyle.transform);
+      const walletMatrix = new DOMMatrixReadOnly(walletStyle.transform);
+      const iconMatrix = new DOMMatrixReadOnly(iconStyle.transform);
+
+      const navRect = navButton.getBoundingClientRect();
+      const walletRect = wallet.getBoundingClientRect();
+
+      return Math.abs(navMatrix.c - walletMatrix.c) < 0.01 &&
+        Math.abs(walletMatrix.c + iconMatrix.c) < 0.01 &&
+        Math.abs(navRect.height - walletRect.height) < 2 &&
+        navStyle.borderRadius === walletStyle.borderRadius &&
+        navStyle.backgroundImage === walletStyle.backgroundImage &&
+        walletRect.left > document.querySelector(
+          '.cerco-global-nav'
+        ).getBoundingClientRect().right + 3;
+    });
+
+    assert.equal(
+      walletShape,
+      true,
+      'OP58 wallet matches nav parallelogram and keeps icon upright'
+    );
+
+    results.push(
+      'OP58: wallet matches navigation shape, icon counter-skewed.'
+    );
+
     results.push('OP56: CERCO centered; navigation right; wallet right; music raised.');
 
     const compactChat = await a.evaluate(() => {

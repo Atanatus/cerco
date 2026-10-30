@@ -111,3 +111,105 @@
       32px;
   }
 }
+
+/* CERCO OP58 — Wallet parallelogram matching global navigation. */
+
+.app > .header .cerco-wallet-trigger {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+
+  padding: 0;
+  border: 1px solid #62757a;
+  border-top-color: #82989b;
+  border-bottom-color: #26383d;
+  border-radius: 3px;
+
+  background: linear-gradient(
+    180deg,
+    #26373d 0%,
+    #1c292e 52%,
+    #141f24 100%
+  );
+
+  color: #e7cd84;
+
+  transform: translateY(-50%) skewX(-12deg);
+  transform-origin: center;
+
+  box-shadow:
+    inset 0 1px #ffffff20,
+    inset 0 -2px #0006,
+    1px 2px #0008;
+
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 90ms ease;
+}
+
+/* Counter-skew the wallet symbol, as with navigation labels. */
+.app > .header .cerco-wallet-trigger > svg {
+  display: block;
+  transform: skewX(12deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.app > .header .cerco-wallet-trigger:hover,
+.app > .header .cerco-wallet-trigger[aria-expanded="true"] {
+  background: linear-gradient(
+    180deg,
+    #344e52,
+    #25383e
+  );
+  border-color: #e2c77c;
+  color: #ffebad;
+}
+
+.app > .header .cerco-wallet-trigger:active {
+  transform: translateY(-50%) skewX(-12deg) translateY(2px);
+  background: #122027;
+  box-shadow: inset 0 2px 5px #0009;
+}
+
+.app > .header .cerco-wallet-trigger:focus-visible {
+  outline: 2px solid #ffe397;
+  outline-offset: 3px;
+}
+
+/* Preserve the upper-right mobile wallet position. */
+@media (max-width: 900px) {
+  .app > .header .cerco-wallet-trigger {
+    top: 4px;
+    right: 7px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    transform: skewX(-12deg);
+  }
+
+  .app > .header .cerco-wallet-trigger:active {
+    transform: skewX(-12deg) translateY(2px);
+  }
+}
+
+@media (pointer: coarse) {
+  .app > .header .cerco-wallet-trigger {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app > .header .cerco-wallet-trigger {
+    transition: none;
+  }
+}
