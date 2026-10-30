@@ -89,17 +89,32 @@ export async function routeGuest(request, env) {
       if (!profile) return json({ error: 'profile_service_unavailable' }, 503);
     }
 
-    await env.DB.prepare('DELETE FROM guest_access_tokens WHERE guest_id = ? AND expires_at <= ?')
-      .bind(profile.guest_id, now).run();
     const accessToken = randomHex();
     const tokenHash = await hash(accessToken);
     const expiresAt = now + ACCESS_TTL_MS;
-    const stored = await env.DB.prepare(
-      `INSERT INTO guest_access_tokens (token_hash, guest_id, created_at, expires_at)
-       SELECT ?, ?, ?, ?
-       WHERE (SELECT COUNT(*) FROM guest_access_tokens WHERE guest_id = ? AND expires_at > ?) < ?`
-    ).bind(tokenHash, profile.guest_id, now, expiresAt, profile.guest_id, now, MAX_ACCESS_TOKENS).run();
-    if (stored.meta?.changes !== 1) return json({ error: 'profile_session_limit' }, 429);
+
+    // Rotate old access tokens atomically instead of locking out
+    // a legitimate holder of the stable recovery credential.
+    // The 16-token cap and new-profile IP rate limit remain intact.
+    const issued = await env.DB.batch([
+      env.DB.prepare(
+        `DELETE FROM guest_access_tokens
+         WHERE guest_id = ?
+           AND token_hash NOT IN (
+             SELECT token_hash FROM guest_access_tokens
+             WHERE guest_id = ? AND expires_at > ?
+             ORDER BY created_at DESC, rowid DESC
+             LIMIT ?
+           )`
+      ).bind(profile.guest_id, profile.guest_id, now, MAX_ACCESS_TOKENS - 1),
+      env.DB.prepare(
+        `INSERT INTO guest_access_tokens
+           (token_hash, guest_id, created_at, expires_at)
+         VALUES (?, ?, ?, ?)`
+      ).bind(tokenHash, profile.guest_id, now, expiresAt)
+    ]);
+    if (issued[1]?.meta?.changes !== 1)
+      return json({ error: 'profile_service_unavailable' }, 503);
     await env.DB.prepare('UPDATE guest_profiles SET last_seen_at = ? WHERE guest_id = ?')
       .bind(now, profile.guest_id).run();
 

@@ -268,3 +268,49 @@ test('expired access is rejected, rate limits cap new profiles, and reports stay
   assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM results').first()).count, 0);
   assert.equal((await db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name='guest_profiles'").first()).count, 1);
 });
+
+test('guest access token rotation preserves recovery and the 16-session cap', async t => {
+  const { mf, db } = await fixture(t);
+
+  const first = await enroll(mf, recovery, '192.0.2.71');
+  const other = await enroll(mf, otherRecovery, '192.0.2.72');
+
+  assert.equal(first.status, 200);
+  assert.equal(other.status, 200);
+
+  let newest = first.body;
+
+  for (let i = 0; i < 20; i++) {
+    const response = await enroll(mf, recovery, '192.0.2.71', false);
+    assert.equal(response.status, 200, 'Recovery must not be locked out');
+    assert.equal(response.body.guest_id, first.body.guest_id);
+    newest = response.body;
+  }
+
+  const count = async id => (
+    await db.prepare(
+      'SELECT COUNT(*) AS n FROM guest_access_tokens WHERE guest_id=?'
+    ).bind(id).first()
+  ).n;
+
+  assert.equal(await count(first.body.guest_id), 16);
+  assert.equal(await count(other.body.guest_id), 1);
+
+  const inventory = profile => mf.dispatchFetch(
+    'https://local.test/skins/inventory',
+    { headers: auth(profile) }
+  );
+
+  assert.equal((await inventory(first.body)).status, 401);
+  assert.equal((await inventory(newest)).status, 200);
+  assert.equal((await inventory(other.body)).status, 200);
+
+  const concurrent = await Promise.all(
+    Array.from({ length: 8 }, () =>
+      enroll(mf, recovery, '192.0.2.71', false))
+  );
+
+  assert(concurrent.every(response => response.status === 200));
+  assert.equal(await count(first.body.guest_id), 16);
+  assert.equal(await count(other.body.guest_id), 1);
+});
