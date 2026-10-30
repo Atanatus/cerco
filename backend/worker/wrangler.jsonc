@@ -15,7 +15,8 @@
     {
       "binding": "DB",
       "database_name": "cerco-production",
-      "database_id": "4e85d0b5-f4dc-4c89-980a-b388dd1b98bb"
+      "database_id": "4e85d0b5-f4dc-4c89-980a-b388dd1b98bb",
+      "migrations_dir": "../d1/migrations"
     }
   ]
 }
