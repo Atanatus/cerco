@@ -163,7 +163,20 @@ async function main() {
     assert.equal(await a.locator('.chat-message-own').count(), 1);
     assert.equal(await b.locator('.chat-message-own').count(), 0);
     assert.match(await b.locator('.chat-sender').innerText(), /^Guest [a-f0-9]{8}$/);
-    assert.equal(await b.locator('.chat-ownership').innerText(), 'GUEST');
+    assert.equal(await b.locator('.chat-ownership').textContent(), 'GUEST');
+    assert.equal(await b.locator('.chat-ownership').isVisible(), false);
+
+    const cardLayout = await b.locator('.chat-message').first().evaluate(item=>{
+      const name=item.querySelector('.chat-sender').getBoundingClientRect();
+      const body=item.querySelector('.chat-message-content > p').getBoundingClientRect();
+      const footer=item.querySelector('.chat-message-meta').getBoundingClientRect();
+      const card=item.getBoundingClientRect();
+      return body.top>=name.bottom-2 &&
+        footer.top>=body.bottom-2 &&
+        body.width>=card.width-8;
+    });
+
+    assert.equal(cardLayout,true,'SIGNAL card layout');
     assert.equal(await b.locator('#chat-signal').innerText(), 'LIVE');
     await b.locator('#chat-input').fill('Two browsers are connected.'); await b.locator('#chat-input').press('Enter');
     await a.locator('.chat-message-content p').filter({ hasText: 'Two browsers' }).waitFor();

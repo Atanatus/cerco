@@ -1,0 +1,293 @@
+/* CERCO OP50 - HEADER WALLET + SIGNAL CARDS */
+
+.header { position: relative; }
+
+.cerco-header-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  font: 400 28px/1 var(--cerco-font);
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.cerco-header-brand small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+
+.cerco-wallet-trigger {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #58747a;
+  border-radius: 5px;
+  background: #16252f;
+  color: #e7cd84;
+  cursor: pointer;
+}
+
+.cerco-wallet-trigger:hover,
+.cerco-wallet-trigger[aria-expanded="true"] {
+  background: #28414d;
+  border-color: #e2c77c;
+  color: #ffebad;
+}
+
+.cerco-wallet-trigger:focus-visible,
+.cerco-wallet-dialog button:focus-visible {
+  outline: 3px solid #ffe397;
+  outline-offset: 2px;
+}
+
+.cerco-wallet-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(85dvh, 610px);
+  overflow-y: auto;
+  padding: 0;
+  border: 1px solid #728f97;
+  border-radius: 9px;
+  background: #121e27;
+  color: #edf3ef;
+  box-shadow: 0 18px 70px #000c;
+  font-family: var(--cerco-font);
+}
+
+.cerco-wallet-dialog:not([open]) {
+  display: none !important;
+}
+
+.cerco-wallet-dialog::backdrop {
+  background: rgba(0,0,0,.76);
+  backdrop-filter: blur(3px);
+}
+
+.cerco-wallet-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 50px;
+  padding: 5px 8px 5px 16px;
+  border-bottom: 1px solid #526a75;
+  background: #1b2c37;
+  color: #f2dfac;
+}
+
+.cerco-wallet-dialog-head h2 {
+  margin: 0;
+  font: 400 18px/1.2 var(--cerco-font);
+  letter-spacing: .1em;
+}
+
+#cosmetic-wallet-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #f0f3ef;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+#cosmetic-wallet-close:hover { background: #304a54; }
+
+.cerco-wallet-dialog .cosmetic-wallet {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cerco-wallet-dialog .cosmetic-wallet h3 {
+  margin-bottom: 14px;
+  font-size: 17px;
+}
+
+.cerco-wallet-dialog #cosmetic-wallet {
+  margin: 10px 0 13px;
+  padding: 15px;
+  font-size: 15px;
+}
+
+.cerco-wallet-dialog #cosmetic-receipt-status {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.cerco-wallet-dialog #cosmetic-refresh {
+  min-height: 44px;
+  font-size: 13px;
+}
+
+@media (max-width:520px) {
+  .cerco-header-brand { font-size: 23px; }
+  .cerco-wallet-dialog .cosmetic-wallet { padding: 14px; }
+  .cerco-wallet-dialog #cosmetic-wallet {
+    padding: 11px;
+    font-size: 13px;
+  }
+}
+
+/* SIGNAL: header, natural-height message, footer */
+
+.chat-panel .chat-messages {
+  gap: 10px;
+  padding: 10px 9px 14px 13px;
+}
+
+.chat-panel .chat-message {
+  display: grid;
+  grid-template-columns: 39px minmax(0,1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 0;
+  row-gap: 0;
+  min-width: 0;
+  margin: 0 3px 3px 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #637f87;
+  border-top-color: #90afb3;
+  border-radius: 3px;
+  background: #14242f;
+  box-shadow: 2px 2px 0 #030b12;
+}
+
+.chat-panel .chat-message::before { display: none; }
+
+.chat-panel .chat-message-content { display: contents; }
+
+.chat-panel .chat-avatar {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+  width: 25px;
+  height: 25px;
+  margin: 7px 0;
+  border-color: #8bacb7;
+  background: #112737;
+}
+
+.chat-panel .chat-sender {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 39px;
+  padding: 7px 8px 7px 2px;
+  color: #e9f2f5;
+  font-size: 14px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.chat-panel .chat-message-content > p {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: block;
+  min-width: 0;
+  min-height: 45px;
+  margin: 0;
+  padding: 11px 10px;
+  border-top: 1px solid #4c6975;
+  border-bottom: 1px solid #4c6975;
+  background: #101e29;
+  color: #f1f6f7;
+  font: 14px/1.5 Arial,sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-panel .chat-message-meta {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 2px 6px 2px 9px;
+  background: #162833;
+}
+
+.chat-panel .chat-ownership { display: none; }
+
+.chat-panel .chat-message-meta > time {
+  display: block;
+  margin-right: auto;
+  color: #adc5cb;
+  font: 11px/1.4 'PZ PixelOperator',monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.chat-panel .chat-report {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-left: auto;
+  min-height: 29px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #bad3dc;
+  font: 11px/1.2 'PZ PixelOperator',monospace;
+}
+
+.chat-panel .chat-report:hover:not(:disabled) {
+  background: #2c4852;
+  color: #fff0cb;
+}
+
+.chat-panel .chat-message-own {
+  margin-left: 3px;
+  border-left: 3px solid #9dd5bd;
+  background: #172e30;
+}
+
+.chat-panel .chat-message-own .chat-message-content > p {
+  background: #12292b;
+}
+
+.chat-panel .chat-message[data-focused="true"] {
+  outline: 2px solid #e2cc98;
+  outline-offset: 1px;
+}
+
+@media (pointer:coarse) {
+  .chat-panel .chat-report,
+  .chat-panel .chat-sender,
+  .chat-panel .chat-message-meta {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .cerco-wallet-trigger { transition: none; }
+}

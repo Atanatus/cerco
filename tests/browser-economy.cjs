@@ -13,7 +13,35 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
  const api={db,start:async guest=>{const runId=crypto.randomUUID();return {...await(await call('/matches/start',{
   game_version:'0.9.0',mode:'expedition',client_run_id:runId,ruleset:'CERCO-0.9.0'},guest.access_token)).json(),runId};}};
  const shot=async name=>page.screenshot({path:path.join(shots,name+'.png'),fullPage:true});
- assert.match(await page.locator('#cosmetic-wallet').innerText(),/^0 ✦ confirmed/);
+ const walletDialog=page.locator('#cosmetic-wallet-dialog');
+ const walletTrigger=page.locator('#cosmetic-wallet-open');
+
+ const openWallet=async()=>{
+  await walletTrigger.click();
+  assert.equal(await walletDialog.evaluate(e=>e.open),true);
+ };
+
+ const closeWallet=async()=>{
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(()=>
+   !document.getElementById('cosmetic-wallet-dialog').open);
+ };
+
+ const refreshWallet=async()=>{
+  await openWallet();
+  await page.locator('#cosmetic-refresh').click();
+  await closeWallet();
+ };
+
+ assert.equal(await walletDialog.evaluate(e=>e.open),false);
+ assert.equal(await page.locator('.player-panel .cosmetic-wallet').count(),0);
+ await openWallet();
+ assert.equal(await walletDialog.isVisible(),true);
+ await shot('economy-wallet-modal');
+ await page.locator('#cosmetic-wallet-close').click();
+ await page.waitForFunction(()=>
+  !document.getElementById('cosmetic-wallet-dialog').open);
+ assert.match(await page.locator('#cosmetic-wallet').textContent(),/^0 ✦ confirmed/);
  await page.locator('[data-panel="shop"]').click();await ready();
  const voidCard=page.locator('#pz-shop-skins [data-product-id="cerco.void_circuit"]');
  assert.equal(await voidCard.getByRole('button',{name:'INSUFFICIENT FUNDS',exact:true}).isDisabled(),true);
@@ -28,15 +56,15 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
  // A valid synthetic final audit produces pending coins only, never a grant.
  const pending=await api.start(g),a=audit(pending);
  assert.equal((await call('/runs/pending',report(pending,g,a))).status,201);
- await page.locator('#cosmetic-refresh').click();await ready();
- assert.match(await page.locator('#cosmetic-wallet').innerText(),/^0 ✦ confirmed · 5 ✦ pending/);
- await shot('economy-profile-pending');
+ await refreshWallet();await ready();
+ assert.match(await page.locator('#cosmetic-wallet').textContent(),/^0 ✦ confirmed · 5 ✦ pending/);
+ await openWallet();await shot('economy-profile-pending');await closeWallet();
  results.push('Economy UI: zero/pending balances, insufficient funds, authentic prices and absent profile-picture catalog.');
 
  // Funding is isolated in the ephemeral D1 harness; no browser or public grant API.
- await fund(api,g,5000);await page.locator('#cosmetic-refresh').click();await ready();
- assert.match(await page.locator('#cosmetic-wallet').innerText(),/^5,000 ✦ confirmed · 5 ✦ pending/);
- await shot('economy-profile-funded');
+ await fund(api,g,5000);await refreshWallet();await ready();
+ assert.match(await page.locator('#cosmetic-wallet').textContent(),/^5,000 ✦ confirmed · 5 ✦ pending/);
+ await openWallet();await shot('economy-profile-funded');await closeWallet();
  let dropped=false;const orders=[];
  await page.route('**/shop/purchase',async route=>{
   const req=route.request(),body=JSON.parse(req.postData());orders.push(body.operationKey);
@@ -48,7 +76,7 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
  await voidCard.getByRole('button',{name:'BUY',exact:true}).click();
  await page.waitForFunction(()=>document.getElementById('cosmetic-shop-status').textContent.startsWith('Purchase confirmed.'));
  assert.equal(orders.length,2);assert.equal(new Set(orders).size,1);
- assert.match(await page.locator('#cosmetic-wallet').innerText(),/^2,000 ✦ confirmed · 5 ✦ pending/);
+ assert.match(await page.locator('#cosmetic-wallet').textContent(),/^2,000 ✦ confirmed · 5 ✦ pending/);
  assert.equal((await db.prepare('SELECT COUNT(*) n FROM cosmetic_purchases WHERE guest_id=?').bind(g.guest_id).first()).n,1);
  await shot('economy-shop-owned');await page.unroute('**/shop/purchase');
  await page.locator('#pz-shop-back').click();await page.locator('[data-panel="settings"]').click();await ready();
@@ -107,26 +135,26 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
 
  // Large values come from the isolated server state, never localStorage overrides.
  await db.prepare('UPDATE cosmetic_wallets SET balance=1000000000 WHERE guest_id=?').bind(g.guest_id).run();
- await page.locator('#cosmetic-refresh').click();await ready();
+ await refreshWallet();await ready();
  for(const [width,height] of [[1920,1080],[1366,768],[1024,768],[390,844],[844,390]]){
   await page.setViewportSize({width,height});await page.locator('[data-panel="shop"]').click();await ready();
   await shot(`economy-shop-${width}x${height}`);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  assert.equal(await page.locator('.cosmetic-wallet').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
+  await openWallet();assert.equal(await page.locator('.cosmetic-wallet').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await closeWallet();
   for(const button of await page.locator('#pz-shop-skins button').all()){
    await button.scrollIntoViewIfNeeded();assert.equal(await button.evaluate(e=>{const r=e.getBoundingClientRect();return r.height>=44&&document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e;}),true);
   }
   await page.locator('#pz-shop-back').click();await page.locator('[data-panel="settings"]').click();await ready();
   await shot(`economy-skins-${width}x${height}`);await page.locator('#pz-skins-back').click();
-  await page.locator('.cosmetic-wallet').scrollIntoViewIfNeeded();await shot(`economy-profile-${width}x${height}`);
+  await openWallet();await shot(`economy-profile-${width}x${height}`);await closeWallet();
   await page.locator('#pz-photo-change').click();assert.equal(await page.locator('#pz-avatar-gallery img').count(),0);
   await page.locator('#pz-avatar-modal-close').focus();await page.keyboard.press('Escape');
   assert.equal(await page.locator('#pz-avatar-modal').evaluate(e=>e.open),false);
  }
- await page.locator('#cosmetic-refresh').focus();await page.keyboard.press('Enter');await ready();
+ await openWallet();await page.locator('#cosmetic-refresh').focus();await page.keyboard.press('Enter');await ready();await closeWallet();
  await page.route('**/shop/catalog',route=>route.abort('failed'));
- await page.locator('#cosmetic-refresh').click();await page.waitForFunction(()=>window.CERCO_COSMETICS.getStatus()==='error');
- assert.match(await page.locator('#cosmetic-wallet').innerText(),/unavailable/);
+ await refreshWallet();await page.waitForFunction(()=>window.CERCO_COSMETICS.getStatus()==='error');
+ assert.match(await page.locator('#cosmetic-wallet').textContent(),/unavailable/);
  await page.locator('[data-panel="shop"]').click();
  assert.equal(await voidCard.getByRole('button',{name:'UNAVAILABLE',exact:true}).isDisabled(),true);
  await shot('economy-offline');await page.locator('#pz-shop-back').click();
