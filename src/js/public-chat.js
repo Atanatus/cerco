@@ -292,9 +292,7 @@
     pending = { text, clientId: crypto.randomUUID(), sequence, attempts: 0 };
     input.value = ''; controls(); transmit();
   });
-  document.getElementById('chat-clear').addEventListener('click', () => {
-    messages.clear(); render(); status.textContent = 'Your view was cleared; public messages were not deleted.';
-  });
+
   window.addEventListener('cerco:guest-profile', renderAvailability);
   function refreshOnReturn() {
     if (document.visibilityState === 'hidden' || !navigator.onLine) return;

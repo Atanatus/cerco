@@ -1,0 +1,113 @@
+/* CERCO OP56 — Centered brand and compact chat.
+   Navigation and wallet preserve their existing DOM and events. */
+
+.app > .header .cerco-header-brand {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  width: max-content;
+  max-width: none;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Compact single-line chat identity. */
+.sidebar.chat-panel .chat-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 30px;
+  padding: 6px 10px 4px;
+  gap: 0;
+}
+
+.sidebar.chat-panel .chat-brand {
+  font-size: 15px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.sidebar.chat-panel .chat-brand strong {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  font-weight: normal;
+  text-shadow: none;
+}
+
+/* More vertical space for the message viewport. */
+.sidebar.chat-panel .chat-signal-state {
+  padding-top: 3px;
+  padding-bottom: 5px;
+}
+
+.sidebar.chat-panel #chat-status {
+  margin-top: 5px;
+  margin-bottom: 4px;
+}
+
+.sidebar.chat-panel .chat-rules {
+  margin-bottom: 5px;
+}
+
+.sidebar.chat-panel #chat-join {
+  margin-bottom: 6px;
+}
+
+.sidebar.chat-panel .chat-messages {
+  flex: 1 1 0;
+  min-height: 50px;
+}
+
+/* Tablet/mobile: identity above navigation to prevent overlap. */
+@media (max-width: 900px) {
+  .app > .header .cerco-header-brand {
+    top: 5px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    align-items: center;
+    text-align: center;
+  }
+
+  .app > .header .cerco-global-nav {
+    top: auto;
+    bottom: 6px;
+    left: auto;
+    right: 12px;
+    transform: none;
+    justify-content: flex-end;
+  }
+
+  .app > .header .cerco-wallet-trigger {
+    top: 4px;
+    right: 7px;
+    transform: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 900px) {
+  .app {
+    grid-template-rows: 96px minmax(0, 1fr) 32px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app {
+    grid-template-rows:
+      96px
+      minmax(540px, 75vh)
+      auto
+      minmax(520px, 65vh)
+      32px;
+  }
+}

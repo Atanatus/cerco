@@ -174,7 +174,7 @@ async function main() {
           !document.querySelector('.player-panel .player-navigation'),
         count: nav.querySelectorAll(':scope > button').length,
         labels: Array.from(nav.children, el => el.textContent.trim()),
-        leftAligned: Math.abs(b.left-(h.left+16))<3,
+        centered: Math.abs((b.left+b.right)/2-(h.left+h.right)/2)<3,
         separated: b.right+8<=n.left && n.right+8<=w.left,
         musicRaised: m.top>=s.bottom-2 && m.top<=s.bottom+20,
         walletPresent: wallet.getAttribute('aria-controls')==='cosmetic-wallet-dialog'
@@ -184,12 +184,32 @@ async function main() {
     assert.equal(header52.moved,true,'Original navigation moved into header');
     assert.equal(header52.count,3,'Exactly three navigation buttons');
     assert.deepEqual(header52.labels,['LEADERBOARDS','SHOP','SKINS']);
-    assert.equal(header52.leftAligned,true,'CERCO logo aligned left');
+    assert.equal(header52.centered,true,'CERCO logo centered');
     assert.equal(header52.separated,true,'Header controls do not overlap');
     assert.equal(header52.musicRaised,true,'Music follows player statistics');
     assert.equal(header52.walletPresent,true,'Wallet trigger remains unchanged');
 
-    results.push('OP55: CERCO left; navigation right; wallet far right; music raised.');
+    results.push('OP56: CERCO centered; navigation right; wallet right; music raised.');
+
+    const compactChat = await a.evaluate(() => {
+      const brand = document.querySelector('.chat-brand');
+      const title = document.querySelector('.chat-title');
+      const messages = document.querySelector('#chat-messages');
+      const composer = document.querySelector('#chat-form');
+
+      if (!brand || !title || !messages || !composer) return false;
+
+      const r = el => el.getBoundingClientRect();
+
+      return brand.textContent.replace(/\s+/g,' ').trim() === 'CERCO / CHAT' &&
+        !document.getElementById('chat-clear') &&
+        r(title).height <= 40 &&
+        r(messages).height > 150 &&
+        r(messages).bottom <= r(composer).top + 2;
+    });
+
+    assert.equal(compactChat,true,'OP56 compact chat geometry');
+    results.push('OP56: compact CHAT, no trash, larger message viewport.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);
@@ -679,9 +699,8 @@ async function main() {
           r.top>=h.top-2 &&
           r.bottom<=h.bottom+2);
 
-        const separated=innerWidth<=680
-          ? b.left>=h.left+8 &&
-            b.right+6<=w.left &&
+        const separated=innerWidth<=900
+          ? Math.abs((b.left+b.right)/2-(h.left+h.right)/2)<3 &&
             n.top>=b.bottom-2 &&
             n.top>=w.bottom-2 &&
             n.right<=h.right-7
