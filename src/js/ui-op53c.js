@@ -28,10 +28,10 @@
   // Default is a visual fallback, not a database entitlement.
   const figure = document.createElement('figure');
   figure.className = 'cerco-picture-default';
-  figure.dataset.defaultPicture = 'ProfilePic1';
+  figure.dataset.defaultPicture = 'Profile_Picture1';
 
   const defaultImage = document.createElement('img');
-  defaultImage.src = './assets/profile-pictures/ProfilePic1.png';
+  defaultImage.src = './assets/profile-pictures/Profile_Picture1.png';
   defaultImage.alt = 'Default profile picture';
   defaultImage.width = 112;
   defaultImage.height = 112;
@@ -44,14 +44,14 @@
   figure.append(defaultImage, caption);
   gallery.prepend(figure);
 
-  // ProfilePic2 is intentionally display-only.
+  // Profile_Picture2 is intentionally display-only.
   // No buy button, price authority, entitlement or ledger change.
   const card = document.createElement('article');
   card.className = 'cerco-picture-preview';
-  card.dataset.profilePicturePreview = 'ProfilePic2';
+  card.dataset.profilePicturePreview = 'Profile_Picture2';
 
   const paidImage = document.createElement('img');
-  paidImage.src = './assets/profile-pictures/ProfilePic2.png';
+  paidImage.src = './assets/profile-pictures/Profile_Picture2.png';
   paidImage.alt = 'Profile picture 02 preview';
   paidImage.width = 160;
   paidImage.height = 160;

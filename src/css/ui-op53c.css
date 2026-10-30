@@ -1,7 +1,7 @@
 /* CERCO OP53C — Default picture and paid preview only. */
 
 .player-panel .player-avatar {
-  background-image: url("../../assets/profile-pictures/ProfilePic1.png");
+  background-image: url("../../assets/profile-pictures/Profile_Picture1.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

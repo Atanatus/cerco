@@ -15,8 +15,8 @@ test('53C is presentation-only; paid image has no purchase action',()=>{
   const js=fs.readFileSync('src/js/ui-op53c.js','utf8');
   const css=fs.readFileSync('src/css/ui-op53c.css','utf8');
 
-  assert.match(js,/ProfilePic1\.png/);
-  assert.match(js,/ProfilePic2\.png/);
+  assert.match(js,/Profile_Picture1\.png/);
+  assert.match(js,/Profile_Picture2\.png/);
   assert.match(js,/Purchase unavailable until server activation/);
   assert.match(js,/data\.cercoProfilePictures|dataset\.cercoProfilePictures/);
 

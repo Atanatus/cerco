@@ -13,10 +13,10 @@ const routes = new Map([
    'staging/cerco-091.html'],
   ['/games/CERCO/cerco_expedition_v091_beta.html',
    'games/CERCO/cerco_expedition_v091_beta.html'],
-  ['/assets/profile-pictures/ProfilePic1.png',
-   'assets/profile-pictures/ProfilePic1.png'],
-  ['/assets/profile-pictures/ProfilePic2.png',
-   'assets/profile-pictures/ProfilePic2.png']
+  ['/assets/profile-pictures/Profile_Picture1.png',
+   'assets/profile-pictures/Profile_Picture1.png'],
+  ['/assets/profile-pictures/Profile_Picture2.png',
+   'assets/profile-pictures/Profile_Picture2.png']
 ]);
 
 async function main() {
@@ -107,6 +107,11 @@ async function main() {
 
     assert.ok(data.canvases >= 1);
 
+    const expectedSizes = {
+      'profile-1': [1254, 1254],
+      'profile-2': [1254, 1254]
+    };
+
     for (const id of ['profile-1','profile-2']) {
       const size = await page.locator('#' + id)
         .evaluate(async image => {
@@ -118,7 +123,7 @@ async function main() {
           ];
         });
 
-      assert.deepEqual(size,[1254,1254]);
+      assert.deepEqual(size,expectedSizes[id]);
     }
 
     assert.deepEqual(errors,[]);

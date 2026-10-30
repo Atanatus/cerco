@@ -48,14 +48,14 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
  assert.match(await voidCard.innerText(),/3,000 ✦/);
  assert.match(await page.locator('#cosmetic-picture-price').innerText(),/1,250 ✦ · COMING SOON/);
  assert.equal(await page.locator('#pz-shop-avatars button').count(),0);
- assert.equal(await page.locator('[data-profile-picture-preview="ProfilePic2"]').count(),1);
+ assert.equal(await page.locator('[data-profile-picture-preview="Profile_Picture2"]').count(),1);
  assert.equal(
-   await page.locator('[data-profile-picture-preview="ProfilePic2"] img').getAttribute('src'),
-   './assets/profile-pictures/ProfilePic2.png'
+   await page.locator('[data-profile-picture-preview="Profile_Picture2"] img').getAttribute('src'),
+   './assets/profile-pictures/Profile_Picture2.png'
  );
  assert.equal(
    await page.locator('.player-avatar').evaluate(
-     el => getComputedStyle(el).backgroundImage.includes('ProfilePic1.png')
+     el => getComputedStyle(el).backgroundImage.includes('Profile_Picture1.png')
    ),
    true
  );
@@ -161,7 +161,7 @@ module.exports=async({pageFor,db,mf,base,shots,results})=>{
   await page.locator('#pz-photo-change').click();assert.equal(await page.locator('#pz-avatar-gallery img').count(),1);
   assert.equal(
     await page.locator('#pz-avatar-gallery .cerco-picture-default img').getAttribute('src'),
-    './assets/profile-pictures/ProfilePic1.png'
+    './assets/profile-pictures/Profile_Picture1.png'
   );
   await page.locator('#pz-avatar-modal-close').focus();await page.keyboard.press('Escape');
   assert.equal(await page.locator('#pz-avatar-modal').evaluate(e=>e.open),false);

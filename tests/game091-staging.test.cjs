@@ -11,10 +11,10 @@ const sources = [
    'C6DC2DFF388CF75D247830335A637EF7E4CEC09EFAED579EAECC7448C9C27030'],
   ['games/CERCO/README_CERCO_0.9.1_ATANATUS.md',
    '517314D2A5BC5B5DEAE4F74FC993F8838F8489A75430123D0D7385CD452B97D9'],
-  ['assets/profile-pictures/ProfilePic1.png',
-   '42234CBF206B6E9B0DD869721BFA092D07E620D51A38A7574A8B08E862466768'],
-  ['assets/profile-pictures/ProfilePic2.png',
-   '6A9FAFB96CF2809FFAC6DCE4C1845D96CC1E2C3E18F94A0816AE6E2FB355D7BC']
+  ['assets/profile-pictures/Profile_Picture1.png',
+   'CD0FCB4B4196887348D628478C616CE4B1246B1E633531F6AA16B69C05A007C3'],
+  ['assets/profile-pictures/Profile_Picture2.png',
+   '43EB6634943050C97149481F4C1D0E69CEA93121E06D977F2BAA6EF29EF474D2']
 ];
 
 test('0.9.1 source files preserve audited SHA256', () => {
@@ -51,6 +51,6 @@ test('0.9.1 retains the required bridge and economy events', () => {
 
   const preview = fs.readFileSync('staging/cerco-091.html','utf8');
 
-  assert.match(preview, /ProfilePic1\.png/);
-  assert.match(preview, /ProfilePic2\.png/);
+  assert.match(preview, /Profile_Picture1\.png/);
+  assert.match(preview, /Profile_Picture2\.png/);
 });
