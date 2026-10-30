@@ -21,3 +21,110 @@
 .player-avatar img[data-equipped-picture] { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .player-avatar:has(img[data-equipped-picture]) > span { visibility: hidden; }
 @media (max-width: 760px) { .cosmetic-wallet { grid-column: 1 / -1; } }
+
+
+/* === CERCO VISUAL 48A : COSMETIC UI POLISH === */
+
+/* Wallet: neutral dark glass rather than an isolated green card. */
+.cosmetic-wallet {
+    background: linear-gradient(155deg, #1b252d 0%, #111b24 100%);
+    border-color: rgba(151, 182, 192, 0.30);
+    box-shadow:
+        inset 0 1px 0 rgba(225, 244, 249, 0.045),
+        0 5px 18px rgba(0, 0, 0, 0.12);
+}
+
+.cosmetic-wallet h3 {
+    color: #f2d78c;
+    letter-spacing: 0.09em;
+}
+
+/* Confirmed wallet balance: visually primary. */
+#cosmetic-wallet {
+    padding: 10px 11px;
+    margin: 9px 0;
+    background: rgba(8, 17, 25, 0.56);
+    border-left: 3px solid #d9bd72;
+    border-radius: 3px 6px 6px 3px;
+    color: #f4efd8;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Pending rewards remain visually secondary. */
+#cosmetic-receipt-status {
+    padding-top: 9px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(169, 194, 200, 0.17);
+    color: #b9cbd0;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.cosmetic-wallet button {
+    background: #294450;
+    border-color: #64828a;
+    color: #edf5f6;
+}
+
+.cosmetic-wallet button:hover:not(:disabled) {
+    background: #345562;
+}
+
+/* Shop cards: improve reading rhythm without replacing the layout. */
+.pz-shop-gallery {
+    gap: clamp(11px, 1.4vw, 19px);
+    scroll-padding-inline: 12px;
+}
+
+.pz-shop-gallery .cerco-skin-card {
+    box-sizing: border-box;
+    min-width: 0;
+    gap: 8px;
+}
+
+.cerco-skin-card > p:not(.cosmetic-price) {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.cerco-skin-card .cosmetic-price {
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Narrow layouts: give each cosmetic card readable width. */
+@media (max-width: 760px) {
+    .cosmetic-wallet {
+        padding: 11px;
+    }
+
+    #cosmetic-wallet {
+        padding: 9px;
+        font-size: 12px;
+    }
+
+    .pz-shop-gallery .cerco-skin-card {
+        flex: 0 0 min(74vw, 258px);
+        min-width: min(74vw, 258px);
+    }
+}
+
+/* Wider displays: allow cards to breathe, without fake content. */
+@media (min-width: 1440px) {
+    .pz-shop-gallery .cerco-skin-card {
+        flex-basis: clamp(212px, 18vw, 286px);
+    }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+    .cosmetic-wallet button {
+        transition: none;
+    }
+}
+
+/* === END CERCO VISUAL 48A === */
