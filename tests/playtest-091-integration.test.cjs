@@ -57,3 +57,15 @@ test('OP60: beta isolated from server sessions and economy', () => {
     /'0\.9\.1'\]\.includes\(live\.gameVersion\)/
   );
 });
+test('OP61: correct header for production and beta', () => {
+  const html = fs.readFileSync('index.html', 'utf8');
+  const source = fs.readFileSync(
+    'src/js/cerco-playtest-091.js', 'utf8'
+  );
+
+  assert.match(html, /<small>0\.9\.0 BETA<\/small>/);
+  assert.match(source, /header\.querySelector\('\.cerco-header-brand > small'\)/);
+  assert.match(source, /versionLabel\.textContent = '0\.9\.1 BETA'/);
+  assert.match(source, /document\.title = 'CERCO — Playtest 0\.9\.1'/);
+  assert.match(source, /if \(!selectBeta\(\)\) return;/);
+});

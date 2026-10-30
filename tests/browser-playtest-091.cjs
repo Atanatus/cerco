@@ -119,9 +119,19 @@ async function main() {
       1
     );
 
+    assert.equal(
+      await stable.page.locator('.cerco-header-brand > small').innerText(),
+      '0.9.0 BETA'
+    );
+
+    assert.equal(
+      await stable.page.title(),
+      'CERCO — Public beta 0.9.0'
+    );
+
     await stable.context.close();
 
-    console.log('PASS: normal PLAY remains CERCO 0.9.0.');
+    console.log('PASS: normal PLAY and header remain CERCO 0.9.0.');
 
     // Direct beta link through the real ATANATUS interface.
     const desktop = await createPage({width:1366,height:768});
@@ -141,6 +151,16 @@ async function main() {
     assert.equal(
       await page.locator('#cerco-playtest-label').isVisible(),
       true
+    );
+
+    assert.equal(
+      await page.locator('.cerco-header-brand > small').innerText(),
+      '0.9.1 BETA'
+    );
+
+    assert.equal(
+      await page.title(),
+      'CERCO — Playtest 0.9.1'
     );
 
     assert.equal(
@@ -271,9 +291,14 @@ async function main() {
       '091'
     );
 
+    assert.equal(
+      await manual.page.locator('.cerco-header-brand > small').innerText(),
+      '0.9.1 BETA'
+    );
+
     await manual.context.close();
 
-    console.log('PASS: TEST 0.9.1 button launches the beta.');
+    console.log('PASS: TEST 0.9.1 launches beta and updates the header.');
 
     // Mobile gameplay.
     const mobile = await createPage(

@@ -21,6 +21,13 @@
     throw new Error('[OP60] Production source changed');
   }
 
+  // OP61: identify the existing header label, never create a duplicate.
+  const versionLabel = header.querySelector('.cerco-header-brand > small');
+
+  if (!versionLabel || versionLabel.textContent.trim() !== '0.9.0 BETA') {
+    throw new Error('[OP61] Header version contract changed');
+  }
+
   const button = document.createElement('button');
   button.id = 'cerco-test-091-button';
   button.type = 'button';
@@ -57,6 +64,10 @@
     frame.dataset.src = BETA;
 
     document.documentElement.dataset.cercoPlaytest = '091';
+
+    // Update only after the beta was selected successfully.
+    versionLabel.textContent = '0.9.1 BETA';
+    document.title = 'CERCO — Playtest 0.9.1';
 
     badge.hidden = false;
     button.hidden = true;
