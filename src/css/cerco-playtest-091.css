@@ -1,0 +1,83 @@
+/* CERCO OP60 V2 — Gameplay-only beta entry. */
+
+.cerco-game-host .cerco-playtest-button {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(15px, 7%, 35px);
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: min(220px, calc(100% - 24px));
+  min-height: 44px;
+
+  padding: 10px 16px;
+
+  transform: translateX(-50%) skewX(-12deg);
+
+  border: 1px solid #6b9290;
+  border-radius: 3px;
+
+  background: linear-gradient(#253e43, #14272e);
+  box-shadow: inset 0 1px #ffffff20, 1px 2px #0008;
+
+  color: #d2f5e9;
+  font: 400 17px/1 var(--cerco-font);
+  letter-spacing: 0.06em;
+
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.cerco-game-host .cerco-playtest-button > span {
+  transform: skewX(12deg);
+  pointer-events: none;
+}
+
+.cerco-game-host .cerco-playtest-button:hover {
+  border-color: #b3e6d1;
+  background: linear-gradient(#315254, #1e363a);
+}
+
+.cerco-game-host .cerco-playtest-button:focus-visible {
+  outline: 2px solid #d0f4e0;
+  outline-offset: 4px;
+}
+
+.cerco-game-host .cerco-playtest-button:active {
+  transform: translateX(-50%) skewX(-12deg) translateY(2px);
+}
+
+.cerco-game-host .cerco-playtest-button[hidden] {
+  display: none !important;
+}
+
+.app > .header .cerco-playtest-label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+
+  transform: translateY(-50%);
+
+  color: #e6d88f;
+  font: 400 12px/1.2 var(--cerco-font);
+  letter-spacing: 0.03em;
+
+  pointer-events: none;
+  z-index: 2;
+}
+
+.app > .header .cerco-playtest-label[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .app > .header .cerco-playtest-label {
+    top: 7px;
+    left: 7px;
+    transform: none;
+    font-size: 10px;
+  }
+}
