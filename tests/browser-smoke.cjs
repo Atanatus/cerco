@@ -147,6 +147,49 @@ async function main() {
     assert.equal(await a.locator('#player-display-name').innerText(), guestA.displayName);
     await require('./shop-geometry.cjs')(a, shots);
     results.push('Shop geometry: six viewports, full cards before next heading, scrolling and unobstructed buttons.');
+    await a.setViewportSize({width:1366,height:768});
+
+    const header52 = await a.evaluate(() => {
+      const header = document.querySelector('.app > .header');
+      const nav = document.querySelector('.cerco-global-nav');
+      const brand = header?.querySelector('.cerco-header-brand');
+      const wallet = header?.querySelector('#cosmetic-wallet-open');
+      const music = document.getElementById('music-player');
+      const stats = document.querySelector('.player-panel .player-stats');
+
+      if (!header || !nav || !brand || !wallet || !music || !stats) {
+        return {error:'Missing component'};
+      }
+
+      const rect = el => el.getBoundingClientRect();
+      const h = rect(header);
+      const n = rect(nav);
+      const b = rect(brand);
+      const w = rect(wallet);
+      const m = rect(music);
+      const s = rect(stats);
+
+      return {
+        moved: nav.parentElement === header &&
+          !document.querySelector('.player-panel .player-navigation'),
+        count: nav.querySelectorAll(':scope > button').length,
+        labels: Array.from(nav.children, el => el.textContent.trim()),
+        center: Math.abs((b.left+b.right)/2-(h.left+h.right)/2)<3,
+        separated: n.right+6<=b.left && b.right+6<=w.left,
+        musicRaised: m.top>=s.bottom-2 && m.top<=s.bottom+20,
+        walletPresent: wallet.getAttribute('aria-controls')==='cosmetic-wallet-dialog'
+      };
+    });
+
+    assert.equal(header52.moved,true,'Original navigation moved into header');
+    assert.equal(header52.count,3,'Exactly three navigation buttons');
+    assert.deepEqual(header52.labels,['LEADERBOARDS','SHOP','SKINS']);
+    assert.equal(header52.center,true,'CERCO logo remains centered');
+    assert.equal(header52.separated,true,'Header controls do not overlap');
+    assert.equal(header52.musicRaised,true,'Music follows player statistics');
+    assert.equal(header52.walletPresent,true,'Wallet trigger remains unchanged');
+
+    results.push('OP52: original navigation in header; CERCO centered; wallet right; music raised.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);
@@ -615,6 +658,38 @@ async function main() {
     for (const size of [{ width: 1366, height: 768 }, {width:1920,height:1080}, {width:1024,height:768},
       {width:768,height:1024}, { width: 820, height: 700 }, { width: 390, height: 844 }]) {
       await a.setViewportSize(size);
+      const navFits=await a.evaluate(()=>{
+        const header=document.querySelector('.app > .header');
+        const nav=header?.querySelector('.cerco-global-nav');
+        const brand=header?.querySelector('.cerco-header-brand');
+        const wallet=header?.querySelector('#cosmetic-wallet-open');
+        if(!header||!nav||!brand||!wallet)return false;
+
+        const h=header.getBoundingClientRect();
+        const n=nav.getBoundingClientRect();
+        const b=brand.getBoundingClientRect();
+        const w=wallet.getBoundingClientRect();
+
+        const buttons=Array.from(nav.querySelectorAll(':scope > button'));
+        const areas=buttons.map(x=>x.getBoundingClientRect());
+
+        const within=areas.every(r=>
+          r.left>=h.left-2 &&
+          r.right<=h.right+2 &&
+          r.top>=h.top-2 &&
+          r.bottom<=h.bottom+2);
+
+        const separated=innerWidth<=680
+          ? n.top>=b.bottom-2 && n.top>=w.bottom-2
+          : n.right<=b.left-3 && b.right<=w.left-3;
+
+        const ordered=areas.every((r,i)=>
+          i===0 || r.left>=areas[i-1].right-2);
+
+        return within && separated && ordered;
+      });
+
+      assert.equal(navFits,true,'OP52 navigation geometry at '+size.width);
       assert.equal(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Horizontal overflow at ' + size.width);
       await a.locator('#music-track').evaluate(el => { el.textContent='Last Train to Jongno · Cypress and Silk'; });
       const musicGeometry = await a.evaluate(() => {

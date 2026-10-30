@@ -1,0 +1,226 @@
+/* ========================================================
+   CERCO OP52 — GLOBAL HEADER NAVIGATION
+   Original navigation nodes, no duplicated controls.
+   ======================================================== */
+
+/* Keep the central CERCO identity independent of navigation. */
+.header {
+  position: relative;
+}
+
+.header .cerco-global-nav {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  right: auto;
+  transform: translateY(-50%);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  align-content: normal;
+
+  flex: 0 0 auto;
+  width: max-content;
+  height: 36px;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.header .cerco-global-nav > button {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+  align-self: center;
+  justify-self: auto;
+
+  width: auto;
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  margin: 0;
+  padding: 0 13px;
+
+  border: 1px solid #62757a;
+  border-top-color: #82989b;
+  border-bottom-color: #26383d;
+  border-radius: 3px;
+
+  background: linear-gradient(
+    180deg,
+    #26373d 0%,
+    #1c292e 52%,
+    #141f24 100%
+  );
+
+  color: #eef5f3;
+  font: 400 13px/1 var(--cerco-font);
+  letter-spacing: .025em;
+  white-space: nowrap;
+
+  transform: skewX(-12deg);
+  transform-origin: center;
+
+  overflow: visible;
+  cursor: pointer;
+  text-shadow: 0 1px #000;
+
+  box-shadow:
+    inset 0 1px #ffffff20,
+    inset 0 -2px #0006,
+    1px 2px #0008;
+
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 90ms ease;
+}
+
+.header .cerco-global-nav > button:nth-child(1) {
+  min-width: 128px;
+}
+
+.header .cerco-global-nav > button:nth-child(2),
+.header .cerco-global-nav > button:nth-child(3) {
+  min-width: 66px;
+}
+
+/* Counter-skew the labels to keep text perfectly readable. */
+.header .cerco-global-nav .cerco-nav-label {
+  display: block;
+  transform: skewX(12deg);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.header .cerco-global-nav > button:hover {
+  background: linear-gradient(
+    180deg,
+    #344e52,
+    #25383e
+  );
+  border-color: #a8c9c1;
+  color: #ffffff;
+}
+
+.header .cerco-global-nav > button:active {
+  transform: skewX(-12deg) translateY(2px);
+  background: #122027;
+  box-shadow: inset 0 2px 5px #0009;
+}
+
+.header .cerco-global-nav > button:focus-visible {
+  outline: 2px solid #d8e9bc;
+  outline-offset: 3px;
+}
+
+/* The original right-column navigation no longer occupies space. */
+/* The music player now follows the player's statistics naturally. */
+.player-panel .music-player {
+  margin-top: 8px;
+  align-self: start;
+}
+
+/* At narrow widths the navigation gets its own header row.
+   The logo remains centered and the wallet remains on the right. */
+@media (max-width: 680px) {
+  .app {
+    grid-template-rows:
+      96px
+      minmax(540px, 75vh)
+      auto
+      minmax(520px, 65vh)
+      32px;
+  }
+
+  .header .cerco-header-brand {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 23px;
+  }
+
+  .header .cerco-wallet-trigger {
+    top: 4px;
+    right: 7px;
+    transform: none;
+  }
+
+  .header .cerco-global-nav {
+    top: auto;
+    bottom: 6px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+
+    display: flex;
+    justify-content: center;
+
+    width: auto;
+    height: 40px;
+    gap: 10px;
+  }
+
+  .header .cerco-global-nav > button {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .header .cerco-global-nav {
+    gap: 8px;
+  }
+
+  .header .cerco-global-nav > button {
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  .header .cerco-global-nav > button:nth-child(1) {
+    min-width: 112px;
+  }
+
+  .header .cerco-global-nav > button:nth-child(2),
+  .header .cerco-global-nav > button:nth-child(3) {
+    min-width: 58px;
+  }
+}
+
+@media (pointer: coarse) {
+  .header .cerco-global-nav {
+    height: 44px;
+  }
+
+  .header .cerco-global-nav > button {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header .cerco-global-nav > button {
+    transition: none;
+  }
+}
