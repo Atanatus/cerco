@@ -1,0 +1,61 @@
+/* CERCO OP65 — MINIMAL CHAT AND TEXTUAL WALLET */
+
+/* Remove redundant visual chrome, not the live connection logic. */
+.sidebar.chat-panel .chat-title {
+  display: none !important;
+}
+
+.sidebar.chat-panel .chat-signal-state,
+.sidebar.chat-panel #chat-status {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.sidebar.chat-panel .chat-rules {
+  margin-top: 10px;
+}
+
+.app > .header .cerco-wallet-trigger {
+  width: 88px;
+  min-width: 88px;
+  padding: 0 10px;
+  color: #eef5f3;
+}
+
+.app > .header .cerco-wallet-trigger > .cerco-wallet-label {
+  display: block;
+  font: 400 13px/1 var(--cerco-font);
+  letter-spacing: .025em;
+  white-space: nowrap;
+  transform: skewX(12deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+@media (min-width: 901px) {
+  .app > .header .cerco-global-nav {
+    right: 108px;
+  }
+}
+
+.app > .header .cerco-wallet-trigger:hover,
+.app > .header .cerco-wallet-trigger[aria-expanded="true"] {
+  border-color: #a8c9c1;
+  color: #ffffff;
+}
+
+@media (max-width: 420px) {
+  .app > .header .cerco-wallet-trigger > .cerco-wallet-label {
+    font-size: 11px;
+  }
+}

@@ -10,10 +10,12 @@ test('OP58 wallet matches navigation without changing handlers', () => {
   assert.match(css, /CERCO OP58/);
   assert.match(css, /cerco-wallet-trigger/);
   assert.match(css, /translateY\(-50%\) skewX\(-12deg\)/);
-  assert.match(css, /cerco-wallet-trigger > svg/);
+  assert.match(css, /cerco-wallet-trigger > \.cerco-wallet-label/);
   assert.match(css, /transform:\s*skewX\(12deg\)/);
   assert.match(nav, /transform:\s*skewX\(-12deg\)/);
 
+  assert.match(wallet, /walletLabel\.textContent = 'WALLET'/);
+  assert.doesNotMatch(wallet, /<svg/);
   assert.match(wallet, /dialog\.showModal\(\)/);
   assert.match(wallet, /aria-expanded/);
   assert.match(wallet, /dialog\.addEventListener\('close'/);

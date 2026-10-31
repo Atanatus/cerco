@@ -149,8 +149,8 @@ async function main() {
     );
 
     assert.equal(
-      await page.locator('#cerco-playtest-label').isVisible(),
-      true
+      await page.locator('#cerco-playtest-label').count(),
+      0
     );
 
     assert.equal(

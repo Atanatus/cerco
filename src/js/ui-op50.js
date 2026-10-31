@@ -27,18 +27,10 @@
   trigger.setAttribute('aria-controls', 'cosmetic-wallet-dialog');
   trigger.setAttribute('aria-expanded', 'false');
 
-  trigger.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24" width="25" height="25"
-      fill="none" stroke="currentColor" stroke-width="1.8"
-      stroke-linecap="round" stroke-linejoin="round"
-      aria-hidden="true">
-      <path d="M4 7V5.5A2.5 2.5 0 0 1 6.5 3H18"/>
-      <rect x="3" y="6" width="18" height="15" rx="2"/>
-      <path d="M15 12h6v5h-6a2.5 2.5 0 0 1 0-5Z"/>
-      <circle cx="16" cy="14.5" r=".7"
-        fill="currentColor" stroke="none"/>
-    </svg>`;
+  const walletLabel = document.createElement('span');
+  walletLabel.className = 'cerco-wallet-label';
+  walletLabel.textContent = 'WALLET';
+  trigger.append(walletLabel);
 
   header.appendChild(trigger);
 

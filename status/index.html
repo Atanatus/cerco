@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <title>CERCO / STATUS</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Consolas, "Courier New", monospace;
+      background: #0b1015;
+      color: #e4edef;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0b1015;
+    }
+
+    main {
+      width: min(720px, calc(100% - 32px));
+      margin: 48px auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid #33424a;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 5vw, 34px);
+      font-weight: 500;
+      letter-spacing: .11em;
+    }
+
+    a {
+      color: #b0d4dc;
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .subtitle {
+      margin: 20px 0 24px;
+      color: #92aab2;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      border-top: 1px solid #32414a;
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: 32px minmax(0,1fr);
+      align-items: center;
+      gap: 12px;
+      min-height: 69px;
+      padding: 12px 10px;
+      border-bottom: 1px solid #27363e;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      font-size: 20px;
+      font-weight: 700;
+      border: 1px solid #576771;
+      color: #a9b8bf;
+      background: #172128;
+    }
+
+    li[data-state="up"] .mark {
+      color: #bcffe0;
+      border-color: #397f61;
+      background: #153f30;
+    }
+
+    li[data-state="down"] .mark {
+      color: #ffd2c9;
+      border-color: #96534e;
+      background: #4d2222;
+    }
+
+    strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .045em;
+    }
+
+    small {
+      display: block;
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #9caeb5;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      min-height: 42px;
+      padding: 0 19px;
+      border: 1px solid #687e84;
+      border-radius: 2px;
+      background: #203139;
+      color: #f1f8f6;
+      font: 12px Consolas, monospace;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: .6;
+    }
+
+    button:focus-visible, a:focus-visible {
+      outline: 2px solid #c5f8d8;
+      outline-offset: 4px;
+    }
+
+    .footnote {
+      margin: 20px 0;
+      color: #869ca5;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 520px) {
+      main { margin: 22px auto; }
+      header { align-items: flex-start; }
+      h1 { font-size: 22px; }
+      li { padding-inline: 5px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>CERCO / STATUS</h1>
+      <a href="/" aria-label="Volver a CERCO">BACK</a>
+    </header>
+
+    <p class="subtitle">
+      Diagnóstico directo de los servicios públicos.
+      Verde = comprobación correcta. Rojo = error o servicio no disponible.
+    </p>
+
+    <ul id="services" aria-label="Estado de servicios">
+      <li data-service="web" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>WEB</strong><small>Comprobando sitio principal…</small></div>
+      </li>
+
+      <li data-service="api" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>API</strong><small>Comprobando endpoint de salud…</small></div>
+      </li>
+
+      <li data-service="chat" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>CHAT / SALA</strong><small>Comprobando disponibilidad…</small></div>
+      </li>
+
+      <li data-service="ws" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>WEBSOCKET</strong><small>Comprobando apertura de conexión…</small></div>
+      </li>
+
+      <li data-service="reconnect" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>CLIENTE DE RECONEXIÓN</strong><small>Comprobando código publicado…</small></div>
+      </li>
+
+      <li data-service="moderation" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>PROTECCIÓN DE MODERACIÓN</strong><small>Comprobando restricción de acceso…</small></div>
+      </li>
+
+      <li data-service="rankings" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>RANKINGS / BASE DE DATOS</strong><small>Comprobando consulta pública…</small></div>
+      </li>
+
+      <li data-service="game090" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>CERCO 0.9.0</strong><small>Comprobando recurso de juego…</small></div>
+      </li>
+
+      <li data-service="game091" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>CERCO 0.9.1 BETA</strong><small>Comprobando recurso de juego…</small></div>
+      </li>
+
+      <li data-service="avatar" data-state="checking">
+        <b class="mark" aria-hidden="true">·</b>
+        <div><strong>FOTOS DE PERFIL</strong><small>Comprobando imagen predeterminada…</small></div>
+      </li>
+    </ul>
+
+    <div class="actions">
+      <button type="button" id="refresh">RECHECK</button>
+      <small id="last-check" role="status" aria-live="polite">Comprobando…</small>
+    </div>
+
+    <p class="footnote">
+      Una comprobación verde confirma exclusivamente lo indicado en su descripción.
+      El WebSocket verifica el handshake sin iniciar sesión. El cliente de reconexión
+      verifica el código publicado, no simula una caída real.
+      La protección de moderación comprueba el rechazo de una petición sin credenciales.
+      No se ejecutan compras, creación de partidas ni escrituras de base de datos.
+    </p>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const API = 'https://cerco-api.atanatus.workers.dev';
+      const refresh = document.getElementById('refresh');
+      const last = document.getElementById('last-check');
+
+      function mark(id, up, description) {
+        const row = document.querySelector('[data-service="' + id + '"]');
+        if (!row) return;
+
+        row.dataset.state = up ? 'up' : 'down';
+        row.querySelector('.mark').textContent = up ? '✓' : '✕';
+        row.querySelector('small').textContent = description;
+        row.setAttribute(
+          'aria-label',
+          (up ? 'Correcto: ' : 'Error: ') +
+          row.querySelector('strong').textContent
+        );
+      }
+
+      function checking() {
+        document.querySelectorAll('[data-service]').forEach(row => {
+          row.dataset.state = 'checking';
+          row.querySelector('.mark').textContent = '·';
+          row.querySelector('small').textContent = 'Comprobando…';
+        });
+      }
+
+      async function request(url, method = 'GET') {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 7000);
+
+        try {
+          return await fetch(url, {
+            method,
+            cache: 'no-store',
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      async function checkJson(id, url, validate, successLabel) {
+        try {
+          const response = await request(url);
+          const data = await response.json();
+          const good = response.ok && validate(data);
+
+          mark(id, good, good ? successLabel : 'Respuesta no válida o servicio caído');
+          return good;
+        } catch (_) {
+          mark(id, false, 'Sin respuesta válida');
+          return false;
+        }
+      }
+
+      async function checkStatic(id, path, label) {
+        try {
+          const response = await request(path, 'HEAD');
+          const good = response.ok;
+
+          mark(id, good, good ? label : 'Recurso no disponible');
+        } catch (_) {
+          mark(id, false, 'No se pudo consultar el recurso');
+        }
+      }
+
+      async function checkWeb() {
+        try {
+          const response = await request('/index.html');
+          const body = await response.text();
+          const good = response.ok && body.includes('id="chat-messages"');
+
+          mark('web', good, good ? 'Página principal accesible' : 'La web no responde correctamente');
+        } catch (_) {
+          mark('web', false, 'No se pudo cargar la web');
+        }
+      }
+
+      async function checkModeration() {
+        try {
+          // Deliberately unauthenticated; no admin data or secrets.
+          const response = await request(API + '/chat/moderation');
+          const body = await response.json();
+
+          const good = response.status === 403 &&
+            body?.error === 'forbidden';
+
+          mark(
+            'moderation',
+            good,
+            good
+              ? 'El acceso sin credenciales está bloqueado'
+              : 'La protección no respondió como se esperaba'
+          );
+        } catch (_) {
+          mark('moderation', false, 'No se pudo verificar la protección');
+        }
+      }
+
+      async function checkReconnectionClient() {
+        try {
+          const response = await request('/src/js/public-chat.js');
+          const js = await response.text();
+
+          const good = response.ok &&
+            js.includes('STATUS_BACKOFF_MS') &&
+            js.includes("ws.addEventListener('close'") &&
+            js.includes('reconnectTimer = setTimeout(connect, delay)');
+
+          mark(
+            'reconnect',
+            good,
+            good
+              ? 'Código de recuperación y reintentos publicado'
+              : 'Código de reconexión ausente o inaccesible'
+          );
+        } catch (_) {
+          mark('reconnect', false, 'Cliente de reconexión inaccesible');
+        }
+      }
+
+      async function checkSocket() {
+        return new Promise(resolve => {
+          let socket;
+          let finished = false;
+
+          const timeout = setTimeout(
+            () => finish(false, 'No se estableció la conexión'),
+            7000
+          );
+
+          function finish(ok, message) {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timeout);
+
+            mark('ws', ok, message);
+
+            try {
+              if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.close(1000, 'Status probe');
+              }
+            } catch (_) {}
+
+            resolve(ok);
+          }
+
+          try {
+            socket = new WebSocket(
+              'wss://cerco-api.atanatus.workers.dev/chat/socket'
+            );
+
+            socket.onopen = () => finish(
+              true,
+              'Handshake confirmado; conexión cerrada inmediatamente'
+            );
+
+            socket.onerror = () => finish(
+              false,
+              'No fue posible abrir el WebSocket'
+            );
+
+            socket.onclose = () => {
+              if (!finished) finish(false, 'Conexión rechazada o cerrada');
+            };
+          } catch (_) {
+            finish(false, 'WebSocket no disponible');
+          }
+        });
+      }
+
+      async function run() {
+        if (refresh.disabled) return;
+
+        refresh.disabled = true;
+        last.textContent = 'Comprobando…';
+        checking();
+
+        const chat = checkJson(
+          'chat',
+          API + '/chat/status',
+          data => data?.available === true && data.paused === false,
+          'Sala disponible; Durable Object responde'
+        );
+
+        const checks = [
+          checkWeb(),
+          checkJson(
+            'api',
+            API + '/health',
+            data => data?.service === 'cerco-api' && data.status === 'ok',
+            'Health endpoint correcto'
+          ),
+          checkJson(
+            'rankings',
+            API + '/leaderboards?kind=guest&metric=score&ruleset=CERCO-0.9.0',
+            data => data?.leaderboard === 'guest' &&
+              data.ruleset === 'CERCO-0.9.0' &&
+              Array.isArray(data.entries),
+            'Consulta de clasificación completada'
+          ),
+          checkModeration(),
+          checkReconnectionClient(),
+          checkStatic(
+            'game090',
+            '/games/CERCO/cerco_expedition_v090.html',
+            'Versión de producción accesible'
+          ),
+          checkStatic(
+            'game091',
+            '/games/CERCO/cerco_expedition_v091_beta.html',
+            'Versión beta accesible'
+          ),
+          checkStatic(
+            'avatar',
+            '/assets/profile-pictures/Profile_Picture1.png',
+            'Fotografía predeterminada accesible'
+          )
+        ];
+
+        checks.push((async () => {
+          const available = await chat;
+
+          if (available) {
+            await checkSocket();
+          } else {
+            mark('ws', false, 'Chat no disponible; prueba omitida');
+          }
+        })());
+
+        try {
+          await Promise.all(checks);
+        } finally {
+          last.textContent = 'Última comprobación: ' +
+            new Date().toLocaleTimeString('es-ES');
+          refresh.disabled = false;
+        }
+      }
+
+      refresh.addEventListener('click', () => {
+        void run();
+      });
+
+      void run();
+    })();
+  </script>
+</body>
+</html>

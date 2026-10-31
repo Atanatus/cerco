@@ -194,23 +194,25 @@ async function main() {
         '.header .cerco-global-nav > button'
       );
       const wallet = document.getElementById('cosmetic-wallet-open');
-      const icon = wallet?.querySelector('svg');
+      const label = wallet?.querySelector('.cerco-wallet-label');
 
-      if (!navButton || !wallet || !icon) return false;
+      if (!navButton || !wallet || !label) return false;
 
       const navStyle = getComputedStyle(navButton);
       const walletStyle = getComputedStyle(wallet);
-      const iconStyle = getComputedStyle(icon);
+      const labelStyle = getComputedStyle(label);
 
       const navMatrix = new DOMMatrixReadOnly(navStyle.transform);
       const walletMatrix = new DOMMatrixReadOnly(walletStyle.transform);
-      const iconMatrix = new DOMMatrixReadOnly(iconStyle.transform);
+      const labelMatrix = new DOMMatrixReadOnly(labelStyle.transform);
 
       const navRect = navButton.getBoundingClientRect();
       const walletRect = wallet.getBoundingClientRect();
 
       return Math.abs(navMatrix.c - walletMatrix.c) < 0.01 &&
-        Math.abs(walletMatrix.c + iconMatrix.c) < 0.01 &&
+        Math.abs(walletMatrix.c + labelMatrix.c) < 0.01 &&
+        label.textContent.trim() === 'WALLET' &&
+        !wallet.querySelector('svg') &&
         Math.abs(navRect.height - walletRect.height) < 2 &&
         navStyle.borderRadius === walletStyle.borderRadius &&
         navStyle.backgroundImage === walletStyle.backgroundImage &&
@@ -222,11 +224,11 @@ async function main() {
     assert.equal(
       walletShape,
       true,
-      'OP58 wallet matches nav parallelogram and keeps icon upright'
+      'OP65 wallet matches navigation geometry and displays upright text'
     );
 
     results.push(
-      'OP58: wallet matches navigation shape, icon counter-skewed.'
+      'OP65: wallet matches navigation shape with textual label.'
     );
 
     results.push('OP56: CERCO centered; navigation right; wallet right; music raised.');
@@ -250,6 +252,43 @@ async function main() {
 
     assert.equal(compactChat,true,'OP56 compact chat geometry');
     results.push('OP56: compact CHAT, no trash, larger message viewport.');
+    const op65Chat = await a.evaluate(() => {
+      const panel = document.querySelector('.sidebar.chat-panel');
+      const title = panel.querySelector('.chat-title');
+      const signal = panel.querySelector('.chat-signal-state');
+      const status = panel.querySelector('#chat-status');
+      const rules = panel.querySelector('.chat-rules');
+      const join = panel.querySelector('#chat-join');
+      const messages = panel.querySelector('#chat-messages');
+      const composer = panel.querySelector('#chat-form');
+
+      return {
+        titleHidden: getComputedStyle(title).display === 'none',
+        signalHidden: getComputedStyle(signal).position === 'absolute',
+        statusHidden: getComputedStyle(status).position === 'absolute',
+        statusAccessible: status.getAttribute('role') === 'status',
+        rulesAtTop: rules.getBoundingClientRect().top -
+          panel.getBoundingClientRect().top < 35,
+        controlsVisible: join.getBoundingClientRect().height > 20 &&
+          composer.getBoundingClientRect().height > 30,
+        messagesVisible: messages.getBoundingClientRect().height > 150
+      };
+    });
+
+    assert(
+      Object.values(op65Chat).every(Boolean),
+      'OP65 minimal chat and preserved live state'
+    );
+
+    await a.locator('#cosmetic-wallet-open').click();
+    assert.equal(
+      await a.locator('#cosmetic-wallet-dialog')
+        .evaluate(dialog => dialog.open),
+      true
+    );
+    await a.locator('#cosmetic-wallet-close').click();
+
+    results.push('OP65: minimal chat, accessible connection state and textual WALLET.');
     await a.locator('#chat-join').click(); await b.locator('#chat-join').click();
     await a.waitForFunction(() => !document.querySelector('#chat-input').disabled);
     await b.waitForFunction(() => !document.querySelector('#chat-input').disabled);

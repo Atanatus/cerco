@@ -154,7 +154,7 @@
 }
 
 /* Counter-skew the wallet symbol, as with navigation labels. */
-.app > .header .cerco-wallet-trigger > svg {
+.app > .header .cerco-wallet-trigger > .cerco-wallet-label {
   display: block;
   transform: skewX(12deg);
   transform-origin: center;

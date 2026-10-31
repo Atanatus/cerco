@@ -47,13 +47,7 @@
   button.append(buttonText);
   screen.append(button);
 
-  const badge = document.createElement('span');
-  badge.id = 'cerco-playtest-label';
-  badge.className = 'cerco-playtest-label';
-  badge.textContent = '0.9.1 · PLAYTEST';
-  badge.hidden = true;
 
-  header.append(badge);
 
   function selectBeta() {
     if (frame.hasAttribute('src') || screen.hidden) return false;
@@ -69,7 +63,7 @@
     versionLabel.textContent = '0.9.1 BETA';
     document.title = 'CERCO — Playtest 0.9.1';
 
-    badge.hidden = false;
+    // Version already visible in the centered CERCO header.
     button.hidden = true;
 
     return true;
