@@ -22,10 +22,10 @@ test('0.9.1 source files preserve audited SHA256', () => {
     assert.equal(hash(file), expected, file);
 });
 
-test('historical 0.9.0 remains unchanged while 0.9.2 is active', () => {
+test('historical 0.9.0 remains unchanged while 0.9.9 is active', () => {
   const html = fs.readFileSync('index.html','utf8');
 
-  assert.match(html, /games\/CERCO\/cerco_expedition_v098_beta\.html/);
+  assert.match(html, /games\/CERCO\/cerco_expedition_v099_beta\.html/);
   assert.doesNotMatch(html, /cerco_expedition_v091_beta\.html/);
 
   assert.equal(

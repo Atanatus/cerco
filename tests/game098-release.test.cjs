@@ -19,16 +19,16 @@ test('CERCO 0.9.8 distribution preserves exact audited bytes', () => {
   assert.match(html, /CERCO_BRIDGE/);
 });
 
-test('CERCO 0.9.8 is the active public beta', () => {
+test('CERCO 0.9.8 remains preserved while 0.9.9 is active', () => {
   const html = fs.readFileSync('index.html', 'utf8');
 
-  assert.match(html, /cerco_expedition_v098_beta\.html/);
-  assert.match(html, /0\.9\.8 BETA/);
-  assert.match(html, /Public beta 0\.9\.8/);
+  assert.match(html, /cerco_expedition_v099_beta\.html/);
+  assert.match(html, /0\.9\.9 BETA/);
+  assert.match(html, /Public beta 0\.9\.9/);
 
   assert.doesNotMatch(
     html,
-    /data-src="[^"]*cerco_expedition_v097_beta\.html"/
+    /data-src="[^"]*cerco_expedition_v098_beta\.html"/
   );
 });
 
@@ -58,6 +58,6 @@ test('CERCO 0.9.8 is accepted for cosmetic-only skins', () => {
 
   assert.match(
     skins,
-    /'0\.9\.7', '0\.9\.8'\]\.includes\(live\.gameVersion\)/
+    /'0\.9\.7', '0\.9\.8', '0\.9\.9'\]\.includes\(live\.gameVersion\)/
   );
 });
