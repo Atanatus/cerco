@@ -75,3 +75,234 @@
   .chat-title { padding-top: 10px; }
   .chat-brand strong { display: inline; font-size: 18px; }
 }
+
+/* ==========================================================================
+   OP62 OWN MESSAGE CONTRAST
+   Objetivo: que los mensajes propios sean MUCHO mas distinguibles visualmente
+   sin perder legibilidad ni romper la estructura del chat.
+   ========================================================================= */
+
+.signal-message.is-own,
+.signal-message[data-own="true"],
+.signal-card.is-own,
+.signal-card[data-own="true"],
+.public-chat-message.is-own,
+.public-chat-message[data-own="true"],
+.public-chat-entry.is-own,
+.public-chat-entry[data-own="true"],
+.public-chat-item.is-own,
+.public-chat-item[data-own="true"],
+.chat-message.is-own,
+.chat-message[data-own="true"] {
+  position: relative;
+  margin-left: 18px;
+  border: 1px solid rgba(118, 255, 228, 0.62);
+  background:
+    linear-gradient(180deg, rgba(18, 45, 43, 0.96) 0%, rgba(10, 28, 29, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(228, 255, 250, 0.16),
+    inset 0 0 0 1px rgba(84, 240, 210, 0.10),
+    0 0 0 1px rgba(3, 12, 20, 0.92),
+    0 10px 22px rgba(0, 0, 0, 0.35),
+    0 0 28px rgba(70, 235, 200, 0.12);
+  transform: translateX(6px);
+}
+
+.signal-message.is-own::before,
+.signal-message[data-own="true"]::before,
+.signal-card.is-own::before,
+.signal-card[data-own="true"]::before,
+.public-chat-message.is-own::before,
+.public-chat-message[data-own="true"]::before,
+.public-chat-entry.is-own::before,
+.public-chat-entry[data-own="true"]::before,
+.public-chat-item.is-own::before,
+.public-chat-item[data-own="true"]::before,
+.chat-message.is-own::before,
+.chat-message[data-own="true"]::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  background:
+    linear-gradient(180deg, rgba(121, 255, 230, 0.95) 0%, rgba(82, 226, 255, 0.88) 100%);
+  box-shadow: 0 0 12px rgba(94, 245, 216, 0.22);
+}
+
+.signal-message.is-own::after,
+.signal-message[data-own="true"]::after,
+.signal-card.is-own::after,
+.signal-card[data-own="true"]::after,
+.public-chat-message.is-own::after,
+.public-chat-message[data-own="true"]::after,
+.public-chat-entry.is-own::after,
+.public-chat-entry[data-own="true"]::after,
+.public-chat-item.is-own::after,
+.public-chat-item[data-own="true"]::after,
+.chat-message.is-own::after,
+.chat-message[data-own="true"]::after {
+  content: "YOU";
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 1px 6px 2px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #e9fffb;
+  border: 1px solid rgba(118, 255, 228, 0.45);
+  background: linear-gradient(180deg, rgba(42, 108, 98, 0.95), rgba(20, 55, 52, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 10px rgba(83, 239, 209, 0.14);
+  pointer-events: none;
+}
+
+.signal-message.is-own .message-author,
+.signal-message[data-own="true"] .message-author,
+.signal-card.is-own .message-author,
+.signal-card[data-own="true"] .message-author,
+.public-chat-message.is-own .message-author,
+.public-chat-message[data-own="true"] .message-author,
+.public-chat-entry.is-own .message-author,
+.public-chat-entry[data-own="true"] .message-author,
+.public-chat-item.is-own .message-author,
+.public-chat-item[data-own="true"] .message-author,
+.chat-message.is-own .message-author,
+.chat-message[data-own="true"] .message-author,
+.signal-message.is-own .chat-message-author,
+.signal-message[data-own="true"] .chat-message-author,
+.signal-card.is-own .chat-message-author,
+.signal-card[data-own="true"] .chat-message-author,
+.public-chat-message.is-own .chat-message-author,
+.public-chat-message[data-own="true"] .chat-message-author,
+.public-chat-entry.is-own .chat-message-author,
+.public-chat-entry[data-own="true"] .chat-message-author,
+.public-chat-item.is-own .chat-message-author,
+.public-chat-item[data-own="true"] .chat-message-author,
+.chat-message.is-own .chat-message-author,
+.chat-message[data-own="true"] .chat-message-author {
+  color: #ecfffb;
+  text-shadow: 0 0 10px rgba(115, 255, 228, 0.18);
+}
+
+.signal-message.is-own .message-body,
+.signal-message[data-own="true"] .message-body,
+.signal-card.is-own .message-body,
+.signal-card[data-own="true"] .message-body,
+.public-chat-message.is-own .message-body,
+.public-chat-message[data-own="true"] .message-body,
+.public-chat-entry.is-own .message-body,
+.public-chat-entry[data-own="true"] .message-body,
+.public-chat-item.is-own .message-body,
+.public-chat-item[data-own="true"] .message-body,
+.chat-message.is-own .message-body,
+.chat-message[data-own="true"] .message-body,
+.signal-message.is-own .chat-message-body,
+.signal-message[data-own="true"] .chat-message-body,
+.signal-card.is-own .chat-message-body,
+.signal-card[data-own="true"] .chat-message-body,
+.public-chat-message.is-own .chat-message-body,
+.public-chat-message[data-own="true"] .chat-message-body,
+.public-chat-entry.is-own .chat-message-body,
+.public-chat-entry[data-own="true"] .chat-message-body,
+.public-chat-item.is-own .chat-message-body,
+.public-chat-item[data-own="true"] .chat-message-body,
+.chat-message.is-own .chat-message-body,
+.chat-message[data-own="true"] .chat-message-body {
+  color: #f5fffd;
+}
+
+.signal-message.is-own .message-meta,
+.signal-message[data-own="true"] .message-meta,
+.signal-card.is-own .message-meta,
+.signal-card[data-own="true"] .message-meta,
+.public-chat-message.is-own .message-meta,
+.public-chat-message[data-own="true"] .message-meta,
+.public-chat-entry.is-own .message-meta,
+.public-chat-entry[data-own="true"] .message-meta,
+.public-chat-item.is-own .message-meta,
+.public-chat-item[data-own="true"] .message-meta,
+.chat-message.is-own .message-meta,
+.chat-message[data-own="true"] .message-meta,
+.signal-message.is-own .chat-message-meta,
+.signal-message[data-own="true"] .chat-message-meta,
+.signal-card.is-own .chat-message-meta,
+.signal-card[data-own="true"] .chat-message-meta,
+.public-chat-message.is-own .chat-message-meta,
+.public-chat-message[data-own="true"] .chat-message-meta,
+.public-chat-entry.is-own .chat-message-meta,
+.public-chat-entry[data-own="true"] .chat-message-meta,
+.public-chat-item.is-own .chat-message-meta,
+.public-chat-item[data-own="true"] .chat-message-meta,
+.chat-message.is-own .chat-message-meta,
+.chat-message[data-own="true"] .chat-message-meta {
+  color: #b7ddd5;
+}
+
+.signal-message.is-own .message-avatar,
+.signal-message[data-own="true"] .message-avatar,
+.signal-card.is-own .message-avatar,
+.signal-card[data-own="true"] .message-avatar,
+.public-chat-message.is-own .message-avatar,
+.public-chat-message[data-own="true"] .message-avatar,
+.public-chat-entry.is-own .message-avatar,
+.public-chat-entry[data-own="true"] .message-avatar,
+.public-chat-item.is-own .message-avatar,
+.public-chat-item[data-own="true"] .message-avatar,
+.chat-message.is-own .message-avatar,
+.chat-message[data-own="true"] .message-avatar,
+.signal-message.is-own .chat-avatar,
+.signal-message[data-own="true"] .chat-avatar,
+.signal-card.is-own .chat-avatar,
+.signal-card[data-own="true"] .chat-avatar,
+.public-chat-message.is-own .chat-avatar,
+.public-chat-message[data-own="true"] .chat-avatar,
+.public-chat-entry.is-own .chat-avatar,
+.public-chat-entry[data-own="true"] .chat-avatar,
+.public-chat-item.is-own .chat-avatar,
+.public-chat-item[data-own="true"] .chat-avatar,
+.chat-message.is-own .chat-avatar,
+.chat-message[data-own="true"] .chat-avatar {
+  border-color: rgba(118, 255, 228, 0.65);
+  box-shadow:
+    0 0 0 1px rgba(9, 19, 24, 0.85),
+    0 0 14px rgba(79, 235, 206, 0.14);
+}
+
+/* En movil, mantener identidad sin desplazar demasiado */
+@media (max-width: 760px) {
+  .signal-message.is-own,
+  .signal-message[data-own="true"],
+  .signal-card.is-own,
+  .signal-card[data-own="true"],
+  .public-chat-message.is-own,
+  .public-chat-message[data-own="true"],
+  .public-chat-entry.is-own,
+  .public-chat-entry[data-own="true"],
+  .public-chat-item.is-own,
+  .public-chat-item[data-own="true"],
+  .chat-message.is-own,
+  .chat-message[data-own="true"] {
+    margin-left: 10px;
+    transform: translateX(2px);
+  }
+
+  .signal-message.is-own::after,
+  .signal-message[data-own="true"]::after,
+  .signal-card.is-own::after,
+  .signal-card[data-own="true"]::after,
+  .public-chat-message.is-own::after,
+  .public-chat-message[data-own="true"]::after,
+  .public-chat-entry.is-own::after,
+  .public-chat-entry[data-own="true"]::after,
+  .public-chat-item.is-own::after,
+  .public-chat-item[data-own="true"]::after,
+  .chat-message.is-own::after,
+  .chat-message[data-own="true"]::after {
+    top: 6px;
+    right: 8px;
+    font-size: 9px;
+  }
+}
