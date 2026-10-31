@@ -4,11 +4,11 @@ const fs = require('node:fs');
 const crypto = require('node:crypto');
 const {createRuntime, schema} = require('./support.cjs');
 
-test('0.9.0 is the exact authorized handoff; older games remain available', () => {
+test('0.9.0 remains preserved; 0.9.2 is the active beta', () => {
   const bytes = fs.readFileSync('games/CERCO/cerco_expedition_v090.html');
   assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),
     '05b55f03e29f3ea130896670af0d0b0805faf9468e2ac7b80bb29447ac090397');
-  assert.match(fs.readFileSync('index.html','utf8'), /data-src="\.\/games\/CERCO\/cerco_expedition_v090.html"/);
+  assert.match(fs.readFileSync('index.html','utf8'), /data-src="\.\/games\/CERCO\/cerco_expedition_v092_beta\.html"/);
   for (const name of ['v080','v081_skins','v083_mobile']) assert.ok(fs.existsSync('games/CERCO/cerco_expedition_'+name+'.html'));
 });
 

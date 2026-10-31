@@ -450,7 +450,8 @@
     // OP60: 0.9.1 is an isolated gameplay playtest.
     // A real iframe has dataset; unit-test frame doubles may not.
     // Never register beta matches, reports or economic receipts.
-    if (frame.dataset?.cercoPlaytest === '091') return;
+    if (frame.dataset?.cercoPlaytest === '091' ||
+        frame.dataset?.src === './games/CERCO/cerco_expedition_v092_beta.html') return;
 
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
