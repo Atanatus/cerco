@@ -21,7 +21,7 @@ test('OP66: 0.9.5 is the primary public beta', () => {
 
   assert.equal(
     hash('games/CERCO/cerco_expedition_v095_beta.html'),
-    'BBF57F95C84086AE1DB4256C5BB7F129D1605213161E307C6702DC4E6EA29766'
+    '13D44FF6490305B44FEB452C54BD6C2481026DEDBAB00A3F397AB0F4C99BEEEC'
   );
 });
 
