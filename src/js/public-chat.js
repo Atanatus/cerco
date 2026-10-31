@@ -18,6 +18,37 @@
   let statusFailures = 0, lastStatusCheck = 0, lastReturnCheck = 0;
   const messages = new Map();
   const messageNodes = new Map();
+  const entrancePending = new Set();
+
+  const DEFAULT_AVATAR = './assets/profile-pictures/Profile_Picture1.png';
+  const TRUSTED_AVATAR = /^\/assets\/profile-pictures\/[A-Za-z0-9_-]+\.(?:png|webp)$/;
+
+  function pictureFor(participantId) {
+    if (!guest || participantId !== guest.participantId) {
+      return DEFAULT_AVATAR;
+    }
+
+    const profile = window.CERCO_GUEST_PROFILE?.getProfile();
+    const inventory = window.CERCO_COSMETICS?.getState()?.inventory;
+
+    if (
+      profile?.guestId !== participantId ||
+      inventory?.authenticated !== true ||
+      inventory.guest_id !== participantId ||
+      !Array.isArray(inventory.items)
+    ) {
+      return DEFAULT_AVATAR;
+    }
+
+    const equipped = inventory.items.find(item =>
+      item.product_id === inventory.equippedPictureId &&
+      item.category === 'profile_picture' &&
+      item.active === 1 &&
+      TRUSTED_AVATAR.test(item.asset_path)
+    );
+
+    return equipped?.asset_path || DEFAULT_AVATAR;
+  }
   let focusedParticipant = null, focusTimer;
   const empty = document.createElement('p'); empty.className = 'chat-empty';
   try { localStorage.removeItem('proyectoz.chat.v1'); } catch (_) {}
@@ -108,8 +139,29 @@
       if (!item) {
       item = document.createElement('article');
       item.className = 'chat-message'; item.dataset.messageId = m.id;
-      const avatar = document.createElement('span'); avatar.className = 'chat-avatar';
-      avatar.textContent = 'G' + m.displayName.slice(6, 7).toUpperCase(); avatar.setAttribute('aria-hidden', 'true');
+      const avatar = document.createElement('span');
+      avatar.className = 'chat-avatar';
+      avatar.setAttribute('aria-hidden', 'true');
+      avatar.textContent = 'G' + m.displayName.slice(6, 7).toUpperCase();
+
+      const photo = document.createElement('img');
+      photo.className = 'chat-avatar-photo';
+      photo.alt = '';
+      photo.width = 30;
+      photo.height = 30;
+      photo.decoding = 'async';
+      photo.loading = 'lazy';
+      photo.src = DEFAULT_AVATAR;
+
+      photo.addEventListener('error', () => {
+        if (photo.getAttribute('src') !== DEFAULT_AVATAR) {
+          photo.src = DEFAULT_AVATAR;
+        } else {
+          photo.hidden = true;
+        }
+      });
+
+      avatar.append(photo);
       const content = document.createElement('div'); content.className = 'chat-message-content';
       const name = document.createElement('button'); name.type = 'button'; name.className = 'chat-sender';
       name.textContent = m.displayName;
@@ -128,10 +180,31 @@
       });
       meta.append(ownership, time, report);
       content.append(name, text, meta); item.append(avatar, content);
+      if (
+        entrancePending.delete(m.id) &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        item.classList.add('chat-message-enter');
+
+        item.addEventListener('animationend', event => {
+          if (event.animationName === 'cercoChatTileLand') {
+            item.classList.remove('chat-message-enter');
+          }
+        }, { once: true });
+      }
+
       messageNodes.set(m.id, item); list.append(item);
       }
       const own = m.participantId === guest?.participantId;
       item.classList.toggle('chat-message-own', own);
+
+      const image = item.querySelector('.chat-avatar-photo');
+      const picture = pictureFor(m.participantId);
+
+      if (image && image.getAttribute('src') !== picture) {
+        image.hidden = false;
+        image.src = picture;
+      }
       item.querySelector('.chat-ownership').textContent = own ? 'YOU ↗' : 'GUEST';
       const focused = !!focusedParticipant && focusedParticipant === m.participantId;
       item.dataset.focused = String(focused);
@@ -221,7 +294,19 @@
         status.textContent = guest.displayName + ' · public guest chat';
         join.textContent = 'Leave chat'; join.disabled = false; controls(); render(); transmit();
         clearTimeout(stableTimer); stableTimer = setTimeout(() => { if (socket === ws && connected) reconnects = 0; }, 30000);
-      } else if (p?.type === 'message') { add(p.message); render(); }
+      } else if (p?.type === 'message') {
+        const id = p.message?.id;
+        const fresh = typeof id === 'string' &&
+          !messages.has(id) && !messageNodes.has(id);
+
+        add(p.message);
+
+        if (fresh && messages.has(id)) {
+          entrancePending.add(id);
+        }
+
+        render();
+      }
       else if (p?.type === 'ack' && pending?.clientId === p.clientId && Number.isSafeInteger(p.nextSequence)) {
         sequence = p.nextSequence; clearPending(); status.textContent = guest.displayName + ' · public guest chat';
       } else if (p?.type === 'history' && Array.isArray(p.messages) && p.messages.length <= 100) {
@@ -315,5 +400,6 @@
   window.addEventListener('pageshow', refreshOnReturn);
   document.addEventListener('visibilitychange', refreshOnReturn);
   window.addEventListener('pagehide', () => leave('Guest session ended. Join again when ready.'));
+  window.addEventListener('cerco:cosmetics', render);
   setInterval(render, 60000); controls(); render(); void checkAvailability({ force: true });
 })();

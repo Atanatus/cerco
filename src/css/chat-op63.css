@@ -1,0 +1,159 @@
+/* CERCO OP63 V3 — PIXEL-3D CHAT, PROFILE PICTURES, TILE LANDING */
+
+.chat-panel .chat-messages > .chat-message {
+  border-radius: 0;
+  border: 1px solid #5d7c8b;
+  border-top-color: #94bac3;
+  background: linear-gradient(155deg,#243947,#101d2b 75%);
+  box-shadow:
+    inset 1px 1px 0 #ffffff13,
+    inset -2px -2px 0 #05111d,
+    2px 2px 0 #030b13;
+}
+
+.chat-panel .chat-messages > .chat-message.chat-message-own {
+  position: relative;
+  margin-left: 12px;
+  margin-right: 5px;
+  margin-bottom: 6px;
+  border: 2px solid #56e7d1;
+  border-top-color: #c4fff2;
+  border-right-color: #38b6cc;
+  border-bottom-color: #1b7887;
+  background: linear-gradient(150deg,#246a71,#144750 48%,#0a2736);
+  box-shadow:
+    inset 2px 2px 0 #b4fff246,
+    inset -3px -3px 0 #04151c,
+    3px 3px 0 #12515a,
+    5px 5px 0 #020d16,
+    0 0 13px #35e5cf2b;
+}
+
+.chat-panel .chat-message.chat-message-own::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(#d9fff5,#3ee1ca,#138b9c);
+  box-shadow: -2px 0 0 #072c36;
+  pointer-events: none;
+}
+
+/* Square profile pictures with pixel-style 3D frames. */
+.chat-panel .chat-message .chat-avatar {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  margin: 4px 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #8caeba;
+  border-radius: 0;
+  background: #142934;
+  box-shadow: inset 1px 1px 0 #ffffff28,2px 2px 0 #04111a;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-avatar {
+  border-color: #a5ffef;
+  box-shadow:
+    inset 1px 1px 0 #ffffff44,
+    2px 2px 0 #03222a,
+    0 0 8px #61f8df4d;
+}
+
+.chat-panel .chat-avatar .chat-avatar-photo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+  z-index: 1;
+}
+
+.chat-panel .chat-avatar .chat-avatar-photo[hidden] {
+  display: none !important;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-sender {
+  color: #ecfffa;
+  background: linear-gradient(180deg,#256873,#164452);
+  text-shadow: 1px 1px #05333c;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-message-content > p {
+  color: #f4fffd;
+  background: linear-gradient(155deg,#103843,#092c38);
+  border-top-color: #5de3d3;
+  border-bottom-color: #216d77;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-message-meta {
+  background: #153e48;
+  color: #c5f7ec;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-ownership {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 4px;
+  border: 1px solid #b8fff0;
+  border-radius: 0;
+  background: #77e6d4;
+  color: #082d37;
+  font: bold 10px/1.2 'Courier New',monospace;
+  box-shadow: 2px 2px 0 #03212c;
+}
+
+.chat-panel .chat-message.chat-message-own .chat-message-meta > time {
+  color: #dafcf2;
+}
+
+@keyframes cercoChatTileLand {
+  0% {
+    opacity: .2;
+    transform: translate3d(0,-48px,0) scale(.97);
+    filter: brightness(1.25);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(0,5px,0) scale(1);
+    filter: brightness(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0,0,0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+.chat-panel .chat-message.chat-message-enter {
+  transform-origin: center top;
+  animation: cercoChatTileLand 460ms steps(7,end) both;
+  will-change: transform,opacity;
+}
+
+@media (max-width:420px) {
+  .chat-panel .chat-messages > .chat-message.chat-message-own {
+    margin-left: 8px;
+    margin-right: 4px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .chat-panel .chat-message.chat-message-enter {
+    animation: none !important;
+    will-change: auto;
+  }
+}

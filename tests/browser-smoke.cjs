@@ -260,9 +260,53 @@ async function main() {
     assert.equal(activeSockets.size, 2, 'Status rechecks must preserve healthy WebSockets');
     assert.equal(await a.locator('#chat-input').isDisabled(), false);
     const text = '<img src=x onerror="window.chatXss=true"> hello 👋';
+    // Observe the animation on a newly received live message.
+    await b.evaluate(() => {
+      window.__op63Seen = false;
+      const list = document.getElementById('chat-messages');
+      const observer = new MutationObserver(() => {
+        if (list.querySelector('.chat-message-enter')) {
+          window.__op63Seen = true;
+          observer.disconnect();
+        }
+      });
+      observer.observe(list, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    });
+
     await a.locator('#chat-input').fill(text); await a.locator('#chat-input').press('Enter');
     await b.locator('.chat-message-content p').filter({ hasText: text }).waitFor();
-    assert.equal(await b.locator('.chat-message img').count(), 0);
+    // User text must not create HTML images. Avatars are trusted UI.
+    assert.equal(await b.locator('.chat-message-content img').count(), 0);
+    assert.equal(await b.locator('.chat-avatar-photo').count(), 1);
+
+    const photo63 = await b.locator('.chat-avatar-photo').first()
+      .evaluate(async image => {
+        await image.decode();
+        const r = image.getBoundingClientRect();
+        return {
+          url: new URL(image.currentSrc).pathname,
+          valid: image.naturalWidth >= 64 &&
+            image.naturalWidth === image.naturalHeight,
+          visible: r.width >= 24 && r.height >= 24,
+          square: Math.abs(r.width-r.height) < 1
+        };
+      });
+
+    assert.equal(photo63.url,'/assets/profile-pictures/Profile_Picture1.png');
+    assert.equal(photo63.valid,true);
+    assert.equal(photo63.visible,true);
+    assert.equal(photo63.square,true);
+
+    await b.waitForFunction(
+      () => window.__op63Seen === true,
+      null,
+      {timeout:5000}
+    );
     assert.equal(await a.locator('.chat-message-own').count(), 1);
     assert.equal(await b.locator('.chat-message-own').count(), 0);
     assert.match(await b.locator('.chat-sender').innerText(), /^Guest [a-f0-9]{8}$/);
@@ -283,6 +327,57 @@ async function main() {
     assert.equal(await b.locator('#chat-signal').innerText(), 'LIVE');
     await b.locator('#chat-input').fill('Two browsers are connected.'); await b.locator('#chat-input').press('Enter');
     await a.locator('.chat-message-content p').filter({ hasText: 'Two browsers' }).waitFor();
+
+    const own63 = await a.locator('.chat-message-own')
+      .first().evaluate(el => {
+        const style = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        const container = document.getElementById('chat-messages')
+          .getBoundingClientRect();
+        return {
+          background:style.backgroundImage,
+          border:style.borderTopColor,
+          shadow:style.boxShadow,
+          margin:parseFloat(style.marginLeft),
+          badge:getComputedStyle(el.querySelector('.chat-ownership')).display,
+          inside:r.left >= container.left-1 && r.right <= container.right+1
+        };
+      });
+
+    const other63 = await a.locator(
+      '.chat-message:not(.chat-message-own)'
+    ).first().evaluate(el => {
+      const style = getComputedStyle(el);
+      return {
+        background:style.backgroundImage,
+        border:style.borderTopColor,
+        shadow:style.boxShadow,
+        margin:parseFloat(style.marginLeft)
+      };
+    });
+
+    assert.notEqual(own63.background,other63.background);
+    assert.notEqual(own63.border,other63.border);
+    assert.notEqual(own63.shadow,other63.shadow);
+    assert(own63.margin > other63.margin);
+    assert.notEqual(own63.badge,'none');
+    assert.equal(own63.inside,true);
+
+    const ownAvatar63 = await a.locator(
+      '.chat-message-own .chat-avatar-photo'
+    ).first().evaluate(async image => {
+      await image.decode();
+      return image.naturalWidth > 0 &&
+        image.getBoundingClientRect().width >= 24;
+    });
+    assert.equal(ownAvatar63,true);
+
+    await a.screenshot({
+      path:path.join(shots,'op63-pixel3d-chat.png'),
+      fullPage:true
+    });
+
+    results.push('OP63: real profile photos, own/other pixel-3D contrast and tile landing.');
     results.push('Two independent Chromium contexts exchange messages; XSS stays text; identity/avatars/time/own messages correct.');
     await a.locator('.chat-sender').first().focus();
     await a.keyboard.press('Enter');
