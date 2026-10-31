@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<!-- Extra comma/space-separated trusted parent origins for custom staging domains. -->
+<meta name="cerco-trusted-parent-origins" content="https://atanatus.com https://www.atanatus.com https://cerco.atanatus.com">
+<title>CERCO — Expedition · 0.9.4</title>
+<style>
+:root{color-scheme:dark;--bg:#090d15;--panel:#121d2b;--border:#304254;--muted:#9bb1c8;--white:#ebf5ff;--sky:#78d9f0;--gold:#f2ca77;--coral:#e47a75;--green:#86dfaa}
+*{box-sizing:border-box}html{min-height:100%}body{min-height:100vh;margin:0;background:radial-gradient(ellipse at 50% -35%,#20374a 0%,#0b1420 41%,var(--bg) 77%);color:var(--white);font:14px/1.45 system-ui,-apple-system,'Segoe UI',Arial,sans-serif}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #b5eeff;outline-offset:3px}button:disabled{opacity:.5;cursor:default}.app{max-width:1310px;margin:auto;padding:17px 17px 24px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:11px;flex-wrap:wrap}.brand{font-weight:950;font-size:29px;letter-spacing:.13em;line-height:1}.brand span{color:var(--sky)}.tag{font-size:10px;font-weight:750;letter-spacing:.16em;color:var(--muted);margin-top:6px}.topBtns{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.seedLabel{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;background:#111d2a;color:#a8bed1;border:1px solid #2a4053;border-radius:7px;padding:8px}.btn{border:1px solid #52728a;background:#24445c;color:#f2faff;border-radius:8px;padding:9px 13px;font-weight:800}.btn:hover:not(:disabled){background:#325a74}.btn.secondary{background:#172536;border-color:#344a5d}.btn.secondary:hover:not(:disabled){background:#24394d}.layout{display:grid;grid-template-columns:minmax(0,1fr) 264px;gap:13px}.main{min-width:0}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:9px}.metric{border:1px solid var(--border);border-radius:8px;background:var(--panel);padding:8px 11px}.metric label{display:block;color:var(--muted);font-size:10px;letter-spacing:.095em;text-transform:uppercase}.metric strong{display:block;font-size:20px;line-height:1.3;font-variant-numeric:tabular-nums}.arena{position:relative;overflow:hidden;border:1px solid #426078;border-radius:10px;background:#0e1723;box-shadow:0 12px 38px #0007}canvas{display:block;width:100%;height:auto;aspect-ratio:28/20;cursor:crosshair;touch-action:none}.toast{position:absolute;left:50%;top:10%;transform:translateX(-50%);pointer-events:none;text-shadow:0 3px 11px #000;font-weight:900;font-size:18px;letter-spacing:.04em;color:#ffe4a9;opacity:0;transition:opacity .15s;white-space:nowrap;line-height:1.4}.roomBadge{position:absolute;top:11px;left:11px;font-size:11px;font-weight:850;letter-spacing:.12em;line-height:1.4;color:#d3e8f7;background:#101c2bdc;border:1px solid #406178;padding:7px 10px;border-radius:6px;pointer-events:none}.stagebar{position:absolute;top:11px;right:11px;font-size:11px;color:#f1d49c;background:#152033d8;padding:6px 10px;border-radius:6px;pointer-events:none;line-height:1.5}#veil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#06101adf;line-height:1.5;padding:18px;overflow-y:auto}#veil.hidden{display:none}.modal{width:min(100%,500px);max-height:100%;overflow-y:auto;background:linear-gradient(150deg,#1b2c3d,#101b2b);border:1px solid #4d6f87;border-radius:12px;padding:22px 23px;box-shadow:0 18px 55px #000a}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#81d5eb}.eyebrow.safe{color:#95e6b3}.modal h2{font-size:24px;line-height:1.16;letter-spacing:-.025em;margin:9px 0}.modal p{color:#bacfe1;font-size:13px;margin:9px 0}.rerollControls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-top:12px}.rerollControls span{font-size:11px;color:#b4cbdb;font-variant-numeric:tabular-nums}.rerollControls .btn{padding:7px 11px;font-size:12px}.modal .subline{color:#8faac0;font-size:11px}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}.choices{display:grid;gap:8px;margin:16px 0 0}.upgrade{border:1px solid #40586d;background:#1b3043;color:#f1f7ff;border-radius:9px;display:flex;align-items:center;gap:11px;text-align:left;padding:10px 12px;width:100%;min-height:63px}.upgrade:hover{background:#29475d;border-color:#79b9d2}.uicon{display:grid;place-items:center;flex:0 0 41px;height:41px;border-radius:8px;background:#304c62;color:#d9f5ff;font-size:22px}.upgrade strong{display:block;font-size:13px}.upgrade small{display:block;font-size:11px;color:#b5cadd;margin-top:3px}.upgrade em{margin-left:auto;font-size:10px;color:#a1b9ce;font-style:normal;white-space:nowrap}.meters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.meter{background:#101b28;border:1px solid #2c4155;border-radius:8px;padding:8px 10px}.meter.full{grid-column:1/-1}.meterline{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#9eb6ca;font-size:10px;letter-spacing:.06em;margin-bottom:6px}.meterline span:last-child{color:#edf7ff;font-variant-numeric:tabular-nums}.track{height:9px;border-radius:7px;background:#273645;overflow:hidden}.fill{width:100%;height:100%;background:#82dea5;transition:width .09s}.fill.fire{background:#edc778}.fill.kills{background:#79bed7}.fill.shieldFill{background:#79a8f1}.meter[hidden]{display:none!important}.under{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:9px;color:#91abc0;font-size:11px}.legend{display:flex;gap:11px;flex-wrap:wrap}.dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}.sidebar{display:grid;align-content:start;gap:11px}.pane{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:13px}.pane h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#d5eaf9;margin:0 0 10px}.pane p{font-size:11px;color:#99adc0;margin:8px 0}.keys{display:grid;grid-template-columns:repeat(3,36px);justify-content:center;gap:4px;margin:10px 0}.key{background:#273c50;border:1px solid #486177;border-radius:5px;display:grid;place-items:center;height:32px;font-weight:800}.key.dim{background:#172537;color:#899caf}.control{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #26394c;padding:5px 0;color:#9bb2c5;font-size:11px}.control b{color:#eef5fc;font-size:11px}.log{font-size:11px;color:#aabed0;min-height:52px;max-height:164px;overflow-y:auto}.log div{border-left:2px solid #4b6d80;padding-left:7px;margin:7px 0}.pill{display:inline-block;border:1px solid #39566c;background:#1e3041;border-radius:5px;padding:2px 6px;color:#c8e1f3;font-size:11px;margin:3px 3px 3px 0}.rank{display:flex;justify-content:space-between;border-bottom:1px solid #2d3d4d;padding:6px 0;font-size:11px}.rank strong{color:#fff4da;font-variant-numeric:tabular-nums}.foot{font-size:10px;color:#7990a6;margin-top:13px}.helper{color:#94adbf;font-size:11px;line-height:1.5;margin-top:10px}.emphasis{color:#ffe3a8;font-weight:900}.buildEmpty{color:#91aabf;font-size:12px}.safeInfo{border:1px solid #426951;background:#1b362d9c;border-radius:9px;padding:10px 11px;margin:13px 0;font-size:12px;color:#c9f3d7}.translucent{opacity:.72}@media(max-width:930px){.layout{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:540px){.app{padding:11px 8px}.sidebar{grid-template-columns:1fr}.brand{font-size:24px}.metrics{grid-template-columns:repeat(2,1fr)}.metric strong{font-size:17px}.modal{padding:15px}.modal h2{font-size:20px}.roomBadge{font-size:9px;padding:4px 6px}.stagebar{font-size:9px;padding:4px 6px}}
+
+.fill.stamina{background:linear-gradient(90deg,#ca9553,#f5d27d)}.fill.combo{background:linear-gradient(90deg,#ad85eb,#f3c474)}
+.shopPanel{margin-top:10px;background:#122535;border:1px solid #3b675f;border-radius:9px;padding:12px}.shopPanel[hidden]{display:none!important}
+.shopHead{display:flex;justify-content:space-between;color:#c0f4d1;font-size:12px;letter-spacing:.07em}.shopHead span{font-weight:900;color:#f2c778}.shopNote{font-size:11px;color:#aec4c9}
+.shopItem{border:1px solid #355669;background:#192e3d;border-radius:8px;padding:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.shopItem b{font-size:12px}.shopItem small{display:block;font-size:11px;color:#a9bfce}.shopItem button{padding:6px 9px;white-space:nowrap;font-size:11px}.shopFoot{color:#a8bfb9;font-size:11px;margin-top:7px}
+@media(max-width:540px){.meters{grid-template-columns:1fr 1fr}.meterline{font-size:9px}}
+
+/* CERCO tactical UI: contained layout without page scrolling */
+html,body{height:100%;min-height:0;overflow:hidden}
+body{height:100dvh}
+.app{height:100dvh;max-width:1560px;padding:9px 13px 10px;display:flex;flex-direction:column;overflow:hidden}
+.top{flex:0 0 auto;min-height:41px;margin-bottom:7px;flex-wrap:nowrap;gap:8px}
+.brand{font-size:24px;line-height:1}.tag{margin-top:3px;font-size:8px;letter-spacing:.14em}
+.topBtns{flex-wrap:nowrap}.seedLabel{font-size:10px;padding:7px 9px}.top .btn{padding:7px 10px;font-size:12px}
+.layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,var(--game-column,1fr)) 250px;gap:10px;justify-content:center}
+.main{min-width:0;min-height:0;display:flex;flex-direction:column;position:relative}
+.metrics{flex:0 0 auto;margin-bottom:7px;gap:6px}
+.metric{padding:5px 9px;border-radius:7px;min-width:0}.metric label{font-size:9px}.metric strong{font-size:18px;line-height:1.2}
+.arenaStage{flex:1 1 auto;min-height:0;min-width:0;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.arena{flex:none;width:100%;height:100%;margin:auto;border-radius:9px;box-shadow:0 4px 22px #0008;min-width:0;min-height:0}
+.arena canvas{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:fill;aspect-ratio:auto}
+.roomBadge,.stagebar{font-size:10px;padding:5px 8px;top:8px}.roomBadge{left:8px}.stagebar{right:8px}
+.sidebar{height:100%;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;grid-template-columns:none;align-content:unset}
+.pane{padding:10px 11px;border-radius:8px}.pane h3{font-size:10px;margin:0 0 8px}
+.hudPane{flex:0 0 auto;padding:9px 10px}.hudTitle{display:flex;align-items:center;justify-content:space-between}.hudTitle h3{margin:0 0 7px}.liveDot{width:6px;height:6px;border-radius:50%;background:#85dbb0;box-shadow:0 0 9px #6dd5ab77}
+.sidebar .meters{display:flex;flex-direction:column;gap:5px;margin:0}
+.sidebar .meter{padding:6px 8px;border-radius:6px;grid-column:auto;min-width:0}
+.sidebar .meterline{font-size:10px;line-height:1.1;margin-bottom:5px;letter-spacing:.02em;gap:4px}
+.sidebar .meterline span:last-child{color:#e5f5ff;white-space:nowrap}
+.sidebar .track{height:7px}.sidebar .meter:nth-child(4) .meterline span:last-child{color:#f1d795;font-weight:750}
+.buildPane{flex:0 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin}.buildPane h3{margin-bottom:5px}
+.buildPane .pill{font-size:10px;padding:2px 5px;margin:2px 3px 2px 0}.buildPane .control{padding:4px 0;font-size:10px;line-height:1.15}.buildPane .control b{font-size:10px;white-space:nowrap}.buildPane p{font-size:10px;margin:6px 0 0;line-height:1.4}
+.utilityButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;flex:0 0 auto}
+.utilityButtons .btn{font-size:10px;padding:7px 1px;white-space:nowrap;border-radius:6px;font-weight:750}
+.hudStatus{color:#94abbf;font-size:10px;line-height:1.2;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;flex:0 0 auto}
+.safeActions{display:flex;gap:5px;flex:0 0 auto}.safeActions[hidden]{display:none}.safeActions .btn{flex:1;font-size:11px;padding:8px 3px}
+.shopPanel{position:fixed;z-index:65;right:max(12px,calc((100vw - 1560px)/2 + 16px));top:60px;margin:0;width:min(355px,calc(100vw - 24px));max-height:calc(100dvh - 75px);overflow-y:auto;background:#162738;box-shadow:0 14px 55px #000d;scrollbar-width:thin}
+.shopPanelTitle{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}.shopHead{flex:1;min-width:0}.shopHead b{font-size:11px;line-height:1.2}.miniClose{border:1px solid #415e71;border-radius:6px;color:#dfedfa;background:#263b4c;font-size:18px;line-height:1;padding:2px 8px}
+.infoShade{position:fixed;inset:0;z-index:200;background:#030912dc;display:grid;place-items:center;padding:15px;backdrop-filter:blur(4px)}
+.infoShade[hidden]{display:none}.infoDialog{width:min(540px,100%);max-height:min(80dvh,650px);background:linear-gradient(160deg,#1b2e40,#101b2a);border:1px solid #52728c;border-radius:12px;padding:19px;box-shadow:0 20px 60px #000b;overflow-y:auto}
+.infoHeader{display:flex;align-items:start;justify-content:space-between;gap:9px;margin-bottom:10px}.infoHeader h2{font-size:22px;margin:5px 0}.infoHeader button{padding:7px 9px;font-size:11px}.infoSection[hidden]{display:none}.infoSection{min-height:60px}
+.infoSection .keys{grid-template-columns:repeat(3,43px);margin:12px 0}.infoSection .key{height:37px}.infoSection .control{font-size:12px;padding:7px 0}.infoSection .control b{font-size:12px}.infoIntro{font-size:12px;color:#a9c0d3;line-height:1.5}
+.infoSection .log{min-height:100px;max-height:350px;overflow:auto;font-size:12px}.infoSection .rank{font-size:12px}
+#veil{overflow:hidden}#veil .modal{max-height:100%;max-width:min(500px,100%);padding:clamp(12px,2vh,22px)}
+#veil .modal h2{font-size:clamp(17px,2.7vh,24px)}
+#veil .modal .choices{margin-top:9px;gap:6px}#veil .modal .upgrade{padding:7px 10px;min-height:52px}
+#veil .modal .actions{margin-top:10px}#veil .modal p{margin:6px 0}
+@media(max-height:720px){.app{padding-top:6px;padding-bottom:7px}.top{min-height:36px;margin-bottom:5px}.brand{font-size:21px}.metric{padding:4px 8px}.metric strong{font-size:16px}.metrics{margin-bottom:5px}.sidebar{gap:6px}.pane{padding:7px 9px}.hudPane{padding:7px 8px}.sidebar .meters{gap:4px}.sidebar .meter{padding:5px 7px}.sidebar .meterline{font-size:9px;margin-bottom:4px}.sidebar .track{height:6px}.buildPane .control{padding:3px 0}.buildPane p{font-size:9px}.utilityButtons .btn{padding:5px 1px;font-size:9px}}
+@media(max-width:850px){.layout{grid-template-columns:minmax(0,1fr) 220px;gap:7px}.app{padding-left:7px;padding-right:7px}.sidebar .meterline{font-size:9px}.buildPane .control{font-size:9px}.buildPane .control b{font-size:9px}.utilityButtons .btn{font-size:9px}.seedLabel{display:none}}
+@media(max-width:700px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{position:fixed;right:8px;top:61px;width:200px;max-height:calc(100dvh - 80px);z-index:22;pointer-events:none;gap:5px}.sidebar .hudPane{pointer-events:auto;background:#121d2be7}.sidebar .buildPane,.sidebar .utilityButtons,.sidebar .hudStatus{display:none}.sidebar .meter{padding:4px 5px}.sidebar .meterline{font-size:8px}.sidebar .track{height:5px}.sidebar .hudTitle{display:none}.arenaStage{align-items:center}.metrics{padding-right:0}.metric label{font-size:8px}.metric strong{font-size:14px}.tag{font-size:7px}.topBtns .btn{font-size:10px;padding:5px}.roomBadge,.stagebar{font-size:8px}}
+
+/* CERCO merchant left of the arena; never cover the combat HUD */
+.shopPanel{
+  right:auto !important;
+  left:var(--shop-x,8px);
+  top:var(--shop-y,55px);
+  width:var(--shop-w,335px);
+  max-width:calc(100vw - 16px);
+  max-height:var(--shop-h,calc(100dvh - 68px));
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  z-index:65;
+}
+.shopPanel .shopHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.shopPanel .shopHead b{letter-spacing:.07em}
+.shopPanel .shopHead span{white-space:nowrap}
+.shopPanel .shopItem > div{min-width:0;overflow-wrap:anywhere}
+.shopPanel.compact{padding:9px;border-radius:8px}
+.shopPanel.compact .shopPanelTitle{gap:2px}
+.shopPanel.compact .shopHead{align-items:flex-start;flex-direction:column;gap:3px}
+.shopPanel.compact .shopHead b{font-size:10px;line-height:1.3}
+.shopPanel.compact .shopNote{display:none}
+.shopPanel.compact .shopItem{display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:7px 6px;margin-top:6px}
+.shopPanel.compact .shopItem b{font-size:11px;line-height:1.2}
+.shopPanel.compact .shopItem small{font-size:10px;line-height:1.25;margin-top:3px}
+.shopPanel.compact .shopItem button{width:100%;padding:5px;font-size:10px}
+.shopPanel.compact .shopFoot{font-size:10px;line-height:1.2}
+.shopPanel.compact #exitSafe{padding:7px 4px;font-size:10px;width:100%}
+
+/* ===== CERCO 0.5.7 · THREE FULL-WIDTH REGIONS ===== */
+.app{width:100%;max-width:none;margin:0;padding-left:10px;padding-right:10px}
+.layout{width:100%;min-width:0;grid-template-columns:minmax(0,1fr) 250px;justify-content:stretch;align-items:stretch;gap:10px}
+.shopDock{display:none;min-width:0;min-height:0;overflow:hidden;padding-top:var(--metrics-block,46px)}
+.app.safe-room.shop-open .layout{grid-template-columns:clamp(174px,14.5vw,218px) minmax(0,1fr) 250px}
+.app.safe-room.shop-open .shopDock{display:block}
+.arenaStage{width:100%;height:100%;justify-content:center;align-items:center}
+.sidebar{min-width:0}
+.shopDock .shopPanel{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;width:100%!important;max-width:100%!important;max-height:100%!important;height:auto;overflow-x:hidden;overflow-y:auto;box-shadow:0 8px 24px #0009;margin:0;z-index:5}
+.shopDock .shopPanel[hidden]{display:none!important}
+.shopDock .shopPanel .shopNote{display:none}
+.shopDock .shopPanel .shopItem{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+.shopDock .shopPanel .shopItem button{width:100%;padding:6px 5px}
+.shopDock .shopPanel .shopHead{flex-direction:column;align-items:flex-start;gap:3px}
+@media(max-width:960px){.app.safe-room.shop-open .layout{grid-template-columns:154px minmax(0,1fr) 220px;gap:7px}.layout{grid-template-columns:minmax(0,1fr) 220px;gap:7px}}
+@media(max-width:700px){.app.safe-room.shop-open .layout,.layout{grid-template-columns:minmax(0,1fr)}.shopDock{display:none!important}.shopDock .shopPanel{position:fixed!important;top:52px!important;left:8px!important;width:min(205px,50vw)!important;max-height:calc(100dvh - 65px)!important}.app.safe-room.shop-open .shopDock{display:contents!important}.app.safe-room.shop-open .shopDock .shopPanel{z-index:65}}
+
+@media (prefers-reduced-motion: reduce){.fill,.toast{transition:none!important}}
+
+/* CERCO 0.8.3 — Mobile controls. All desktop input and the bridge stay intact. */
+.touchControls[hidden]{display:none!important}
+.touchControls{position:fixed;inset:0;z-index:58;pointer-events:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+.touchJoy{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:max(17px,calc(env(safe-area-inset-bottom) + 12px));width:132px;height:132px;border:2px solid #658ba7a8;border-radius:50%;background:#101e2ec9;box-shadow:0 0 24px #050d16bb,inset 0 0 22px #284e6855;pointer-events:auto;touch-action:none;display:grid;place-items:center;cursor:grab}
+.touchJoy::before,.touchJoy::after{content:"";position:absolute;background:#7095b05c;pointer-events:none}
+.touchJoy::before{width:64px;height:1px}.touchJoy::after{width:1px;height:64px}
+.touchKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #a5def3;box-shadow:0 0 18px #65cbf35e,inset 0 0 14px #5299bd48;background:#315874dd;pointer-events:none;display:grid;place-items:center;color:#e4faff;font-size:22px;font-weight:800}
+.touchJoy.isHeld .touchKnob{background:#4a86a8ee;box-shadow:0 0 20px #7bdcffab}
+.touchRight{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(16px,calc(env(safe-area-inset-bottom) + 12px));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.touchFire{position:relative;width:98px;height:98px;border-radius:50%;border:2px solid #ffe2a1;background:radial-gradient(circle at 40% 32%,#805b3b,#372c29 76%);box-shadow:0 0 22px #daa9604e,inset 0 0 22px #f3ba634b;color:#fff0c8;font-size:16px;letter-spacing:.10em;font-weight:950;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:crosshair}
+.touchFire small{font-size:9px;font-weight:700;letter-spacing:.03em;opacity:.82}
+.touchFire.isHeld{background:radial-gradient(circle at 42% 30%,#ba8951,#734331 80%);box-shadow:0 0 28px #e7a35e9a,inset 0 0 24px #ffdb8a55}
+.touchSprint,.touchAuto{border-radius:10px;border:1px solid #567c92;background:#1b3449e9;color:#e3f6ff;min-width:90px;min-height:42px;padding:8px 10px;font-size:12px;font-weight:900;letter-spacing:.065em;pointer-events:auto;touch-action:none;box-shadow:0 3px 14px #050d16bb}
+.touchSprint.isHeld{background:#2d6e8d;border-color:#a3effb}.touchAuto[hidden]{display:none!important}.touchAuto[aria-pressed=true]{background:#265b51;border-color:#8ee3ac;color:#dfffee}
+.touchAimMark{position:absolute;width:15px;height:15px;border-radius:50%;border:2px solid #fce1a6;pointer-events:none;opacity:0;left:50%;top:50%;transform:translate(-50%,-50%)}
+.touchFire.isAiming .touchAimMark{opacity:1}
+/* Compact landscape touch placement: preserve a full-height arena. */
+@media (max-height:480px){.touchJoy{width:102px;height:102px;bottom:6px}.touchKnob{width:48px;height:48px}.touchFire{width:74px;height:74px;font-size:12px}.touchRight{gap:4px;bottom:5px}.touchSprint,.touchAuto{min-height:31px;font-size:10px;padding:4px 8px;min-width:74px}}
+@media (max-width:700px){body.touchEnabled .sidebar{top:var(--mobile-hud-top,155px);width:140px;max-height:calc(100dvh - var(--mobile-hud-top,155px) - 8px)}body.touchEnabled .sidebar .hudPane{padding:5px}body.touchEnabled .sidebar .meter{padding:3px 4px}body.touchEnabled .sidebar .meterline{font-size:8px;margin-bottom:2px}body.touchEnabled .sidebar .meters{gap:3px}body.touchEnabled .sidebar .track{height:4px}body.touchEnabled .topBtns .btn{font-size:10px;padding:4px 6px}body.touchEnabled .identity .tag{font-size:7px}body.touchEnabled .metric{padding:4px 5px}}
+
+
+/* Do not cover the playfield with the desktop HUD on narrow touch screens. */
+@media (max-width:700px){
+ body.touchEnabled .sidebar{left:8px;right:8px;width:auto;max-height:calc(100dvh - var(--mobile-hud-top,145px) - 8px)}
+ body.touchEnabled .sidebar .hudPane{padding:4px 6px;pointer-events:none;background:#101e2cd9}
+ body.touchEnabled .sidebar .meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(63px,1fr));gap:4px}
+ body.touchEnabled .sidebar .meter{padding:3px 4px}
+ body.touchEnabled .sidebar .meterline{display:flex;flex-direction:column;align-items:stretch;gap:1px;font-size:8px;line-height:1;white-space:nowrap;margin-bottom:3px}
+ body.touchEnabled .sidebar .meterline span:first-child{font-size:7px;white-space:nowrap}
+ body.touchEnabled .sidebar .track{height:4px}
+ body.touchEnabled #touchHudCombo,body.touchEnabled #touchHudRoomKills{display:none}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="identity"><div class="brand">CERCO<span>.</span></div><div class="tag">EXPEDITION · VERSION 0.9.4</div></div>
+    <div class="topBtns">
+      <span class="seedLabel" id="seedTag" title="Expedition map seed">SEED —</span>
+      <button id="pauseBtn" class="btn secondary" title="Pause or resume (P)">Pause · P</button>
+      <button id="resetBtn" class="btn secondary" title="Restart expedition (R)">Restart · R</button>
+    </div>
+  </header>
+  <div class="layout">
+    <div class="shopDock" id="shopDock">
+      <section id="safeShop" class="shopPanel" hidden aria-label="Safe-room shop">
+        <div class="shopPanelTitle"><div class="shopHead"><b>◈ MERCHANT · GEAR</b><span id="safeClock">45 s</span></div><button id="closeShop" class="miniClose" type="button" aria-label="Close shop">×</button></div>
+        <p class="shopNote">Stand near the merchant to trade. Spending credits never reduces your score. Better gear unlocks as you progress.</p>
+        <div id="shopItems"></div>
+        <button class="btn secondary" id="exitSafe" style="margin-top:10px">Leave safe room →</button>
+      </section>
+    </div>
+    <main class="main">
+      <div class="metrics" aria-label="Expedition scoreboard">
+        <div class="metric"><label>ROOM</label><strong id="room">01</strong></div>
+        <div class="metric"><label>KILLS</label><strong id="kills">0 / 20</strong></div>
+        <div class="metric"><label>TIME</label><strong id="clock">60.0</strong></div>
+        <div class="metric"><label>SCORE</label><strong id="score">0</strong></div>
+      </div>
+      <div class="arenaStage" id="arenaStage">
+        <div class="arena" id="arena">
+          <canvas id="board" width="1120" height="800" aria-label="Grid-based survival arena with enemies and exits"></canvas>
+          <div class="roomBadge" id="roomBadge">ROOM 01 · CHAMBER</div>
+          <div class="stagebar" id="stageTag">20 KILLS TO EXIT</div>
+          <div class="toast" id="toast"></div>
+          <div id="veil"><div class="modal" id="modal"></div></div>
+        </div>
+      </div>
+
+    </main>
+    <aside class="sidebar" aria-label="Player status and build">
+      <section class="pane hudPane" aria-label="Combat status">
+        <div class="hudTitle"><h3>COMBAT STATUS</h3><span class="liveDot" aria-label="Live indicators"></span></div>
+        <div class="meters">
+          <div class="meter" id="touchHudHealth"><div class="meterline"><span>HEALTH</span><span id="healthText">100 / 100</span></div><div class="track"><div class="fill" id="healthBar"></div></div></div>
+          <div class="meter" id="shieldMeter" hidden><div class="meterline"><span>SHIELD</span><span id="shieldText">0 / 0</span></div><div class="track"><div class="fill shieldFill" id="shieldBar"></div></div></div>
+          <div class="meter" id="touchHudShot"><div class="meterline"><span>SHOT · COOLDOWN</span><span id="fireText">LISTA</span></div><div class="track"><div class="fill fire" id="fireBar"></div></div></div>
+          <div class="meter" id="touchHudStamina"><div class="meterline"><span>STAMINA · SPACE</span><span id="staminaText">100 / 100</span></div><div class="track"><div class="fill stamina" id="staminaBar"></div></div></div>
+          <div class="meter" id="touchHudCombo"><div class="meterline"><span>COMBO</span><span id="comboText">×1.00 · 0 kills</span></div><div class="track"><div class="fill combo" id="comboBar" style="width:0"></div></div></div>
+          <div class="meter" id="touchHudRoomKills"><div class="meterline"><span>ROOM KILLS</span><span id="objectiveText">0 / 20</span></div><div class="track"><div class="fill kills" id="objectiveBar" style="width:0"></div></div></div>
+        </div>
+      </section>
+      <section class="pane buildPane">
+        <h3>YOUR BUILD</h3>
+        <div id="build" class="buildEmpty">No upgrades yet.</div>
+        <div class="control"><span>Life steal · progress</span><b id="siphonStatus">—</b></div>
+        <div class="control"><span>Shop credits</span><b id="creditsStatus">0 ◈</b></div>
+        <div class="control"><span>Style Coins · this run</span><b id="styleCoinStatus">0 ✦</b></div>
+        <div class="control"><span>Equipment</span><b id="gearStatus">0 / 3</b></div>
+        <div class="control"><span>Combat / defense turrets</span><b id="turretStatus">0</b></div>
+        <p>Life steal triggers on kills with no room cap. Engineering upgrades affect turrets only.</p>
+      </section>
+      <section id="safeActions" class="safeActions" hidden>
+        <button class="btn" id="openShop" type="button">◈ Open shop</button>
+        <button class="btn secondary" id="leaveSafe" type="button">Continue →</button>
+      </section>
+      <div class="utilityButtons" aria-label="Options and help">
+        <button id="helpBtn" class="btn secondary" type="button" title="Controls and help">⌨ Controls</button>
+        <button id="topBtn" class="btn secondary" type="button" title="Best scores">★ Records</button>
+        <button id="logBtn" class="btn secondary" type="button" title="Event log">☷ Log</button>
+      </div>
+      <div class="hudStatus" id="status" aria-live="polite">Ready</div>
+    </aside>
+  </div>
+</div>
+
+<!-- Controls are outside the arena so their positions stay stable in an iframe. -->
+<div id="touchControls" class="touchControls" hidden aria-label="Touch game controls">
+  <div id="touchJoy" class="touchJoy" role="group" aria-label="Eight-direction movement joystick"><span class="touchKnob" id="touchKnob" aria-hidden="true">✣</span></div>
+  <div class="touchRight">
+    <button id="touchAuto" class="touchAuto" type="button" aria-pressed="false" aria-label="Toggle auto-move" hidden>AUTO OFF</button>
+    <button id="touchSprint" class="touchSprint" type="button" aria-label="Hold to sprint">SPRINT</button>
+    <button id="touchFire" class="touchFire" type="button" aria-label="Hold to shoot, drag to aim">FIRE<small>DRAG TO AIM</small><span id="touchAimMark" class="touchAimMark" aria-hidden="true"></span></button>
+  </div>
+</div>
+<div id="infoShade" class="infoShade" hidden>
+  <section class="infoDialog" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="infoHeader"><div><span class="eyebrow">CERCO · INFORMATION</span><h2 id="infoTitle">Controls</h2></div><button id="closeInfo" class="btn secondary" aria-label="Close window">Close · Esc</button></div>
+    <section id="infoControls" class="infoSection">
+      <p class="infoIntro">Quick controls reference. Combat pauses while this panel is open.</p>
+      <div class="keys"><span class="key">Q</span><span class="key">W</span><span class="key">E</span><span class="key">A</span><span class="key dim">·</span><span class="key">D</span><span class="key">Z</span><span class="key">S</span><span class="key">C</span></div>
+      <div class="control"><span>Move (8 directions)</span><b>Q W E A S D Z C</b></div>
+      <div class="control"><span>Aim and fire</span><b>Mouse + click</b></div>
+      <div class="control"><span>Mobile · move</span><b>Left joystick</b></div>
+      <div class="control"><span>Mobile · fire and aim</span><b>Hold FIRE · drag to aim</b></div>
+      <div class="control"><span>Mobile · sprint</span><b>Hold SPRINT</b></div>
+      <div class="control"><span>Sprint (stamina)</span><b>Space</b></div>
+      <div class="control"><span>Combat turrets</span><b>1 active · 2 with Dual Deployment</b></div><div class="control"><span>Interceptor turrets</span><b>1 active · 2 with Twin Interceptors</b></div><div class="control"><span>Passive pulse</span><b>Repels enemies · no damage</b></div><div class="control"><span>Build limit</span><b>20 selections total · 1 per unlock or level</b></div><div class="control"><span>Upgrade choice</span><b>20 seconds · 0 to skip</b></div>
+      <div class="control"><span>Persistent auto-move (if unlocked)</span><b>F · toggle on/off</b></div>
+      <div class="control"><span>Auto-fire (if unlocked)</span><b>Nearest visible target</b></div>
+      <div class="control"><span>Pause / Restart</span><b>P / R</b></div>
+      <p class="infoIntro">Hold the mouse button to fire manually, even with Auto-fire. Turrets redeploy when a slot opens and their 7-second cooldown is ready. Auto-move stays enabled when you hit a wall; choose another direction. Life Steal carries its kill counter across rooms. Base movement speed increases with progression. Shop credits, Style Coins and score are all separate. Collect gold coins for cosmetic rewards on ATANATUS; the website must verify them.</p>
+        <div class="legend"><span><i class="dot" style="background:#eac16e"></i>Style Coins</span><span><i class="dot" style="background:#75d4ee"></i>Player</span><span><i class="dot" style="background:#d77d74"></i>Zombies</span><span><i class="dot" style="background:#84e1ac"></i>Health</span><span><i class="dot" style="background:#f1c66a"></i>Nuke</span><span><i class="dot" style="background:#b7e3ff"></i>Exit</span></div>
+    </section>
+    <section id="infoRanks" class="infoSection" hidden><div id="ranks"></div><p class="infoIntro">Records are stored in this browser only. Online leaderboards require your website integration.</p></section>
+    <section id="infoLog" class="infoSection" hidden><div class="log" id="log"></div></section>
+  </section>
+</div>
+<script>
+(()=>{'use strict';
+const cv=document.getElementById('board'),g=cv.getContext('2d');
+// Keep room geometry stable and cache static terrain.
+const terrainCanvas=document.createElement('canvas');terrainCanvas.width=cv.width;terrainCanvas.height=cv.height;
+const terrainContext=terrainCanvas.getContext('2d');
+let W=28,H=20;const T=40,at=(x,y)=>y*W+x,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const $=id=>document.getElementById(id);
+const ui={veil:$('veil'),modal:$('modal'),room:$('room'),kills:$('kills'),clock:$('clock'),score:$('score'),healthText:$('healthText'),healthBar:$('healthBar'),fireText:$('fireText'),fireBar:$('fireBar'),objectiveText:$('objectiveText'),objectiveBar:$('objectiveBar'),roomBadge:$('roomBadge'),stageTag:$('stageTag'),status:$('status'),toast:$('toast'),build:$('build'),log:$('log'),ranks:$('ranks'),seedTag:$('seedTag'),siphonStatus:$('siphonStatus'),staminaText:$('staminaText'),staminaBar:$('staminaBar'),comboText:$('comboText'),comboBar:$('comboBar'),creditsStatus:$('creditsStatus'),gearStatus:$('gearStatus'),turretStatus:$('turretStatus'),styleCoinStatus:$('styleCoinStatus'),shieldMeter:$('shieldMeter'),shieldText:$('shieldText'),shieldBar:$('shieldBar'),safeShop:$('safeShop'),safeClock:$('safeClock'),shopItems:$('shopItems')};
+// Keep secondary information out of the arena.
+let infoReturnMode=null;
+function openInfo(which){
+ const root=$('infoShade');if(!root.hidden)return;
+ infoReturnMode=['play','safe'].includes(state.mode)?state.mode:null;
+ if(infoReturnMode){state.keys.clear();state.holdFire=false;state.mode='info';}
+ $('infoControls').hidden=which!=='controls';$('infoRanks').hidden=which!=='ranks';$('infoLog').hidden=which!=='log';
+ $('infoTitle').textContent={controls:'Controls',ranks:'Local best',log:'Expedition log'}[which];
+ root.hidden=false;$('closeInfo').focus();
+}
+function closeInfo(){
+ if($('infoShade').hidden)return;
+ $('infoShade').hidden=true;
+ if(infoReturnMode){state.mode=infoReturnMode;state.keys.clear();state.holdFire=false;}
+ infoReturnMode=null;
+}
+// Align arena and HUD without a wasted gap.
+// The board geometry remains locked until the next room.
+// Lock world dimensions when entering a new room.
+// Resize visual scale only during active combat, never world coordinates.
+function configureWorld(){
+ const holder=$('arenaStage');if(!holder)return false;
+ const width=holder.clientWidth,height=holder.clientHeight;
+ if(width<40||height<40)return false;
+ const ratio=width/height,base=28/20;
+ let columns=28,rows=20;
+ if(ratio>base)columns=clamp(Math.round(20*ratio),28,60);
+ else rows=clamp(Math.round(28/Math.max(.4,ratio)),20,40);
+ if(columns===W&&rows===H)return false;
+ W=columns;H=rows;cv.width=W*T;cv.height=H*T;
+ terrainCanvas.width=cv.width;terrainCanvas.height=cv.height;
+ return true;
+}
+function fitArena(){
+ const holder=$('arenaStage'),arena=$('arena'),metrics=document.querySelector('.metrics');
+ if(!holder||!arena)return;
+ const width=holder.clientWidth,height=holder.clientHeight;
+ if(width<1||height<1)return;
+ const scale=Math.min(width/cv.width,height/cv.height);
+ const arenaW=Math.max(1,Math.floor(cv.width*scale));
+ const arenaH=Math.max(1,Math.floor(cv.height*scale));
+ if(arena.style.width!==arenaW+'px')arena.style.width=arenaW+'px';
+ if(arena.style.height!==arenaH+'px')arena.style.height=arenaH+'px';
+ const blockHeight=(metrics?.getBoundingClientRect().height||0)+(parseFloat(metrics?getComputedStyle(metrics).marginBottom:0)||0);
+ document.querySelector('.app').style.setProperty('--metrics-block',Math.round(blockHeight)+'px');
+}
+
+const DIR=[[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]],KEY={w:0,e:1,d:2,c:3,s:4,z:5,a:6,q:7,ArrowUp:0,ArrowRight:2,ArrowDown:4,ArrowLeft:6};
+// Native multi-touch controls; never enter the event/audit or economy payloads.
+const touch={dir:null,joyId:null,fireId:null,fireHeld:false,fireStartX:0,fireStartY:0,sprintId:null,sprintHeld:false,angle:null,aimDragged:false,visible:false};
+const touchRoot=$('touchControls'),touchJoy=$('touchJoy'),touchKnob=$('touchKnob'),touchFire=$('touchFire'),touchSprint=$('touchSprint'),touchAuto=$('touchAuto'),touchAimMark=$('touchAimMark');
+let touchCapability=matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window && navigator.maxTouchPoints>0);
+let touchHudTop=-1;
+function allowTouch(){if(touchCapability)return;touchCapability=true;document.body.classList.add('touchEnabled')}
+function releaseTouchInput(){
+ touch.joyId=null;touch.dir=null;touch.fireId=null;touch.fireHeld=false;touch.angle=null;touch.aimDragged=false;touch.sprintId=null;touch.sprintHeld=false;
+ touchJoy.classList.remove('isHeld');touchKnob.style.transform='translate(-50%,-50%)';
+ touchFire.classList.remove('isHeld','isAiming');touchAimMark.style.transform='translate(-50%,-50%)';touchSprint.classList.remove('isHeld');
+ state.keys.delete(' ');
+}
+function updateTouchPresentation(){
+ const visible=touchCapability&&['play','safe'].includes(state.mode)&&!document.querySelector('.app').classList.contains('shop-open')&&$('infoShade').hidden;
+ if(touch.visible!==visible){touch.visible=visible;touchRoot.hidden=!visible;if(!visible)releaseTouchInput()}
+ if(visible){
+  const showAuto=!!have('auto');touchAuto.hidden=!showAuto;
+  const pressed=String(!!(showAuto&&state.player?.auto));
+  if(touchAuto.getAttribute('aria-pressed')!==pressed)touchAuto.setAttribute('aria-pressed',pressed);
+  const label=state.player?.auto?'AUTO ON':'AUTO OFF';if(touchAuto.textContent!==label)touchAuto.textContent=label;
+  if(touchFire.disabled!==(state.mode!=='play'))touchFire.disabled=state.mode!=='play';
+  if(touchSprint.disabled!==(state.mode!=='play'))touchSprint.disabled=state.mode!=='play';
+ }
+ if(touchCapability&&innerWidth<=700){
+  const metrics=document.querySelector('.metrics');
+  if(metrics){const nextTop=Math.ceil(metrics.getBoundingClientRect().bottom+6);if(nextTop!==touchHudTop){touchHudTop=nextTop;document.body.style.setProperty('--mobile-hud-top',nextTop+'px')}}
+ }
+}
+function touchDirection(dir){
+ const previous=touch.dir;touch.dir=dir;
+ if(dir==null||previous===dir||!state.player||!['play','safe'].includes(state.mode))return;
+ const p=state.player;p.lastDir=dir;
+ if(p.auto){p.autoHeading=dir;state.stepCooldown=0}
+ if(state.stepCooldown<=0){playerStep(dir);const [dx,dy]=DIR[dir];state.stepCooldown=stepDelay()*(dx&&dy?Math.SQRT2:1)}
+}
+function updateJoy(e){
+ const r=touchJoy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ const dx=e.clientX-cx,dy=e.clientY-cy,d=Math.hypot(dx,dy),maxRadius=Math.min(r.width,r.height)*.29;
+ const scale=d>0?Math.min(1,maxRadius/d):0;
+ touchKnob.style.transform=`translate(-50%,-50%) translate(${dx*scale}px,${dy*scale}px)`;
+ // Eight discrete directions, including true diagonals.
+ touchDirection(d<14?null:(Math.round(Math.atan2(dy,dx)/(Math.PI/4))+2+8)%8);
+}
+touchJoy.addEventListener('pointerdown',e=>{
+ if(touch.joyId!==null||!['play','safe'].includes(state.mode))return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;allowTouch();touch.joyId=e.pointerId;
+ touchJoy.classList.add('isHeld');touchJoy.setPointerCapture(e.pointerId);updateJoy(e);e.preventDefault();
+});
+touchJoy.addEventListener('pointermove',e=>{if(e.pointerId===touch.joyId){updateJoy(e);e.preventDefault()}});
+function endJoy(e){if(e.pointerId!==touch.joyId)return;touch.joyId=null;touchJoy.classList.remove('isHeld');touchKnob.style.transform='translate(-50%,-50%)';touchDirection(null);e.preventDefault()}
+touchJoy.addEventListener('pointerup',endJoy);touchJoy.addEventListener('pointercancel',endJoy);touchJoy.addEventListener('lostpointercapture',e=>{if(touch.joyId===e.pointerId)endJoy(e)});
+function updateTouchFireAim(e){
+ const dx=e.clientX-touch.fireStartX,dy=e.clientY-touch.fireStartY,d=Math.hypot(dx,dy);
+ if(d>18){touch.aimDragged=true;touch.angle=Math.atan2(dy,dx);touchFire.classList.add('isAiming');}
+ if(touch.aimDragged){
+  const a=touch.angle??0,rad=Math.min(27,d);
+  touchAimMark.style.transform=`translate(-50%,-50%) translate(${Math.cos(a)*rad}px,${Math.sin(a)*rad}px)`;
+ }
+}
+function applyTouchAim(){
+ if(!state.player)return;
+ const p=state.player;
+ const [dx,dy]=touch.aimDragged&&touch.angle!=null?[Math.cos(touch.angle),Math.sin(touch.angle)]:DIR[p.lastDir]||[1,0];
+ state.aimX=(p.x+.5)*T+dx*500;state.aimY=(p.y+.5)*T+dy*500;
+}
+touchFire.addEventListener('pointerdown',e=>{
+ if(state.mode!=='play'||touch.fireId!==null)return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;allowTouch();
+ touch.fireId=e.pointerId;touch.fireHeld=true;touch.fireStartX=e.clientX;touch.fireStartY=e.clientY;touch.angle=null;touch.aimDragged=false;
+ touchFire.classList.add('isHeld');touchFire.setPointerCapture(e.pointerId);updateTouchFireAim(e);applyTouchAim();fireShot();e.preventDefault();
+});
+touchFire.addEventListener('pointermove',e=>{if(e.pointerId===touch.fireId){updateTouchFireAim(e);e.preventDefault()}});
+function endTouchFire(e){if(e.pointerId!==touch.fireId)return;touch.fireId=null;touch.fireHeld=false;touch.aimDragged=false;touch.angle=null;touchFire.classList.remove('isHeld','isAiming');touchAimMark.style.transform='translate(-50%,-50%)';e.preventDefault()}
+touchFire.addEventListener('pointerup',endTouchFire);touchFire.addEventListener('pointercancel',endTouchFire);touchFire.addEventListener('lostpointercapture',e=>{if(touch.fireId===e.pointerId)endTouchFire(e)});
+touchSprint.addEventListener('pointerdown',e=>{
+ if(state.mode!=='play'||touch.sprintId!==null)return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;allowTouch();touch.sprintId=e.pointerId;touch.sprintHeld=true;state.keys.add(' ');touchSprint.classList.add('isHeld');touchSprint.setPointerCapture(e.pointerId);e.preventDefault();
+});
+function endSprint(e){if(e.pointerId!==touch.sprintId)return;touch.sprintId=null;touch.sprintHeld=false;state.keys.delete(' ');touchSprint.classList.remove('isHeld');e.preventDefault()}
+touchSprint.addEventListener('pointerup',endSprint);touchSprint.addEventListener('pointercancel',endSprint);touchSprint.addEventListener('lostpointercapture',e=>{if(touch.sprintId===e.pointerId)endSprint(e)});
+touchAuto.addEventListener('click',()=>{
+ if(!have('auto')||!state.player||!['play','safe'].includes(state.mode))return;
+ const p=state.player;p.auto=!p.auto;p.autoHeading=p.auto?touch.dir??activeDirection():null;state.stepCooldown=0;
+ toast(p.auto?'AUTO-MOVE ON · CHOOSE DIRECTION':'AUTO-MOVE OFF',1);updateTouchPresentation();
+});
+
+const upgrades=[
+{id:'damage',family:'POWER',name:'Heavy Core',symbol:'◆',description:'+1 damage per projectile.',max:12},
+{id:'rate',family:'POWER',name:'Rapid Fire',symbol:'↻',description:'Reduces firing cooldown by 14%.',max:11},
+{id:'boom',family:'POWER',name:'Blast Impact',symbol:'✹',description:'Hits damage enemies in a small area.',max:5},
+{id:'multi',family:'BALLISTICS',name:'Multi-Shot',symbol:'✺',description:'Fires one additional projectile per shot.',max:5},
+{id:'pierce',family:'BALLISTICS',name:'Piercing',symbol:'➤',description:'Each projectile pierces one additional enemy.',max:6},
+{id:'closeRange',family:'BALLISTICS',name:'Close Quarters',symbol:'◀',description:'Shortens player-shot travel but increases impact damage. Cannot combine with Longshot.',max:4,excludes:'longRange'},
+{id:'longRange',family:'BALLISTICS',name:'Longshot',symbol:'➚',description:'Player shots gain impact damage and glow after traveling farther. Cannot combine with Close Quarters.',max:4,excludes:'closeRange'},
+{id:'bounce',family:'BALLISTICS',name:'Ricochet',symbol:'⌁',description:'Projectiles gain one extra wall bounce.',max:3},
+{id:'stamina',family:'MOVEMENT',name:'Endurance',symbol:'➟',description:'+20 maximum stamina and faster regeneration.',max:5},
+{id:'sprintShards',family:'MOVEMENT',name:'Shatter Sprint',symbol:'✧',description:'Real sprint steps emit short-range shards at nearby enemies. Higher levels trigger more often.',max:3},
+{id:'sprintTrail',family:'MOVEMENT',name:'Corrosive Wake',symbol:'♨',description:'Sprint leaves a short-lived corrosive trail that damages pursuing enemies. Maximum 24 trail tiles.',max:3},
+{id:'sprintSpeed',family:'MOVEMENT',name:'Sprint Drive',symbol:'»',description:'Move faster while sprinting, at a slightly higher stamina cost.',max:3},
+{id:'sprintHeal',family:'SURVIVAL',name:'Momentum Recovery',symbol:'✚',description:'Heals 2 HP per 23 / 19 / 15 tiles of actual sprint distance. No per-room healing limit.',max:3},
+{id:'auto',family:'MOVEMENT',name:'Auto-Move',symbol:'⇢',description:'Press F to toggle continuous movement. Hitting a wall stops you until you choose a new direction.',max:1},
+	{id:'autofire',family:'BALLISTICS',name:'Auto-Fire',symbol:'◎',description:'Automatically fires at the nearest visible enemy. Manual aiming still works.',max:1},
+{id:'shield',family:'SURVIVAL',name:'Protective Shield',symbol:'⬡',description:'Absorbs incoming damage before health. Collect blue shield drops to recharge it.',max:4},
+{id:'life',family:'SURVIVAL',name:'Vital Core',symbol:'♥',description:'+20 maximum health and restores 20 HP.',max:8},
+{id:'drain',family:'SURVIVAL',name:'Life Steal',symbol:'✚',description:'Restores health after a set number of kills. Upgrades trigger more often. No per-room cap.',max:5},
+	{id:'homing',family:'BALLISTICS',name:'Homing Shots',symbol:'➶',description:'Shots curve toward visible enemies. Higher levels improve tracking and range.',max:5},
+{id:'lightning',family:'IMPACT',name:'Chain Lightning',symbol:'ϟ',description:'Hits arc lightning between nearby enemies.',max:5},
+{id:'turret',family:'ENGINEERING',name:'Auto-Turret',symbol:'▣',description:'Maintains 1 active turret. Redeploys when destroyed or expired after its 7-second cooldown.',max:1},
+{id:'turretExtra',family:'ENGINEERING',name:'Dual Deployment',symbol:'▥',description:'Allows up to 2 active combat turrets. Each deployment has a 7-second cooldown.',max:1,requires:'turret'},
+{id:'interceptTurret',family:'DEFENSE',name:'Interceptor Turret',symbol:'◈',description:'Deploys one automatic defensive turret that destroys incoming enemy projectiles, not enemies.',max:1},
+{id:'interceptExtra',family:'DEFENSE',name:'Twin Interceptors',symbol:'◇',description:'Allows a second interceptor turret. Separate deployment slots from combat turrets.',max:1,requires:'interceptTurret'},
+{id:'repulse',family:'SURVIVAL',name:'Repulsion Pulse',symbol:'◉',description:'Autonomous non-damaging shockwave pushes nearby enemies away. Upgrades reduce its cooldown.',max:3},
+{id:'turretPower',family:'ENGINEERING',name:'Reinforced Turrets',symbol:'✥',description:'Increases turret damage and durability only.',max:5,requires:'turret'},
+{id:'turretRate',family:'ENGINEERING',name:'Servo Motors',symbol:'⌘',description:'Increases turret firing rate only.',max:5,requires:'turret'},
+{id:'turretRange',family:'ENGINEERING',name:'Extended Radar',symbol:'◎',description:'Increases turret targeting range.',max:4,requires:'turret'},
+{id:'turretLightning',family:'ENGINEERING',name:'Arc Turrets',symbol:'ϟ',description:'All turret hits can chain lightning. Upgrades are separate from player Chain Lightning.',max:4,requires:'turret'},
+{id:'turretRicochet',family:'ENGINEERING',name:'Ricochet Turrets',symbol:'⌁',description:'Turret shots can ricochet off walls and jump to nearby enemies. Separate from player Ricochet.',max:3,requires:'turret'}
+];
+function rng(seed){let a=seed>>>0||0x13579bdf;return()=>{a^=a<<13;a^=a>>>17;a^=a<<5;return (a>>>0)/4294967296}}
+function numSeed(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]||123456789}catch(e){return (Math.random()*0xffffffff)>>>0||123456789}}
+const random=(a,b)=>a+Math.random()*(b-a),randomInt=n=>Math.floor(Math.random()*n);
+const SHOT_CAP=24,MAX_TURRETS=2,SAFE_SECONDS=45,COMBO_WINDOW=3;
+// Every initial unlock and every subsequent level consumes exactly one selection.
+// There is deliberately NO cap on the number of different ability IDs in a build.
+const BUILD_PICK_CAP=20,CHOICE_SECONDS=20,GUARDIAN_MAX=3;
+// Cosmetic rewards do not affect gameplay or the expedition shop.
+// These deterministic client rolls aid reproducible analysis, NOT anti-cheat verification.
+// Only ATANATUS may award account-wide currency after server-side checks.
+const CERCO_COSMETIC_SCHEMA='cerco.cosmetics.v1';
+const CERCO_COSMETIC_CURRENCY='atanatus.style_coins';
+const CERCO_COIN_DROP_CHANCE=.03;
+function cercoCoinBand(stage){return Math.floor((Math.max(1,stage)-1)/5)+1}
+function cercoCoinPolicy(stage){
+ const band=cercoCoinBand(stage);
+ return Object.freeze({band,currencyId:CERCO_COSMETIC_CURRENCY,
+  combatRooms:[5*band-4,5*band-1],dropChance:CERCO_COIN_DROP_CHANCE,
+  minValue:band<=5?2*band:Math.min(34,10+2*(band-5)),
+  maxValue:band===1?5:band<=5?4*band:Math.min(68,20+4*(band-5)),
+  maxSpawnedValue:Math.min(200,40+25*(band-1)),
+  eligibleOrigins:['normal'],excludedEnemies:['boss','devil'],coinLifetimeSeconds:18});
+}
+function cercoCosmeticPolicy(){return cercoCopy({schema:CERCO_COSMETIC_SCHEMA,currencyId:CERCO_COSMETIC_CURRENCY,
+  displayName:'Style Coins',verification:'server_required',dropChance:CERCO_COIN_DROP_CHANCE,
+  rules:['Combat rooms only','One physical coin per eligible drop','Nuke and environmental kills excluded','Boss kills excluded','Seed replays are practice-only (no Style Coin drops)',
+         'Drops expire and must be collected','Uncollected drops are not rewarded','Only the platform grants account balance'],
+  bands:[1,2,3,4,5,6,7,8].map(b=>cercoCoinPolicy(b*5-4))});}
+function cercoCosmeticInit(){
+ state.cosmetic={collected:0,spawnedValue:0,spawnedCount:0,collectedCount:0,nextDrop:0,
+  rooms:{},bands:{},receipts:[],spawns:[],rng:null,eligibleRoomKills:0};
+}
+function cercoCosmeticBand(stage){
+ const policy=cercoCoinPolicy(stage),key=String(policy.band);
+ if(!state.cosmetic.bands[key])state.cosmetic.bands[key]={band:policy.band,eligibleKills:0,spawnedValue:0,spawnedCount:0,collectedValue:0,collectedCount:0};
+ return state.cosmetic.bands[key];
+}
+function cercoCosmeticRoom(stage){
+ const key=String(stage);
+ if(!state.cosmetic.rooms[key])state.cosmetic.rooms[key]={room:stage,band:cercoCoinBand(stage),eligibleKills:0,spawnedValue:0,spawnedCount:0,collectedValue:0,collectedCount:0};
+ return state.cosmetic.rooms[key];
+}
+function cercoCosmeticBeginRoom(stage,safe){
+ state.cosmetic.eligibleRoomKills=0;
+ state.cosmetic.rng=safe?null:rng(((state.seed^Math.imul(stage,0x6a09e667)^0x82c0ffee)>>>0)||1);
+ if(!safe){cercoCosmeticBand(stage);cercoCosmeticRoom(stage)}
+}
+function cercoCosmeticTryDrop(z,origin){
+ if(!state.cosmetic||state.mode!=='play'||state.room.safe||state.seedReplay||origin!=='normal'||isGuardian(z))return;
+ // No impossible-to-collect coin appears from the final kill of a completed room.
+ if(state.kills>=state.goal&&!state.bossAlive&&(state.stage%5!==4||state.roomBossSpawned))return;
+ const policy=cercoCoinPolicy(state.stage),band=cercoCosmeticBand(state.stage),room=cercoCosmeticRoom(state.stage);
+ band.eligibleKills++;room.eligibleKills++;state.cosmetic.eligibleRoomKills++;
+ const roll=state.cosmetic.rng(); // One drop-chance draw for every eligible kill.
+ if(roll>=policy.dropChance||band.spawnedValue>=policy.maxSpawnedValue||state.drops.length>=12)return;
+ const rollValue=state.cosmetic.rng(); // Value roll only after success.
+ const proposed=policy.minValue+Math.floor(rollValue*(policy.maxValue-policy.minValue+1));
+ const value=Math.min(proposed,policy.maxSpawnedValue-band.spawnedValue);
+ if(value<=0)return;
+ const tiles=[];for(let dy=0;dy<(z.h||1);dy++)for(let dx=0;dx<(z.w||1);dx++)tiles.push({x:z.x+dx,y:z.y+dy});
+ // Prefer the defeated enemy's cell; if occupied/blocked, use a nearby walkable cell.
+ // Never spawn a coin underneath the player, inside a wall or atop another pickup.
+ const candidates=[...tiles];
+ for(const t of tiles)for(const [dx,dy] of DIR)candidates.push({x:t.x+dx,y:t.y+dy});
+ const pos=candidates.find(p=>!blockedIn(state.room,p.x,p.y)&&!(state.player.x===p.x&&state.player.y===p.y)
+  &&!state.drops.some(d=>d.x===p.x&&d.y===p.y)
+  &&!state.turrets.some(t=>t.x===p.x&&t.y===p.y));
+ if(!pos)return;
+ const dropId=state.runId+':coin:'+String(++state.cosmetic.nextDrop);
+ const receipt={dropId,room:state.stage,band:policy.band,currencyId:CERCO_COSMETIC_CURRENCY,
+  value,enemyType:z.type,eligibleKillNumberInRoom:room.eligibleKills,
+  spawnedAtActiveSeconds:cercoMsSeconds()};
+ state.drops.push({...pos,type:'style_coin',value,dropId,life:policy.coinLifetimeSeconds,receipt});
+ band.spawnedValue+=value;band.spawnedCount++;room.spawnedValue+=value;room.spawnedCount++;
+ state.cosmetic.spawnedValue+=value;state.cosmetic.spawnedCount++;
+ state.cosmetic.spawns.push({...receipt});
+ emitCercoEvent('cosmetic_coin_spawned',{coin:cercoCopy(receipt),currencyId:CERCO_COSMETIC_CURRENCY,
+  creditable:false,trust:'client_reported_unverified'});
+}
+function cercoCosmeticCollect(drop){
+ if(!state.cosmetic||!drop?.receipt||state.cosmetic.receipts.some(r=>r.dropId===drop.dropId))return;
+ const receipt={...drop.receipt,collectedAtActiveSeconds:cercoMsSeconds()};
+ const band=cercoCosmeticBand(drop.receipt.room),room=cercoCosmeticRoom(drop.receipt.room);
+ band.collectedValue+=drop.value;band.collectedCount++;room.collectedValue+=drop.value;room.collectedCount++;
+ state.cosmetic.collected+=drop.value;state.cosmetic.collectedCount++;
+ state.cosmetic.receipts.push(receipt);
+ const a=state.audit,r=cercoAuditCurrent();if(a){a.pickups.style_coin=(a.pickups.style_coin||0)+1;
+  if(r){r.styleCoinsCollected=(r.styleCoinsCollected||0)+drop.value;r.styleCoinPickups=(r.styleCoinPickups||0)+1}}
+ const x=(state.player.x+.5)*T,y=(state.player.y+.5)*T;
+ addFloater(x,y,'+'+drop.value+' ✦','#ffdc88',true);sparks(x,y,13,'#f4c66c',.9);
+ toast('+'+drop.value+' STYLE COINS',1.05);
+ textLog('Style Coins collected: +'+drop.value+' (pending platform verification).');
+ emitCercoEvent('cosmetic_coin_collected',{coin:cercoCopy(receipt),currencyId:CERCO_COSMETIC_CURRENCY,
+  runCosmeticTotal:state.cosmetic.collected,creditable:false,trust:'client_reported_unverified'});
+}
+function cercoCosmeticReport(){
+ if(!state.cosmetic)return null;
+ const c=state.cosmetic;
+ const receiptTotal=c.receipts.reduce((sum,r)=>sum+r.value,0);
+ const uniqueDropIds=new Set(c.receipts.map(r=>r.dropId));
+ const spawnedIds=new Set(c.spawns.map(r=>r.dropId));
+ const bands=Object.values(c.bands).sort((a,b)=>a.band-b.band).map(b=>{
+  const policy=cercoCoinPolicy(5*b.band-4);
+  return {...b,maxSpawnedValue:policy.maxSpawnedValue,minValue:policy.minValue,maxValue:policy.maxValue};
+ });
+ return cercoCopy({schema:CERCO_COSMETIC_SCHEMA,currencyId:CERCO_COSMETIC_CURRENCY,
+  collected:c.collected,collectedCount:c.collectedCount,spawnedValue:c.spawnedValue,spawnedCount:c.spawnedCount,
+  rooms:Object.values(c.rooms).sort((a,b)=>a.room-b.room),bands,
+  spawns:c.spawns,receipts:c.receipts,
+  diagnosticChecks:{receiptSumMatchesTotal:receiptTotal===c.collected,
+   receiptIdsUnique:uniqueDropIds.size===c.receipts.length,
+   receiptsReferenceSpawn:[...uniqueDropIds].every(id=>spawnedIds.has(id)),
+   spawnedBandCapsRespected:bands.every(b=>b.spawnedValue<=b.maxSpawnedValue),
+   collectedDoesNotExceedSpawned:c.collected<=c.spawnedValue},
+  trust:'client_reported_unverified',serverWalletCredited:false});
+}
+
+// Store gear grows with expedition depth: multiple tiers and three equipment slots.
+// Stat caps keep movement controllable and incoming damage relevant.
+const GEAR_NAMES={
+ armor:['Reinforced Armor','Shock-Absorbing Plates','Ceramic Plating','Obsidian Armor','Siege Armor','Fortified Bulwark'],
+ core:['Calibrated Core','Compact Reactor','Precision Core','Plasma Reactor','Siege Core','Stormheart Core'],
+ boots:['Lightweight Soles','Reinforced Boots','Kinetic Boots','Vector Drive','Heavy Thrusters','Burst Boots']
+};
+function equipmentOffer(slot,stage,r){
+ const depth=Math.max(0,Math.floor((stage-5)/5));
+ const tier=clamp(depth,0,8);
+ const amount=slot==='armor'?Math.min(.45,.12+tier*.042):slot==='core'?Math.min(.95,.15+tier*.11):Math.min(.30,.07+tier*.029);
+ const pct=Math.round(amount*100),base=GEAR_NAMES[slot][Math.min(tier,GEAR_NAMES[slot].length-1)];
+ const name=base+(tier>=GEAR_NAMES[slot].length?' · '+['VI','VII','VIII'][Math.min(2,tier-GEAR_NAMES[slot].length)]:''),stat=slot==='armor'?`−${pct}% damage taken`:slot==='core'?`+${pct}% projectile damage`:`+${pct}% movement speed`;
+ return {name,stat,amount,slot,tier,price:400+tier*180+depth*40};
+}
+const clamp01=x=>clamp(x,0,1);
+
+const state={runId:null,mode:'menu',previousMode:'menu',stage:1,combat:1,cleared:0,seed:0,room:null,score:0,kills:0,totalKills:0,goal:20,time:60,duration:60,frenzy:false,clock:0,anim:0,last:0,spawnTimer:0,aiTimer:0,simTime:0,mobs:[],shots:[],drops:[],fx:[],floaters:[],up:{},keys:new Set(),lastKey:null,stepCooldown:0,holdFire:false,aimX:760,aimY:400,nextMob:1,player:null,combo:0,lastKill:-100,comboBank:0,credits:0,creditsRoom:0,stamina:100,staminaMax:100,safeTimer:45,safeItems:[],gear:{armor:null,core:null,boots:null},turrets:[],enemyShots:[],particles:[],floatLife:[],shockwaves:[],arcs:[],bossAlive:false,roomBossSpawned:false,navMerchant:null,path:[],pathTimer:0,transitionTimer:0,awardNext:false,records:[],noticeEnd:0,noticeText:'',noticeDuration:0,choiceOptions:[],upgradeRerolls:0,roomLifeDrops:0,roomShieldDrops:0,roomNukes:0,choiceTimer:0,upgradePicks:0,choiceSkips:0,guardianSpawned:0,repulseReady:0,lastInterceptDeploy:-100,interceptCount:0,deferWaveCompletion:false,cosmetic:null,hazards:[],lastPlayerMove:0,collapseElapsed:0,encroachment:0,announcedTypes:new Set(),trails:[],sprintSteps:0,sprintHealDistance:0,sprintHealed:0,sprintShardAt:-100};
+
+// CERCO integration protocol v1: read-only game events for embedding sites.
+// Messages contain no user identifiers or credentials; the host supplies identity.
+const CERCO_VERSION='0.9.5';
+const CERCO_RULESET='CERCO-0.9.5'; // Momentum Recovery heals by real sprint distance with no per-room healing cap.
+const CERCO_AUDIT_SCHEMA='cerco.audit.v2';
+// Cosmetic API v1 — source of truth for CERCO skin IDs and visual rendering.
+// No equipment, stats, purchases or player identity are managed by this module.
+const CERCO_SKIN_SCHEMA='cerco.skins.v1';
+const CERCO_SKINS=Object.freeze([
+ Object.freeze({id:'cerco.default',name:'Original',rarity:'starter',description:'The original CERCO player cube.',free:true,cosmeticOnly:true,visualVersion:1}),
+ Object.freeze({id:'cerco.void_circuit',name:'Void Circuit',rarity:'rare',description:'Obsidian graphite, violet circuitry and a subtle neon pulse.',free:false,cosmeticOnly:true,visualVersion:1})
+]);
+let cercoEquippedSkin='cerco.default';
+function cercoSkinById(id){return CERCO_SKINS.find(s=>s.id===id)||null}
+function cercoSkinCatalog(){return cercoCopy({schema:CERCO_SKIN_SCHEMA,gameVersion:CERCO_VERSION,skins:CERCO_SKINS});}
+function cercoSkinState(){return Object.freeze({schema:CERCO_SKIN_SCHEMA,skinId:cercoEquippedSkin,cosmeticOnly:true,serverEntitlementVerified:false});}
+function cercoSetSkin(id){
+ const skin=typeof id==='string'?cercoSkinById(id):null;
+ if(!skin)return {ok:false,skinId:cercoEquippedSkin,error:'unknown_skin'};
+ const changed=cercoEquippedSkin!==id;
+ cercoEquippedSkin=id;
+ if(changed)emitCercoEvent('skin_changed',{skinId:id,cosmeticOnly:true,serverEntitlementVerified:false});
+ return {ok:true,skinId:id,changed,cosmeticOnly:true};
+}
+// One canvas renderer shared by actual gameplay and shop-preview requests.
+function cercoDrawAvatar(ctx,id,cx,cy,time=0,hit=false){
+ ctx.save();
+ if(id==='cerco.void_circuit'){
+  const pulse=.5+.5*Math.sin(time*2.6),rim='#a674ff';
+  ctx.fillStyle='#02050c99';ctx.fillRect(cx-9,cy-9,27,27);
+  ctx.shadowColor='#9854ff';ctx.shadowBlur=6+5*pulse;
+  ctx.fillStyle=hit?'#fff3ff':'#151524';ctx.fillRect(cx-15,cy-15,30,30);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#292b3e';ctx.fillRect(cx-12,cy-12,24,5);
+  ctx.fillStyle='#090e1c';ctx.fillRect(cx-12,cy-6,24,17);
+  ctx.strokeStyle=rim;ctx.lineWidth=2;ctx.strokeRect(cx-14,cy-14,28,28);
+  // Light-reactive circuit traces, intentionally kept inside the player hitbox.
+  ctx.strokeStyle='#ce97ff';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-10,cy-7);ctx.lineTo(cx-5,cy-7);ctx.lineTo(cx-5,cy-2);ctx.lineTo(cx,cy-2);
+  ctx.moveTo(cx+10,cy+8);ctx.lineTo(cx+5,cy+8);ctx.lineTo(cx+5,cy+3);ctx.lineTo(cx+1,cy+3);ctx.stroke();
+  ctx.fillStyle='#72f0ef';ctx.shadowColor='#64e8ff';ctx.shadowBlur=3+6*pulse;
+  ctx.fillRect(cx-3,cy-3,6,6);
+  ctx.fillRect(cx-11,cy-9,3,3);ctx.fillRect(cx+8,cy+7,3,3);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#e1d0ff';ctx.globalAlpha=.4+.4*pulse;ctx.fillRect(cx-11,cy+9,22,1);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle='#5f4c95';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-12,cy+12);ctx.lineTo(cx-6,cy+12);ctx.moveTo(cx+6,cy-12);ctx.lineTo(cx+12,cy-12);ctx.stroke();
+ }else{
+  ctx.fillStyle='#050d17b0';ctx.fillRect(cx-10,cy-10,28,28);
+  ctx.fillStyle=hit?'#fff9d9':'#74cfe6';ctx.fillRect(cx-15,cy-15,30,30);
+  ctx.strokeStyle='#d4faff';ctx.lineWidth=2.5;ctx.strokeRect(cx-14,cy-14,28,28);
+  ctx.fillStyle='#b7f0ff';ctx.fillRect(cx-8,cy-8,8,6);
+ }
+ ctx.restore();
+}
+function cercoSkinPreview(id,size=256){
+ if(!cercoSkinById(id))return null;
+ const n=Math.max(64,Math.min(512,Math.floor(Number(size)||256)));
+ const canvas=document.createElement('canvas');canvas.width=n;canvas.height=n;
+ const ctx=canvas.getContext('2d');
+ ctx.translate(n/2,n/2);ctx.scale(n/51,n/51);
+ // The studio thumbnail deliberately uses the same avatar renderer as the game.
+ cercoDrawAvatar(ctx,id,0,0,1.2,false);
+ return {skinId:id,mimeType:'image/png',width:n,height:n,dataUrl:canvas.toDataURL('image/png')};
+}
+// Only the real embedding parent may request appearance changes. The host must
+// FIRST validate skin ownership in its backend; a local visual change is never proof.
+function cercoTrustedParentOrigin(origin){
+ if(!origin||origin==='null')return false;
+ if(origin===window.location.origin)return true;
+ const meta=document.querySelector('meta[name="cerco-trusted-parent-origins"]');
+ return (meta?.content||'').split(/[\s,]+/).some(s=>s===origin);
+}
+
+function makeRunId(){
+ try{if(typeof crypto.randomUUID==='function')return crypto.randomUUID();
+ const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return 'cerco-'+Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');}
+ catch(_){return 'cerco-'+Date.now().toString(36)+'-'+numSeed().toString(16)}
+}
+function cercoSnapshot(){
+ return Object.freeze({
+  runId:state.runId||null,gameVersion:CERCO_VERSION,ruleset:CERCO_RULESET,
+  mode:state.mode,seed:state.seed>>>0,seedReplay:!!state.seedReplay,room:state.stage,boardColumns:W,boardRows:H,
+  roomsCleared:state.cleared,kills:state.totalKills,
+  roomKills:state.kills,roomGoal:state.goal,
+  score:Math.max(0,Math.floor(state.score)),credits:state.credits,
+  activeSeconds:Math.round(state.simTime*1000)/1000,
+  health:state.player?Math.ceil(state.player.hp):null,skinId:cercoEquippedSkin,
+  styleCoinsRun:state.cosmetic?.collected||0,styleCoinCurrency:CERCO_COSMETIC_CURRENCY,styleCoinsVerified:false,
+  finished:state.mode==='dead',
+  auditSchema:CERCO_AUDIT_SCHEMA, eventSeq:state.eventSeq||0
+ });
+}
+function cercoCopy(o){return JSON.parse(JSON.stringify(o))}
+function cercoAuditInit(){
+ const startDate=new Date().toISOString(); // Device clock; NOT a trusted server timestamp.
+ state.eventSeq=0;
+ state.audit={schema:CERCO_AUDIT_SCHEMA,startedAtClient:startDate,rooms:[],currentRoom:null,
+  score:{baseKills:0,comboBonus:0,roomBonuses:0},
+  credits:{earned:0,spentGear:0,spentRerolls:0,tradeInDiscounts:0},
+  killsByType:{},killBuckets:{},maxCombo:0,maxMultiplier:1,nukeKills:0,environmentalKills:0,
+  upgrades:[],upgradeSkips:[],gearPurchases:[],rerolls:[],pickups:{health:0,shield:0,nuke:0,style_coin:0},
+  result:null,finalized:false};
+}
+function cercoAuditCurrent(){return state.audit?.currentRoom||null}
+function cercoAuditOpenRoom(stage,safe){
+ const audit=state.audit;
+ if(!audit)return;
+ if(audit.currentRoom&&!audit.currentRoom.status)cercoAuditCloseRoom('transitioned');
+ const record={room:stage,type:safe?'safe':'combat',kind:state.room?.kind||'',
+  boardColumns:W,boardRows:H,roomColumns:state.room?.w||0,roomRows:state.room?.h||0,invasionTier:safe?0:invasionTier(),hazardsCreated:0,maxEncroachment:0,
+  startedActiveSeconds:cercoMsSeconds(),durationSeconds:null,
+  goal:safe?0:state.goal,timeLimitSeconds:safe?SAFE_SECONDS:state.duration,bossRequired:!safe&&stage%5===4,
+  kills:0,killsByType:{},killBuckets:{},nukeKills:0,environmentalKills:0,styleCoinsCollected:0,styleCoinPickups:0,
+  baseKillPoints:0,comboBonusPoints:0,roomBonusPoints:0,
+  creditsEarned:0,creditsSpent:0,creditsTradeInDiscount:0,
+  scoreAtEntry:state.score,scoreAtExit:null,creditsAtEntry:state.credits,creditsAtExit:null,
+  styleCoinsAtEntry:state.cosmetic?.collected||0,styleCoinsAtExit:null,
+  healthAtEntry:state.player?Math.ceil(state.player.hp):null,
+  shieldAtEntry:state.player?Math.ceil(state.player.shield):null,
+  healthAtExit:null,shieldAtExit:null,
+  frenzyTriggered:false,guardianDefeated:false,guardiansDefeated:0,remainingSecondsAtClear:null,upgradesAtEntry:{...state.up},gearAtEntry:cercoAuditGear(),
+  status:null};
+ audit.rooms.push(record);audit.currentRoom=record;
+}
+function cercoMsSeconds(){return Math.round(state.simTime*1000)/1000}
+function cercoAuditGear(){return Object.fromEntries(Object.entries(state.gear).map(([slot,item])=>[slot,item?{name:item.name,tier:item.tier,price:item.price,amount:item.amount}:null]))}
+function cercoAuditCloseRoom(status){
+ const r=cercoAuditCurrent();if(!r||r.status)return r;
+ r.status=status;r.finishedActiveSeconds=cercoMsSeconds();
+ r.durationSeconds=Math.max(0,Math.round((r.finishedActiveSeconds-r.startedActiveSeconds)*1000)/1000);
+ r.scoreAtExit=state.score;r.creditsAtExit=state.credits;r.styleCoinsAtExit=state.cosmetic?.collected||0;
+ r.healthAtExit=state.player?Math.ceil(state.player.hp):null;
+ r.shieldAtExit=state.player?Math.ceil(state.player.shield):null;
+ r.upgradesAtExit={...state.up};r.gearAtExit=cercoAuditGear();
+ return r;
+}
+function cercoAuditKill(z,base,multiplier,earned,fromNuke,origin){
+ const a=state.audit,r=cercoAuditCurrent();if(!a||!r)return;
+ const type=z.type||'unknown';const tag=type+'|'+Number(multiplier).toFixed(2)+'|'+origin;
+ for(const bucket of [a.killsByType,r.killsByType])bucket[type]=(bucket[type]||0)+1;
+ for(const bucket of [a.killBuckets,r.killBuckets])bucket[tag]=(bucket[tag]||0)+1;
+ for(const o of [a.score]){o.baseKills+=base;o.comboBonus+=earned-base}
+ r.kills++;r.baseKillPoints+=base;r.comboBonusPoints+=earned-base;
+ if(origin==='nuke'){a.nukeKills++;r.nukeKills++}
+ if(origin==='explosion'){a.environmentalKills++;r.environmentalKills++}
+ if(!fromNuke){a.maxCombo=Math.max(a.maxCombo,state.combo);a.maxMultiplier=Math.max(a.maxMultiplier,multiplier)}
+}
+function cercoAuditCredits(kind,amount,other={}){
+ const a=state.audit,r=cercoAuditCurrent();if(!a||!r)return;
+ if(kind==='earned'){a.credits.earned+=amount;r.creditsEarned+=amount}
+ else if(kind==='gear'){a.credits.spentGear+=amount;r.creditsSpent+=amount;a.credits.tradeInDiscounts+=other.discount||0;r.creditsTradeInDiscount+=other.discount||0}
+ else if(kind==='reroll'){a.credits.spentRerolls+=amount;r.creditsSpent+=amount}
+}
+function cercoAuditReport(){
+ const a=state.audit;if(!a||!state.runId)return null;
+ const snap=cercoSnapshot();
+ const history=a.rooms.map(r=>{
+  if(r.status)return cercoCopy(r);
+  const live=cercoCopy(r);live.status='in_progress';live.finishedActiveSeconds=cercoMsSeconds();
+  live.durationSeconds=Math.max(0,Math.round((live.finishedActiveSeconds-live.startedActiveSeconds)*1000)/1000);
+  live.scoreAtExit=state.score;live.creditsAtExit=state.credits;live.styleCoinsAtExit=state.cosmetic?.collected||0;
+  live.healthAtExit=state.player?Math.ceil(state.player.hp):null;
+  live.shieldAtExit=state.player?Math.ceil(state.player.shield):null;
+  live.upgradesAtExit={...state.up};live.gearAtExit=cercoAuditGear();return live;
+ });
+ const scoreCheck=a.score.baseKills+a.score.comboBonus+a.score.roomBonuses===snap.score;
+ const killCheck=Object.values(a.killsByType).reduce((s,n)=>s+n,0)===snap.kills;
+ const creditCheck=a.credits.earned-a.credits.spentGear-a.credits.spentRerolls===snap.credits;
+ return cercoCopy({schema:CERCO_AUDIT_SCHEMA,gameVersion:CERCO_VERSION,ruleset:CERCO_RULESET,
+  runId:state.runId,seed:snap.seed,seedReplay:snap.seedReplay,
+  startedAtClient:a.startedAtClient, // Device supplied: do not use as proof of elapsed time.
+  result:a.result,activeSeconds:snap.activeSeconds,
+  cosmeticEconomy:cercoCosmeticReport(),
+  final:{room:snap.room,roomsCleared:snap.roomsCleared,kills:snap.kills,score:snap.score,
+   credits:snap.credits,styleCoinsRun:snap.styleCoinsRun,styleCoinsVerified:false,health:snap.health,boardColumns:snap.boardColumns,boardRows:snap.boardRows,
+   upgrades:{...state.up},gear:cercoAuditGear(),skinId:cercoEquippedSkin,upgradePicks:state.upgradePicks,choiceSkips:state.choiceSkips,guardianSpawned:state.guardianSpawned},
+  scoreBreakdown:{...a.score,total:a.score.baseKills+a.score.comboBonus+a.score.roomBonuses},
+  economy:{...a.credits,balance:snap.credits},
+  killsByType:{...a.killsByType},killBuckets:{...a.killBuckets},
+  maxCombo:a.maxCombo,maxMultiplier:a.maxMultiplier,nukeKills:a.nukeKills,environmentalKills:a.environmentalKills,
+  pickups:{...a.pickups},upgrades:a.upgrades,upgradeSkips:a.upgradeSkips,gearPurchases:a.gearPurchases,rerolls:a.rerolls,
+  rooms:history,
+  diagnosticChecks:{scoreAddsUp:scoreCheck,killsAddUp:killCheck,creditsAddUp:creditCheck},
+  trust:'client_reported_unverified'});
+}
+function emitCercoEvent(event,extra={}){
+ state.eventSeq=(state.eventSeq||0)+1;
+ const detail=Object.freeze({...cercoSnapshot(),...extra});
+ const message=Object.freeze({source:'CERCO',protocol:1,event,detail});
+ window.dispatchEvent(new CustomEvent('cerco:event',{detail:message}));
+ window.dispatchEvent(new CustomEvent('cerco:'+event,{detail}));
+ // Parent-only, cross-origin-compatible transport; no network requests.
+ if(window.parent&&window.parent!==window)window.parent.postMessage(message,'*');
+}
+function cercoBridgeCapabilities(){return Object.freeze({game:'CERCO',gameVersion:CERCO_VERSION,ruleset:CERCO_RULESET,protocol:1,
+ auditSchema:CERCO_AUDIT_SCHEMA,skinSchema:CERCO_SKIN_SCHEMA,cosmeticSchema:CERCO_COSMETIC_SCHEMA,
+ transport:['postMessage','CustomEvent','sameOriginBridge'],inputMethods:['keyboard_mouse','touch_joystick_fire'],
+ hostQueries:['capabilities','snapshot','run_report','skin_catalog','skin_state','skin_preview','cosmetic_policy','cosmetic_report'],
+ hostCommands:['cerco_set_skin'],
+ events:['bridge_ready','run_started','room_entered','room_cleared','upgrade_selected','upgrade_rerolled',
+ 'upgrade_skipped','gear_purchased','pickup_collected','cosmetic_coin_spawned','cosmetic_coin_collected','run_finished','run_abandoned','skin_changed'],
+ resultEvent:'run_finished',playerIdentity:'provided_by_host',serverSession:'provided_by_host',
+ skinOwnership:'provided_and_verified_by_host',cosmeticRewards:'server_validated_only',trust:'client_reported_unverified'});}
+// Parent queries remain read-only. Appearance changes are cosmetic-only and
+// allowed only from the exact embedding parent on a configured trusted origin.
+window.addEventListener('message',function(event){
+ if(window.parent===window||event.source!==window.parent)return;
+ const data=event.data;
+ if(!data||data.source!=='ATANATUS'||data.protocol!==1)return;
+ if(data.action==='cerco_set_skin'){
+  if(!cercoTrustedParentOrigin(event.origin))return;
+  if(typeof data.requestId!=='string'||data.requestId.length>100)return;
+  const detail=cercoSetSkin(data.skinId);
+  event.source.postMessage({source:'CERCO',protocol:1,event:'skin_set_result',requestId:data.requestId,detail},event.origin);
+  return;
+ }
+ if(data.action!=='cerco_query')return;
+ if(typeof data.requestId!=='string'||data.requestId.length>100||!['capabilities','snapshot','run_report','skin_catalog','skin_state','skin_preview','cosmetic_policy','cosmetic_report'].includes(data.query))return;
+ let detail=null;
+ if(data.query==='capabilities')detail=cercoBridgeCapabilities();
+ else if(data.query==='snapshot')detail=cercoSnapshot();
+ else if(data.query==='run_report')detail=cercoAuditReport();
+ else if(data.query==='skin_catalog')detail=cercoSkinCatalog();
+ else if(data.query==='skin_state')detail=cercoSkinState();
+ else if(data.query==='skin_preview')detail=cercoSkinPreview(data.skinId,data.size);
+ else if(data.query==='cosmetic_policy')detail=cercoCosmeticPolicy();
+ else if(data.query==='cosmetic_report')detail=cercoCosmeticReport();
+ event.source.postMessage({source:'CERCO',protocol:1,event:'query_result',requestId:data.requestId,query:data.query,detail},event.origin==='null'?'*':event.origin);
+});
+Object.defineProperty(window,'CERCO_BRIDGE',{
+ value:Object.freeze({version:CERCO_VERSION,protocol:1,auditSchema:CERCO_AUDIT_SCHEMA,skinSchema:CERCO_SKIN_SCHEMA,cosmeticSchema:CERCO_COSMETIC_SCHEMA,
+ getSnapshot:cercoSnapshot,getRunReport:cercoAuditReport,getCapabilities:cercoBridgeCapabilities,
+ getSkinCatalog:cercoSkinCatalog,getSkinState:cercoSkinState,getSkinPreview:cercoSkinPreview,setSkin:cercoSetSkin,
+ getCosmeticPolicy:cercoCosmeticPolicy,getCosmeticReport:cercoCosmeticReport}),
+ enumerable:false,writable:false,configurable:false
+});
+function textLog(msg){const el=document.createElement('div');el.textContent=msg;ui.log.prepend(el);while(ui.log.children.length>7)ui.log.lastElementChild.remove()}
+function toast(msg,duration=1.5){state.noticeText=msg;state.noticeDuration=duration;state.noticeEnd=state.anim+duration;ui.toast.textContent=msg;ui.toast.style.opacity='1'}
+function hideModal(){ui.veil.classList.add('hidden')}
+function showModal(html){ui.modal.innerHTML=html;ui.veil.classList.remove('hidden')}
+function saveRecords(){try{localStorage.setItem('cerco_expedicion_v04_records',JSON.stringify(state.records))}catch(e){}}
+function loadRecords(){try{const a=JSON.parse(localStorage.getItem('cerco_expedicion_v04_records')||'[]');state.records=Array.isArray(a)?a.filter(x=>x&&Number.isSafeInteger(x.points)&&x.points>=0&&x.points<=Number.MAX_SAFE_INTEGER&&Number.isSafeInteger(x.room)&&x.room>=1&&Number.isSafeInteger(x.kills)&&x.kills>=0).slice(0,5):[]}catch(e){state.records=[]}}
+function renderRecords(){ui.ranks.replaceChildren();if(!state.records.length){ui.ranks.textContent='No completed runs yet.';return}state.records.forEach((r,i)=>{const d=document.createElement('div');d.className='rank';const a=document.createElement('span'),b=document.createElement('strong');a.textContent=`${i+1}. Room ${r.room} · ${r.kills} kills`;b.textContent=r.points.toLocaleString('en-US');d.append(a,b);ui.ranks.appendChild(d)})}
+function have(id){return state.up[id]||0}
+function buildBranches(){return Object.values(state.up).filter(v=>v>0).length}
+function buildPicks(){return state.upgradePicks||0}
+function guardianRoom(){return state.stage%5===4}
+function guardianStage(){return Math.floor(state.stage/5)+1}
+// The first guardian room has one; later guardian rooms introduce additional and alternate leaders.
+function guardianTarget(){return !guardianRoom()?0:Math.min(GUARDIAN_MAX,1+Math.floor(guardianStage()/2))}
+function isGuardian(z){return z?.type==='boss'||z?.type==='devil'}
+function activeGuardians(){return state.mobs.filter(isGuardian)}
+function turretAllowance(){return Math.min(MAX_TURRETS,have('turret')?1+have('turretExtra'):0)}
+function interceptorAllowance(){return Math.min(MAX_TURRETS,have('interceptTurret')?1+have('interceptExtra'):0)}
+// Ranged-only encounters occur in rooms 7, 17, 27... excluding guardians and sanctuaries.
+function rangedAssault(){return state.stage>=7&&(state.stage-7)%10===0}
+// Every five combat rooms unlock an additional enemy capability tier.
+function invasionTier(){return Math.max(0,Math.floor((state.combat-1)/5))}
+function antiCampActive(){return state.mode==='play'&&state.combat>=8&&state.simTime-state.lastPlayerMove>=3.0}
+function ghostInWall(z){return z?.type==='ghost'&&blockedIn(state.room,z.x,z.y)}
+function enemyVisibleToWeapons(z){return !ghostInWall(z)}
+function rangedThreatCount(){return state.mobs.filter(z=>['ranged','seeker','blighter','shaman','demolisher'].includes(z.type)).length}
+function hazardZoneCap(){return Math.min(3,1+Math.floor(invasionTier()/2))}
+function threatAllowance(){return Math.min(8,3+invasionTier())}
+function specialThreatCount(){return state.mobs.filter(z=>['snarer','ghost','detonator','seeker','blighter','healer','shaman','demolisher'].includes(z.type)).length}
+
+function maxCombatPlayers(){return rangedAssault()?Math.min(12,8+Math.floor(state.combat/8)):Math.min(96,10+Math.ceil(state.combat*2.7))}
+function shotDelay(){return Math.max(.13,.47*Math.pow(.86,have('rate')))}
+const VAMP_RULES=[null,{kills:12,heal:4},{kills:10,heal:4},{kills:8,heal:4},{kills:7,heal:5},{kills:6,heal:5}];
+function vampRule(){return VAMP_RULES[clamp(have('drain'),0,5)]||null}
+function stepDelay(){const level=Math.min(.25,.012*Math.max(0,state.combat-1));const boots=state.gear.boots?.amount||0;const boost=isSprinting()?1.60+have('sprintSpeed')*.12:1;const slow=state.player?.slowUntil>state.simTime?1.43:1;return Math.max(.075,.163*slow/(1+level+boots)/boost)}
+function spawnGap(){return Math.max(.12,.68-.022*(state.combat-1))*(state.frenzy?.5:1)*(rangedAssault()?1.4:1)}
+function waveRules(){const r=state.combat;state.goal=Math.round(20+9*(r-1)+.48*(r-1)*(r-1));state.duration=rangedAssault()?80:Math.min(120,60+5*(r-1));if(rangedAssault())state.goal=Math.max(20,Math.round(state.goal*.70));state.time=state.duration;state.kills=0;state.frenzy=false;state.spawnTimer=.40;state.aiTimer=0;state.combo=0;state.lastKill=-100;state.creditsRoom=0;state.bossAlive=false;state.roomBossSpawned=false;state.guardianSpawned=0}
+function localToWorld(room,x,y){return {x:x+room.ox,y:y+room.oy}}
+function inBounds(room,x,y){return x>=room.ox&&x<room.ox+room.w&&y>=room.oy&&y<room.oy+room.h}
+function blockedIn(room,x,y){return !inBounds(room,x,y)||room.walls.has(at(x,y))}
+// Line of sight between cell centers prevents targeting enemies
+// behind a wall.
+function clearLine(room,x1,y1,x2,y2){
+ const steps=Math.max(1,Math.ceil(Math.max(Math.abs(x2-x1),Math.abs(y2-y1))*8));
+ for(let n=1;n<steps;n++){const t=n/steps,x=Math.floor(x1+.5+(x2-x1)*t),y=Math.floor(y1+.5+(y2-y1)*t);if(blockedIn(room,x,y))return false}
+ return true;
+}
+function legalStepIn(room,x,y,dx,dy){const nx=x+dx,ny=y+dy;if(blockedIn(room,nx,ny))return false;if(dx&&dy&&(blockedIn(room,x+dx,y)||blockedIn(room,x,y+dy)))return false;return true}
+function bfs(room,start,stop){if(!room||blockedIn(room,start.x,start.y)||blockedIn(room,stop.x,stop.y))return null;const q=[start],prev=new Int32Array(W*H).fill(-1),si=at(start.x,start.y),ei=at(stop.x,stop.y);prev[si]=si;for(let i=0;i<q.length;i++){const p=q[i],pidx=at(p.x,p.y);if(pidx===ei)break;for(const [dx,dy] of DIR){if(!legalStepIn(room,p.x,p.y,dx,dy))continue;const nx=p.x+dx,ny=p.y+dy,j=at(nx,ny);if(prev[j]!==-1)continue;prev[j]=pidx;q.push({x:nx,y:ny})}}if(prev[ei]<0)return null;let cur=ei,path=[];while(cur!==si){path.push({x:cur%W,y:Math.floor(cur/W)});cur=prev[cur]}path.reverse();return path}
+function distanceField(room,tx,ty){const data=new Uint16Array(W*H).fill(999),queue=[];if(!blockedIn(room,tx,ty)){queue.push({x:tx,y:ty});data[at(tx,ty)]=0}for(let i=0;i<queue.length;i++){const p=queue[i],v=data[at(p.x,p.y)];for(const [dx,dy] of DIR){if(!legalStepIn(room,p.x,p.y,dx,dy))continue;const x=p.x+dx,y=p.y+dy,j=at(x,y);if(data[j]>v+1){data[j]=v+1;queue.push({x,y})}}}return data}
+function mapConnected(room){if(!bfs(room,room.entrance,room.exit))return false;const dist=distanceField(room,room.entrance.x,room.entrance.y);let free=0,reachable=0;for(let y=room.oy+1;y<room.oy+room.h-1;y++)for(let x=room.ox+1;x<room.ox+room.w-1;x++){if(blockedIn(room,x,y))continue;free++;if(dist[at(x,y)]<999)reachable++}return free>=(room.w-2)*(room.h-2)*.70&&reachable>=free*.97}
+function buildMap(stage,safe){const rngRoom=rng(((state.seed^Math.imul(stage,0x9e3779b9))>>>0)||1);let w,h;if(safe){w=Math.min(30,W-2);h=Math.min(18,H-2)}else{const n=stage-Math.floor(stage/5);w=Math.min(W-2,18+2*Math.floor(Math.max(0,n-1)/2)+Math.max(0,W-28));h=Math.min(H-2,14+2*Math.floor(Math.max(0,n-1)/3)+Math.max(0,H-20))}const ox=Math.floor((W-w)/2),oy=Math.floor((H-h)/2),middle=Math.floor(h/2);let room={w,h,ox,oy,walls:new Set(),entrance:{x:ox+1,y:oy+middle},exit:{x:ox+w-2,y:oy+middle},safe,kind:'',theme:0};
+// Fixed refuge, independent of stage and seed.
+if(safe){room.kind='SANCTUARY';room.theme=4;for(const [lx,ly] of [[5,4],[6,4],[5,5],[6,5],[w-7,4],[w-6,4],[w-7,5],[w-6,5],[5,h-6],[6,h-6],[5,h-5],[6,h-5],[w-7,h-6],[w-6,h-6],[w-7,h-5],[w-6,h-5]]){const p=localToWorld(room,lx,ly);room.walls.add(at(p.x,p.y))}return room}
+const shapes=['GALLERY','CROSSROADS','BASTION','RUINS'];const theme=(stage*7+Math.floor(rngRoom()*17))%4;room.theme=theme;room.kind=shapes[theme];let valid=false;
+for(let attempt=0;attempt<64&&!valid;attempt++){
+ room.walls=new Set();const count=6+Math.floor(stage/3)+Math.floor(rngRoom()*5);const protectedArea=(lx,ly)=>((Math.abs(lx-1)<4||Math.abs(lx-(w-2))<4)&&Math.abs(ly-middle)<4);
+ const add=(lx,ly)=>{if(lx<2||lx>=w-2||ly<1||ly>=h-1||protectedArea(lx,ly))return;room.walls.add(at(ox+lx,oy+ly))};
+ for(let i=0;i<count;i++){const lx=2+Math.floor(rngRoom()*(w-4)),ly=2+Math.floor(rngRoom()*(h-4));if(theme===0){const a=1+Math.floor(rngRoom()*2);for(let yy=0;yy<a;yy++)for(let xx=0;xx<a;xx++)add(lx+xx,ly+yy)}else if(theme===1){const len=2+Math.floor(rngRoom()*4),horizontal=rngRoom()<.52;for(let j=0;j<len;j++)add(lx+(horizontal?j:0),ly+(horizontal?0:j))}else if(theme===2){const len=3+Math.floor(rngRoom()*5),horizontal=rngRoom()<.5;for(let j=0;j<len;j++)if(j!==Math.floor(len/2))add(lx+(horizontal?j:0),ly+(horizontal?0:j))}else{const len=2+Math.floor(rngRoom()*3);for(let j=0;j<len;j++){add(lx+j,ly);if(rngRoom()<.6)add(lx,ly+j)}}}
+ // Space around both doors is always open, and all free areas must be connected.
+ valid=mapConnected(room);
+}
+if(!valid){room.walls=new Set();room.kind='OPEN FIELD'}
+return room}
+function makePlayer(){const a=state.room.entrance;return{x:a.x,y:a.y,fromX:a.x,fromY:a.y,blend:1,hp:100,maxHp:100,lastShot:-100,lastHit:-100,lastDir:2,auto:false,autoHeading:null,vampKills:0,slowUntil:0,poisonUntil:0,poisonTick:0,shield:0,shieldMax:0}}
+function relocatePlayer(){const p=state.player,a=state.room.entrance;p.x=a.x;p.y=a.y;p.fromX=a.x;p.fromY=a.y;p.blend=1;p.lastDir=2;p.autoHeading=null;if(!have('auto'))p.auto=false;state.keys.clear();state.lastKey=null;state.stepCooldown=0;state.holdFire=false;state.aimX=(p.x+3.5)*T;state.aimY=(p.y+.5)*T}
+function prepareStage(stage,award){
+ const safe=stage%5===0;document.querySelector('.app').classList.toggle('safe-room',safe);document.querySelector('.app').classList.remove('shop-open');configureWorld();fitArena();
+ state.stage=stage;state.room=buildMap(stage,safe);renderTerrain();
+ state.mobs=[];state.shots=[];state.enemyShots=[];state.turrets=[];state.drops=[];state.fx=[];state.particles=[];state.floaters=[];state.arcs=[];state.hazards=[];state.collapseElapsed=0;state.encroachment=0;state.collapseHit=0;state.lastPlayerMove=state.simTime;
+ state.path=[];state.aiTimer=0;state.spawnTimer=0;state.awardNext=false;state.deferWaveCompletion=false;state.roomLifeDrops=0;state.roomShieldDrops=0;state.roomNukes=0;state.trails=[];state.sprintSteps=0;state.sprintHealDistance=0;state.sprintHealed=0;state.sprintShardAt=-100;
+ state.player.poisonUntil=0;state.player.slowUntil=0;
+ state.safeTimer=SAFE_SECONDS;state.safeHealSpent=0;state.stamina=state.staminaMax;state.lastDeploy=-100;state.lastInterceptDeploy=-100;state.repulseReady=state.simTime+3;state.guardianSpawned=0;
+ cercoCosmeticBeginRoom(stage,safe);
+ relocatePlayer();setShopOpen(false);
+ if(safe){
+  state.navMerchant={x:state.room.ox+Math.floor(state.room.w/2),y:state.room.oy+Math.floor(state.room.h/2)};
+  const offersRng=rng((state.seed^Math.imul(stage,0x13579bdf))>>>0||1);
+  state.safeItems=['armor','core','boots'].map(slot=>equipmentOffer(slot,stage,offersRng));
+  for(const [dx,dy] of [[-4,1],[-1,-3],[4,2]]){const x=state.navMerchant.x+dx,y=state.navMerchant.y+dy;if(!blockedIn(state.room,x,y))state.drops.push({x,y,type:'life',value:12,life:999,safe:true})}
+  if(have('shield')&&state.player.shield<state.player.shieldMax){
+   const nearby=[[-3,-2],[3,-2],[-2,3],[2,3]];
+   let placed=0;for(const [dx,dy] of nearby){const x=state.navMerchant.x+dx,y=state.navMerchant.y+dy;
+    if(!blockedIn(state.room,x,y)&&!state.drops.some(d=>d.x===x&&d.y===y)){
+     state.drops.push({x,y,type:'shield',value:Math.min(20,12+have('shield')*2),life:999,safe:true});
+     if(++placed>=2)break;
+    }
+   }
+  }
+  state.mode=award?'choiceSafe':'safe';cercoAuditOpenRoom(stage,safe);if(state.runId&&state.runInitialized)emitCercoEvent('room_entered',{roomType:'safe',roomReport:cercoCopy(cercoAuditCurrent())});textLog('Room '+stage+': sanctuary, 45 seconds to collect health'+(have('shield')?' and shield':'')+' drops.');
+  if(award)showUpgradeChoices();else showRefuge();
+  toast('SANCTUARY · 45 SECONDS',2);
+ }else{
+  state.navMerchant=null;state.combat=stage-Math.floor(stage/5);waveRules();state.mode=award?'choice':'play';cercoAuditOpenRoom(stage,safe);if(state.runId&&state.runInitialized)emitCercoEvent('room_entered',{roomType:'combat',roomReport:cercoCopy(cercoAuditCurrent())});
+  textLog('Room '+stage+': '+(rangedAssault()?'ranged assault':state.room.kind.toLowerCase())+'. Goal: '+state.goal+' kills'+(guardianRoom()?' and '+guardianTarget()+' guardian(s)':'')+'.');
+  if(award)showUpgradeChoices();else{hideModal();toast(rangedAssault()?'RANGED ASSAULT · ROOM '+stage:'ROOM '+String(stage).padStart(2,'0')+' · '+state.room.kind,1.6)}
+ }
+ updateHUD();
+}
+function begin(seed,seedReplay=false){document.querySelector('.app').classList.remove('safe-room','shop-open');configureWorld();fitArena();state.runId=makeRunId();state.runInitialized=false;state.seedReplay=!!seedReplay;state.seed=(seed>>>0)||numSeed();state.score=0;state.kills=0;state.totalKills=0;state.cleared=0;state.simTime=0;cercoAuditInit();cercoCosmeticInit();state.up={};state.choiceOptions=[];state.upgradeRerolls=0;state.keys.clear();state.lastKey=null;state.holdFire=false;state.nextMob=1;state.clock=0;state.credits=0;state.creditsRoom=0;state.gear={armor:null,core:null,boots:null};state.stamina=100;state.staminaMax=100;state.lastDeploy=-100;state.lastInterceptDeploy=-100;state.repulseReady=0;state.upgradePicks=0;state.choiceSkips=0;state.guardianSpawned=0;state.enemyShots=[];state.turrets=[];state.particles=[];state.shockwaves=[];state.floaters=[];state.arcs=[];state.hazards=[];state.announcedTypes=new Set();state.trails=[];state.sprintSteps=0;state.sprintHealDistance=0;state.sprintHealed=0;state.sprintShardAt=-100;state.lastPlayerMove=0;state.collapseElapsed=0;state.encroachment=0;state.player=null;state.room=buildMap(1,false);state.player=makePlayer();prepareStage(1,false);ui.log.replaceChildren();textLog('Expedition started. Fight your way through.');updateBuild();renderRecords();state.runInitialized=true;emitCercoEvent('run_started');emitCercoEvent('room_entered',{roomType:'combat'})}
+function combatObjectiveReady(){
+ return state.mode==='play' && state.kills>=state.goal && !state.bossAlive && (!guardianRoom() || state.guardianSpawned>=guardianTarget());
+}
+function verifyCombatObjective(){if(combatObjectiveReady())completeCombat()}
+function completeCombat(){
+ if(state.mode!=='play'||state.bossAlive||(guardianRoom()&&state.guardianSpawned<guardianTarget()))return;
+ const bonus=250+state.goal*10+Math.ceil(Math.max(0,state.time))*9;state.score+=bonus;state.cleared++;
+ if(state.audit){state.audit.score.roomBonuses+=bonus;const r=cercoAuditCurrent();if(r){r.roomBonusPoints+=bonus;r.remainingSecondsAtClear=Math.max(0,state.time);r.frenzyTriggered=r.frenzyTriggered||!!state.frenzy}}
+ state.mode='extract';
+ state.mobs=[];state.shots=[];state.enemyShots=[];state.turrets=[];state.drops=[];state.hazards=[];state.trails=[];state.encroachment=0;
+ state.holdFire=false;state.keys.clear();state.lastKey=null;state.awardNext=true;
+ state.path=bfs(state.room,{x:state.player.x,y:state.player.y},state.room.exit)||[];state.pathTimer=.1;
+ const completedReport=cercoAuditCloseRoom('cleared');
+ emitCercoEvent('room_cleared',{roomCleared:state.stage,roomBonus:bonus,roomReport:cercoCopy(completedReport)});
+ textLog('Room cleared. +'+bonus.toLocaleString('en-US')+' points.');toast('ROOM CLEARED · EXITING',2);updateHUD();
+}
+function beginSafeExit(){
+ if(state.mode!=='safe')return;cercoAuditCloseRoom('safe_exited');hideModal();setShopOpen(false);
+ state.mode='extract';state.path=bfs(state.room,{x:state.player.x,y:state.player.y},state.room.exit)||[];
+ state.pathTimer=.08;state.awardNext=false;state.keys.clear();toast('ON TO THE NEXT ROOM',1.3);updateHUD();
+}
+function moveTo(nx,ny){const p=state.player,oldNear=nearMerchant();state.lastPlayerMove=state.simTime;p.fromX=p.x;p.fromY=p.y;p.x=nx;p.y=ny;p.blend=0;if(state.mode==='play'||state.mode==='safe')collectDrops();if(state.mode==='play'&&isSprinting())onRealSprintStep(p.fromX,p.fromY);if(state.mode==='safe'&&oldNear!==nearMerchant())renderShop()}
+function tickExtraction(dt){state.pathTimer-=dt;if(state.pathTimer>0)return;state.pathTimer=.085;if(!state.path.length){const pos=state.room.exit;if(state.player.x!==pos.x||state.player.y!==pos.y){state.path=bfs(state.room,{x:state.player.x,y:state.player.y},pos)||[];if(!state.path.length){state.mode='transition';state.transitionTimer=.45;return}}else{state.mode='transition';state.transitionTimer=.55;return}}
+const next=state.path.shift();if(next){moveTo(next.x,next.y);if(!state.path.length&&next.x===state.room.exit.x&&next.y===state.room.exit.y){state.mode='transition';state.transitionTimer=.55}}}
+function tickTransition(dt){state.transitionTimer-=dt;if(state.transitionTimer<=0)prepareStage(state.stage+1,state.awardNext)}
+function pickUpgrade(id){
+ if(!['choice','choiceSafe'].includes(state.mode)||!state.choiceOptions.some(u=>u.id===id)||buildPicks()>=BUILD_PICK_CAP)return;
+ const u=upgrades.find(u=>u.id===id);if(!u||have(id)>=u.max||(u.requires&&!have(u.requires))||(u.excludes&&have(u.excludes)))return;
+ state.up[id]=(state.up[id]||0)+1;state.upgradePicks++;const p=state.player;
+ if(id==='life'){p.maxHp+=20;p.hp=Math.min(p.maxHp,p.hp+20)}
+ if(id==='shield'){const old=p.shieldMax;p.shieldMax=18+12*have('shield');p.shield=Math.min(p.shieldMax,p.shield+(p.shieldMax-old));}
+ if(id==='stamina'){state.staminaMax+=20;state.stamina=Math.min(state.staminaMax,state.stamina+20)}
+ if(id==='drain'){const rule=vampRule();p.vampKills=Math.min(p.vampKills,rule.kills-1)}
+ textLog('Upgrade: '+u.name+' (level '+have(id)+').');
+ if(state.audit)state.audit.upgrades.push({room:state.stage,activeSeconds:cercoMsSeconds(),upgradeId:id,level:have(id)});
+ updateBuild();emitCercoEvent('upgrade_selected',{upgradeId:id,upgradeLevel:have(id)});
+ const fromSafe=state.mode==='choiceSafe';
+ if(fromSafe)showRefuge();else{state.mode='play';hideModal();toast(u.name.toUpperCase()+' ACTIVATED',1.4)}
+ updateHUD();
+}
+function skipUpgrade(reason='manual'){
+ if(!['choice','choiceSafe'].includes(state.mode))return false;
+ const fromSafe=state.mode==='choiceSafe';
+ state.choiceSkips++;if(state.audit)state.audit.upgradeSkips.push({room:state.stage,activeSeconds:cercoMsSeconds(),reason,offered:state.choiceOptions.map(u=>u.id)});
+ emitCercoEvent('upgrade_skipped',{room:state.stage,reason,upgradesSelected:buildPicks(),branches:buildBranches()});
+ textLog(reason==='timeout'?'Upgrade selection expired.':'Upgrade skipped.');
+ if(fromSafe)showRefuge();else{state.mode='play';hideModal();toast('UPGRADE SKIPPED',.9)}
+ updateHUD();return true;
+}
+// Rerolling uses only expedition credits.
+// Reroll limits reset for each new choice; skip never spends credits.
+const MAX_UPGRADE_REROLLS=3,UPGRADE_REROLL_STEP=60;
+function eligibleUpgrades(){return buildPicks()>=BUILD_PICK_CAP?[]:upgrades.filter(u=>have(u.id)<u.max&&(!u.requires||have(u.requires))&&(!u.excludes||!have(u.excludes)))}
+function shuffleUpgrades(items){
+ const result=items.slice();
+ for(let i=result.length-1;i>0;i--){const j=randomInt(i+1);[result[i],result[j]]=[result[j],result[i]]}
+ return result;
+}
+function rerollUpgradeChoices(){
+ if(!['choice','choiceSafe'].includes(state.mode)||state.upgradeRerolls>=MAX_UPGRADE_REROLLS)return;
+ const cost=UPGRADE_REROLL_STEP*(state.upgradeRerolls+1);
+ if(state.credits<cost)return;
+ const previous=new Set(state.choiceOptions.map(u=>u.id));
+ const pool=eligibleUpgrades();
+ const fresh=pool.filter(u=>!previous.has(u.id));
+ // Avoid repeating previous upgrade choices when three alternatives exist.
+ // Fill any gaps with valid options if most upgrades are maxed out.
+ const next=shuffleUpgrades(fresh).slice(0,3);
+ if(next.length<3){
+  for(const u of shuffleUpgrades(pool.filter(u=>!next.some(n=>n.id===u.id)))){
+   if(next.length>=3)break;
+   next.push(u);
+  }
+ }
+ if(!next.length||next.every((u,i)=>u.id===state.choiceOptions[i]?.id))return;
+ state.credits-=cost;cercoAuditCredits('reroll',cost);
+ if(state.audit)state.audit.rerolls.push({room:state.stage,activeSeconds:cercoMsSeconds(),cost,roll:state.upgradeRerolls+1,offered:next.map(u=>u.id)});
+ state.upgradeRerolls++;
+ state.choiceOptions=next;
+ textLog('Upgrade choices refreshed for '+cost+' credits.');
+ emitCercoEvent('upgrade_rerolled',{creditsSpent:cost,rerollNumber:state.upgradeRerolls,offeredUpgradeIds:next.map(u=>u.id)});
+ showUpgradeChoices(true);
+ updateHUD();
+}
+function showUpgradeChoices(reuse=false){
+ const available=eligibleUpgrades();
+ if(!reuse){
+  state.upgradeRerolls=0;state.choiceTimer=CHOICE_SECONDS;
+  state.choiceOptions=shuffleUpgrades(available).slice(0,3);
+ }else{
+  state.choiceOptions=state.choiceOptions.filter(u=>available.some(v=>v.id===u.id));
+  if(!state.choiceOptions.length)state.choiceOptions=shuffleUpgrades(available).slice(0,3);
+ }
+ if(!state.choiceOptions.length){skipUpgrade('cap_reached');return}
+ const cost=UPGRADE_REROLL_STEP*(state.upgradeRerolls+1);
+ const left=MAX_UPGRADE_REROLLS-state.upgradeRerolls;
+ const remaining=available.filter(u=>!state.choiceOptions.some(o=>o.id===u.id));
+ const canRefresh=left>0&&remaining.length>0;
+ showModal(`<div class="eyebrow">${state.room.safe?'NEW SANCTUARY':'NEW ROOM · '+state.stage}</div><h2>Choose your upgrade <span id="choiceCountdown" style="font-size:14px;color:#f5cf83">${Math.ceil(state.choiceTimer)} s</span></h2><p>Each new ability or level-up uses 1 of ${BUILD_PICK_CAP} selections. All available abilities can appear, with no limit on different abilities. Used: ${buildPicks()} / ${BUILD_PICK_CAP} · Remaining: ${BUILD_PICK_CAP-buildPicks()}.</p><div class="choices" id="upgradeChoices"></div><div class="rerollControls"><button class="btn secondary" id="refreshUpgrades" type="button" ${!canRefresh||state.credits<cost?'disabled':''}>↻ Reroll all 3 · ${cost} ◈</button><span>◈ ${state.credits} credits · ${left} rerolls left</span></div><div class="actions"><button class="btn secondary" id="skipUpgrade" type="button">Continue without upgrade · 0</button></div><p class="subline">1–3 choose · 0 skips. Timer expires into a free skip. Rerolls spend expedition credits; combat and sanctuary timers pause.</p>`);
+ const wrap=$('upgradeChoices');state.choiceOptions.forEach((u,i)=>{
+  const btn=document.createElement('button');btn.className='upgrade';btn.type='button';btn.dataset.upgrade=u.id;
+  const icon=document.createElement('span');icon.className='uicon';icon.textContent=u.symbol;
+  const details=document.createElement('span'),strong=document.createElement('strong'),small=document.createElement('small');
+  strong.textContent=(i+1)+'. '+u.name;small.textContent=u.description;details.append(strong,small);
+  const level=document.createElement('em');level.textContent=`${u.family} · LV ${have(u.id)+1}`;
+  btn.append(icon,details,level);btn.onclick=()=>pickUpgrade(u.id);wrap.append(btn);
+ });
+ const refresh=$('refreshUpgrades');if(refresh)refresh.onclick=rerollUpgradeChoices;const skip=$('skipUpgrade');if(skip)skip.onclick=()=>skipUpgrade('manual');
+}
+// Use spare left-side space for the shop when available.
+// Compact cards fit into a narrow left margin, or overlap the left
+// At narrow widths, overlay the left side of the sanctuary, never the HUD.
+function positionSafeShop(){
+ ui.safeShop.classList.add('compact');
+ fitArena();
+}
+
+function setShopOpen(open){
+ ui.safeShop.hidden=!open;
+ document.querySelector('.app').classList.toggle('shop-open',open);
+ requestAnimationFrame(fitArena);
+}
+function showRefuge(){state.mode='safe';hideModal();setShopOpen(false);toast('COLLECT HEALTH · VISIT THE MERCHANT',1.8);updateHUD()}
+
+function nearMerchant(){const m=state.navMerchant,p=state.player;return state.mode==='safe'&&m&&Math.max(Math.abs(m.x-p.x),Math.abs(m.y-p.y))<=3}
+function renderShop(){
+ if(state.mode!=='safe')return;
+ const close=nearMerchant();ui.shopItems.replaceChildren();
+ for(const offer of state.safeItems){
+  const current=state.gear[offer.slot],refund=current?Math.round(current.price*.35):0;
+  const price=Math.max(0,offer.price-refund);
+  const row=document.createElement('div');row.className='shopItem';
+  const label=document.createElement('div'),title=document.createElement('b'),detail=document.createElement('small');
+  title.textContent=offer.name+(current?' · replaces '+current.name:'');detail.textContent=offer.stat+' · '+price+' ◈'+(refund?' (trade-in included)':'');label.append(title,detail);
+  const btn=document.createElement('button');btn.className='btn';btn.type='button';
+  const same=current&&current.name===offer.name;
+  btn.textContent=same?'Equipped':close?'Buy':'Come closer';btn.disabled=!close||same||state.credits<price;
+  btn.onclick=()=>purchase(offer.slot);row.append(label,btn);ui.shopItems.appendChild(row);
+ }
+ const msg=document.createElement('div');msg.className='shopFoot';msg.textContent=close?'Trade in your current gear for 35% of its original price.':'Find the golden merchant in the center of the sanctuary.';
+ ui.shopItems.append(msg);
+}
+function purchase(slot){
+ if(!nearMerchant())return;const offer=state.safeItems.find(o=>o.slot===slot);if(!offer)return;
+ const current=state.gear[slot],refund=current?Math.round(current.price*.35):0,price=Math.max(0,offer.price-refund);
+ if(state.credits<price||current?.name===offer.name)return;
+ state.credits-=price;state.gear[slot]={...offer};cercoAuditCredits('gear',price,{discount:refund});
+ if(state.audit)state.audit.gearPurchases.push({room:state.stage,activeSeconds:cercoMsSeconds(),slot,name:offer.name,tier:offer.tier,listedPrice:offer.price,tradeInDiscount:refund,paid:price});
+ textLog('Equipped: '+offer.name+' for '+price+' credits.');emitCercoEvent('gear_purchased',{slot,gearTier:offer.tier,creditsSpent:price,listedPrice:offer.price,tradeInDiscount:refund,gearName:offer.name});
+ toast('◈ '+offer.name.toUpperCase(),1.3);updateBuild();renderShop();updateHUD();
+}
+function comboMultiplier(){const c=state.combo;return c>=30?3:c>=20?2:c>=10?1.5:c>=5?1.25:1}
+function addFloater(x,y,text,color='#f9d58a',big=false){if(state.floaters.length>55)state.floaters.shift();state.floaters.push({x,y,text,color,life:big?1.15:.75,max:big?1.15:.75,big})}
+function sparks(x,y,n,color='#f9ba78',force=1){
+ if(state.particles.length>300)return;for(let i=0;i<Math.min(n,310-state.particles.length);i++){
+  const a=Math.random()*Math.PI*2,s=random(40,155)*force,life=random(.28,.67);
+  state.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life,max:life,color,size:random(2,5)});
+ }
+}
+function updateParticles(dt){
+ for(let i=state.particles.length-1;i>=0;i--){const p=state.particles[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.965;p.vy*=.965;if(p.life<=0)state.particles.splice(i,1)}
+ for(let i=state.floaters.length-1;i>=0;i--){const f=state.floaters[i];f.life-=dt;f.y-=23*dt;if(f.life<=0)state.floaters.splice(i,1)}
+ for(let i=state.arcs.length-1;i>=0;i--)if((state.arcs[i].life-=dt)<=0)state.arcs.splice(i,1);
+}
+function isSprinting(){return state.mode==='play'&&state.keys.has(' ')&&(activeDirection()!=null||touch.dir!=null||(state.player.auto&&state.player.autoHeading!=null))&&state.stamina>1&&state.player.slowUntil<=state.simTime}
+function regulateStamina(dt){const sprint=isSprinting();if(sprint){state.stamina=Math.max(0,state.stamina-(30+have('sprintSpeed')*2)*dt);if(state.stamina<=0)state.keys.delete(' ')}else{state.stamina=Math.min(state.staminaMax,state.stamina+(17+have('stamina')*3)*dt)}}
+function applyPoison(dt){const p=state.player;if(p.poisonUntil>state.simTime){p.poisonTick+=dt;while(p.poisonTick>=1&&state.mode==='play'){p.poisonTick-=1;p.hp=Math.max(0,p.hp-4-Math.floor(state.combat/10));sparks((p.x+.5)*T,(p.y+.5)*T,4,'#90d77d',.5);if(p.hp<=0){finishRun();return}}}else p.poisonTick=0}
+
+function updateBuild(){
+ ui.build.replaceChildren();const entries=upgrades.filter(u=>have(u.id));
+ if(!entries.length){ui.build.textContent='No upgrades yet.'}
+ for(const u of entries){const span=document.createElement('span');span.className='pill';span.textContent=u.name+' ×'+have(u.id);ui.build.append(span)}
+ for(const slot of ['armor','core','boots']){if(!state.gear[slot])continue;const span=document.createElement('span');span.className='pill';span.textContent='◈ '+state.gear[slot].name;ui.build.append(span)}
+}
+function updateHUD(){
+ if(!state.player||!state.room)return;const p=state.player,rm=state.room;
+ ui.room.textContent=String(state.stage).padStart(2,'0');
+ ui.kills.textContent=rm.safe?'SANCTUARY':`${state.kills} / ${state.goal}`;
+ ui.clock.textContent=rm.safe?Math.ceil(state.safeTimer)+' s':state.frenzy?'FRENZY':Math.max(0,state.time).toFixed(1);
+ ui.score.textContent=state.score.toLocaleString('en-US');ui.healthText.textContent=`${Math.ceil(p.hp)} / ${p.maxHp}`;
+ ui.healthBar.style.width=clamp(p.hp/p.maxHp*100,0,100)+'%';
+ ui.shieldMeter.hidden=!have('shield');ui.shieldText.textContent=`${Math.ceil(p.shield)} / ${p.shieldMax}`;ui.shieldBar.style.width=p.shieldMax?clamp(p.shield/p.shieldMax*100,0,100)+'%':'0%';
+ const elapsed=state.simTime-p.lastShot,fireFrac=clamp(elapsed/shotDelay(),0,1);
+ ui.fireBar.style.width=(fireFrac*100)+'%';ui.fireText.textContent=fireFrac>=1?'READY':Math.max(0,shotDelay()-elapsed).toFixed(2)+' s';
+ ui.objectiveText.textContent=rm.safe?'SAFE':`${state.kills} / ${state.goal}`;
+ ui.objectiveBar.style.width=rm.safe?'100%':clamp(100*state.kills/state.goal,0,100)+'%';
+ ui.staminaText.textContent=`${Math.floor(state.stamina)} / ${state.staminaMax}`;
+ ui.staminaBar.style.width=(state.stamina/state.staminaMax*100)+'%';
+ const multi=comboMultiplier(),left=Math.max(0,COMBO_WINDOW-(state.simTime-state.lastKill));
+ ui.comboText.textContent=`×${multi.toFixed(2)} · ${state.combo} kills`;
+ ui.comboBar.style.width=clamp(left/COMBO_WINDOW*100,0,100)+'%';
+ ui.creditsStatus.textContent=state.credits+' ◈';
+ ui.styleCoinStatus.textContent=(state.cosmetic?.collected||0)+' ✦';
+ ui.gearStatus.textContent=['armor','core','boots'].filter(s=>state.gear[s]).length+' / 3';const turretMax=turretAllowance();const turretWait=Math.max(0,7-(state.simTime-state.lastDeploy));
+ const attackTurrets=state.turrets.filter(t=>t.role!=='interceptor').length,defenseTurrets=state.turrets.filter(t=>t.role==='interceptor').length;
+ ui.turretStatus.textContent=`${attackTurrets}/${turretMax} ATK · ${defenseTurrets}/${interceptorAllowance()} DEF${attackTurrets<turretMax&&turretWait>0?' · '+turretWait.toFixed(1)+' s':''}`;
+ ui.seedTag.textContent='SEED '+String(state.seed).padStart(10,'0');
+ const vr=vampRule();ui.siphonStatus.textContent=vr?`+${vr.heal} HP / ${vr.kills} kills · ${p.vampKills}/${vr.kills}`:'Not unlocked';
+ ui.roomBadge.textContent=`ROOM ${String(state.stage).padStart(2,'0')} · ${rm.safe?'SANCTUARY':rangedAssault()?'RANGED ASSAULT':state.stage%5===4?'GUARDIAN · '+rm.kind:rm.kind}`;
+ const guardian=state.mobs.find(isGuardian);
+ ui.stageTag.textContent=rm.safe?'SAFE ROOM · '+Math.ceil(state.safeTimer)+' s':state.mode==='extract'||state.mode==='transition'?'EXIT OPEN':state.bossAlive&&state.kills>=state.goal?`KILLS COMPLETE · GUARDIANS ${activeGuardians().length}`:state.encroachment>0?`INVASION · RING ${state.encroachment}`:state.frenzy?'FRENZY!':`${state.goal} KILLS TO EXIT`;
+ ui.safeClock.textContent=Math.ceil(state.safeTimer)+' s';
+ $('safeActions').hidden=state.mode!=='safe';
+ ui.status.textContent=state.mode==='play'?(state.bossAlive&&state.kills>=state.goal?'Kill goal reached. Defeat the guardian to unlock the exit.':state.player.auto?'Auto-move ON · choose a direction':'Survive · reach the kill goal'):state.mode==='extract'?'Heading to the exit…':state.mode==='transition'?'Entering the next room…':state.mode==='safe'?'Collect health · shop · 45 s':state.mode==='choice'||state.mode==='choiceSafe'?'Choose an upgrade':state.mode==='dead'?'Run finished':'Paused';
+}
+function activeDirection(){const keys=Array.from(state.keys).filter(k=>Object.prototype.hasOwnProperty.call(KEY,k));if(!keys.length)return null;const direct=keys.find(k=>k===state.lastKey&&['q','e','z','c'].includes(k))||keys.find(k=>['q','e','z','c'].includes(k));if(direct)return KEY[direct];let dx=0,dy=0;for(const k of keys){if(k==='ArrowUp'||k==='w')dy-=1;if(k==='ArrowDown'||k==='s')dy+=1;if(k==='ArrowLeft'||k==='a')dx-=1;if(k==='ArrowRight'||k==='d')dx+=1}if(dx!==0||dy!==0){dx=Math.sign(dx);dy=Math.sign(dy);return DIR.findIndex(p=>p[0]===dx&&p[1]===dy)}return KEY[state.lastKey]??KEY[keys[keys.length-1]]}
+function playerStep(direction){
+ if(direction==null||direction<0||!['play','safe'].includes(state.mode))return;
+ const p=state.player,[dx,dy]=DIR[direction];p.lastDir=direction;const nx=p.x+dx,ny=p.y+dy;
+ if(state.mode==='play'&&state.turrets.some(t=>t.x===nx&&t.y===ny)){if(p.auto){p.autoHeading=null;toast('TURRET BLOCKING · TURN',.65)}return;}
+ if(state.mode==='play'){
+  const enemy=state.mobs.find(z=>nx>=z.x&&nx<z.x+(z.w||1)&&ny>=z.y&&ny<z.y+(z.h||1));if(enemy){
+   if(hitPlayer(contactDamage()))applyEnemyStatus(enemy);
+   if(p.auto){p.autoHeading=null;toast('PATH BLOCKED · TURN',.65)}
+   return;
+  }
+  // Adjacent enemies do not prevent moving into a free diagonal cell.
+  // Solid wall corners still block diagonal movement.
+ }
+ if(legalStepIn(state.room,p.x,p.y,dx,dy)){moveTo(nx,ny)}
+ else if(p.auto){p.autoHeading=null;toast('OBSTACLE · TURN',.65)}
+}
+
+// Sprint rewards only real, successful player movement during combat.
+// No gain by holding sprint into a wall or moving in a sanctuary.
+// Momentum Recovery has NO room cap; stamina cost and traveled distance determine its rate.
+function onRealSprintStep(fromX,fromY){
+ state.sprintSteps++;
+ const lvlShard=have('sprintShards');
+ if(lvlShard&&state.sprintSteps%(lvlShard===1?4:lvlShard===2?3:2)===0&&state.simTime-state.sprintShardAt>=.22){
+  const p=state.player,px=(p.x+.5)*T,py=(p.y+.5)*T;
+  let target=null,best=T*2.65;
+  for(const z of state.mobs){
+   if(!enemyVisibleToWeapons(z))continue;
+   const c=enemyCenter(z),d=Math.hypot(c.x-px,c.y-py);
+   if(d<best&&clearLine(state.room,p.x,p.y,z.x,z.y)){target=z;best=d}
+  }
+  if(target&&state.shots.length<SHOT_CAP+18){const c=enemyCenter(target),a=Math.atan2(c.y-py,c.x-px);state.sprintShardAt=state.simTime;
+   state.shots.push({source:'shard',x:px,y:py,vx:Math.cos(a)*550,vy:Math.sin(a)*550,rad:3.3,
+    damage:Math.min(2.2,.55+lvlShard*.32),pierce:0,bounce:0,life:.26,homing:0,seen:new Set()});
+   sparks(px,py,3,'#f3c89a',.45);}
+ }
+ if(have('sprintTrail')&&state.sprintSteps%2===0){
+  if(!state.trails.some(t=>t.x===fromX&&t.y===fromY&&t.life>1)){
+   if(state.trails.length>=24)state.trails.shift();
+   state.trails.push({x:fromX,y:fromY,life:1.6+have('sprintTrail')*.35,max:1.6+have('sprintTrail')*.35});
+  }
+ }
+ const healLevel=have('sprintHeal');
+ if(healLevel){
+  // A diagonal tile represents sqrt(2) tiles of real distance, not one tile.
+  // The call is made ONLY after a successful sprint move inside a combat room.
+  state.sprintHealDistance+=Math.hypot(state.player.x-fromX,state.player.y-fromY);
+  const stride=27-4*healLevel; // L1: 23 tiles; L2: 19; L3: 15.
+  if(state.sprintHealDistance>=stride){
+   state.sprintHealDistance-=stride;
+   const p=state.player,amount=Math.min(2,p.maxHp-p.hp);
+   if(amount>0){p.hp+=amount;state.sprintHealed+=amount;
+    const x=(p.x+.5)*T,y=(p.y+.5)*T;addFloater(x,y-T*.6,'+'+amount+' HP','#a1f8c4');sparks(x,y,5,'#9cf4c3',.5);}
+  }
+ }
+}
+function updateSprintTrails(dt){
+ for(let i=state.trails.length-1;i>=0;i--){if((state.trails[i].life-=dt)<=0)state.trails.splice(i,1)}
+ if(!state.trails.length)return;
+ for(const z of [...state.mobs]){
+  if(state.mode!=='play')break;
+  if(!enemyVisibleToWeapons(z)||state.simTime-(z.lastCorrosion||-100)<.75)continue;
+  const c=enemyCenter(z);
+  if(state.trails.some(t=>Math.hypot(c.x-(t.x+.5)*T,c.y-(t.y+.5)*T)<T*.8)){
+   z.lastCorrosion=state.simTime;
+   const dmg=Math.min(1.4,.35+have('sprintTrail')*.25);
+   damageEnemy(z,dmg);if(state.mobs.includes(z))sparks(c.x,c.y,3,'#b3eb64',.35);
+  }
+ }
+}
+
+function updateMovement(dt){
+ const p=state.player;state.stepCooldown-=dt;
+ const direction=p.auto?p.autoHeading:(touch.dir??activeDirection());
+ if(direction==null){state.stepCooldown=Math.min(state.stepCooldown,0);return}
+ if(state.stepCooldown<=0){playerStep(direction);const [dx,dy]=DIR[direction];state.stepCooldown=stepDelay()*(dx!==0&&dy!==0?Math.SQRT2:1)}
+}
+function tryPlayerKey(key){
+ const direction=KEY[key];if(!['play','safe'].includes(state.mode))return;
+ state.keys.add(key);state.lastKey=key;
+ if(state.player.auto){state.player.autoHeading=direction;state.stepCooldown=0;}
+ if(state.stepCooldown<=0){playerStep(direction);const d=DIR[direction];state.stepCooldown=stepDelay()*(d[0]&&d[1]?Math.SQRT2:1)}
+}
+function rectClear(room,x,y,w,h,occupied=null){
+ for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+  const px=x+xx,py=y+yy;
+  if(blockedIn(room,px,py)||(occupied&&occupied.has(at(px,py))))return false;
+ }
+ return true;
+}
+function enemyCells(z){const cells=[];for(let dy=0;dy<(z.h||1);dy++)for(let dx=0;dx<(z.w||1);dx++)cells.push(at(z.x+dx,z.y+dy));return cells}
+function enemyDistance(z,x,y){return Math.max(Math.max(z.x-x,x-(z.x+(z.w||1)-1),0),Math.max(z.y-y,y-(z.y+(z.h||1)-1),0))}
+function enemyCenter(z){return{x:(z.x+(z.w||1)/2)*T,y:(z.y+(z.h||1)/2)*T}}
+function canMobAdvance(z,dx,dy,occupied){
+ const x=z.x+dx,y=z.y+dy,w=z.w||1,h=z.h||1;
+ if(!rectClear(state.room,x,y,w,h,occupied))return false;
+ // All covered cells must be able to pass along the movement direction.
+ for(let iy=0;iy<h;iy++)for(let ix=0;ix<w;ix++)if(!legalStepIn(state.room,z.x+ix,z.y+iy,dx,dy))return false;
+ return true;
+}
+function zombieType(){
+ if(rangedAssault()){
+  // Assault rooms mix all ranged archetypes, scaling their variety with invasion depth.
+  const types=['ranged','ranged','ranged','snarer'];
+  if(state.combat>=6)types.push('seeker','shaman');
+  if(state.combat>=10)types.push('blighter');
+  if(state.combat>=11)types.push('demolisher');
+  return types[randomInt(types.length)];
+ }
+ const n=state.combat,tier=invasionTier();
+ const count=type=>state.mobs.filter(z=>z.type===type).length;
+ const dangerous=specialThreatCount()<threatAllowance();
+ const shooterCap=Math.max(3,Math.ceil(maxCombatPlayers()*.40));
+ const choices=[];
+ const add=(type,weight,ok=true)=>{if(ok&&weight>0)choices.push({type,weight})};
+ // Occupancy limits prevent unavoidable stacks of hazards and status attacks.
+ add('normal',35);add('interceptor',n>=3?14:0);add('flanker',n>=3?12:0);
+ add('ranged',n>=2?13+Math.min(7,tier*2):0,rangedThreatCount()<shooterCap);
+ add('brute',n>=5?6+Math.min(3,tier):0,count('brute')<Math.max(1,Math.min(3,Math.ceil(n/12))));
+ add('toxic',n>=6?7:0);
+ add('snarer',n>=7?5:0,dangerous&&count('snarer')<1);
+ add('detonator',n>=8?7+Math.min(4,tier):0,dangerous&&count('detonator')<2);
+ add('healer',n>=8?5:0,dangerous&&count('healer')<2);
+ add('shaman',n>=9?5:0,dangerous&&count('shaman')<2);
+ add('ghost',n>=10?5+Math.min(4,tier):0,dangerous&&count('ghost')<Math.min(3,1+Math.floor(n/14)));
+ add('seeker',n>=8?6+Math.min(4,tier):0,dangerous&&count('seeker')<3&&rangedThreatCount()<shooterCap);
+ add('blighter',n>=10?5+Math.min(4,tier):0,dangerous&&count('blighter')<2);
+ add('demolisher',n>=11?5+Math.min(4,tier):0,dangerous&&count('demolisher')<2&&rangedThreatCount()<shooterCap);
+ // Camping is countered by pressure from outside melee range, not by instant damage.
+ if(antiCampActive())for(const item of choices){if(['ranged','seeker','blighter','demolisher'].includes(item.type))item.weight*=3.2}
+ const total=choices.reduce((v,c)=>v+c.weight,0);let r=Math.random()*total;
+ for(const item of choices){r-=item.weight;if(r<0)return item.type}
+ return 'normal';
+}
+function spawnEnemy(forced){
+ if(state.mode!=='play'||(!forced&&state.mobs.length>=maxCombatPlayers()))return false;
+ const rm=state.room,p=state.player,possible=[],fallback=[],dist=distanceField(rm,p.x,p.y),occupied=new Set([...state.mobs.flatMap(enemyCells),...state.turrets.map(t=>at(t.x,t.y))]);
+ for(let y=rm.oy+1;y<rm.oy+rm.h-1;y++)for(let x=rm.ox+1;x<rm.ox+rm.w-1;x++){
+  if(blockedIn(rm,x,y)||occupied.has(at(x,y)))continue;
+  const d=dist[at(x,y)];if(d<5||d>=999)continue;
+  if(d>=8)fallback.push({x,y});
+  const edge=Math.min(x-rm.ox,y-rm.oy,rm.ox+rm.w-1-x,rm.oy+rm.h-1-y);
+  if(edge<=2&&d>=7)possible.push({x,y});
+ }
+ const pool=possible.length?possible:fallback;if(!pool.length)return false;
+ const type=forced||zombieType();
+ const validPool=type==='brute'?pool.filter(q=>rectClear(state.room,q.x,q.y,2,2,occupied)&&Math.max(Math.abs(q.x-p.x),Math.abs(q.y-p.y))>6):pool;
+ if(!validPool.length)return false;
+ const pos=validPool[randomInt(validPool.length)];
+ const levelHp=Math.floor((state.combat-1)/6)+Math.floor((state.combat-1)/18);
+ const baseHp={normal:1,interceptor:2,flanker:3,ranged:2,seeker:3,blighter:4,demolisher:5,toxic:2,snarer:5,healer:7,shaman:4,ghost:3,boss:17,devil:20,brute:11,detonator:3}[type]||1;
+ const hp=isGuardian({type})?baseHp+state.combat*3+Math.min(25,guardianStage()*2):baseHp+levelHp;
+ const interval=type==='snarer'?.94:(type==='boss'||type==='devil')?1.04:type==='brute'?1.30:type==='detonator'?.27:type==='ghost'?1.10:type==='healer'?.80:type==='blighter'?1.05:type==='demolisher'?.98:type==='seeker'?.88:type==='shaman'?1.12:type==='ranged'?random(.70,1.01):random(.52,.86);
+ state.mobs.push({id:state.nextMob++,type,x:pos.x,y:pos.y,hp,maxHp:hp,interval,timer:random(.05,.30),flash:0,flank:Math.random()*Math.PI*2,shootTimer:random(.9,2.0),healTimer:random(1.5,2.7),fuse:-1,dashTimer:0,castTimer:random(2.4,4.0),w:type==='brute'?2:1,h:type==='brute'?2:1});
+ if(type==='boss'||type==='devil'){state.guardianSpawned++;state.bossAlive=true;state.roomBossSpawned=state.guardianSpawned>=guardianTarget();toast(type==='devil'?'INFERNAL GUARDIAN!':'GUARDIAN INCOMING!',2.1);textLog(type==='devil'?'An infernal guardian is entering the arena.':'A guardian is blocking the exit.')}else if(['detonator','seeker','blighter','demolisher'].includes(type)&&!state.announcedTypes.has(type)){
+  state.announcedTypes.add(type);textLog(({detonator:'Detonator detected — destroy it before it reaches you.',seeker:'Homing shooter detected — break line of sight.',blighter:'Contaminator detected — keep moving to avoid radiation.',demolisher:'Demolisher incoming — protect your turrets.'})[type]);
+ }return true;
+}
+function healMob(z,amount){
+ if(!z||!state.mobs.includes(z)||z.hp>=z.maxHp||state.mode!=='play')return false;
+ const gained=Math.min(amount,z.maxHp-z.hp);z.hp+=gained;
+ const c=enemyCenter(z);sparks(c.x,c.y,4,'#91ecb6',.5);addFloater(c.x,c.y-T*.45,'+'+Math.ceil(gained),'#a7f4c5');
+ return true;
+}
+function healerPulse(healer){
+ const source=enemyCenter(healer);
+ const allies=state.mobs.filter(z=>z!==healer&&z.type!=='detonator'&&z.hp<z.maxHp&&Math.hypot(enemyCenter(z).x-source.x,enemyCenter(z).y-source.y)<T*(4.2+Math.min(1.3,invasionTier()*.25))&&clearLine(state.room,healer.x,healer.y,z.x,z.y));
+ allies.sort((a,b)=>(a.hp/a.maxHp)-(b.hp/b.maxHp));
+ let healed=0;for(const z of allies.slice(0,Math.min(5,3+Math.floor(invasionTier()/3)))){if(healMob(z,isGuardian(z)?1:Math.min(5,2+Math.floor(invasionTier()/2))))healed++}
+ if(healed){effect(source.x,source.y,T*3.7,'#74d9a6',.32);sparks(source.x,source.y,10,'#82e8ae',.4)}
+}
+function spawnContamination(z){
+ if(state.mode!=='play'||state.hazards.length>=hazardZoneCap())return false;
+ const p=state.player,forward=DIR[p.lastDir]||[0,0];
+ let tx=clamp(p.x+(antiCampActive()?0:forward[0]),state.room.ox+1,state.room.ox+state.room.w-2);
+ let ty=clamp(p.y+(antiCampActive()?0:forward[1]),state.room.oy+1,state.room.oy+state.room.h-2);
+ if(blockedIn(state.room,tx,ty)){tx=p.x;ty=p.y;}
+ const range=Math.hypot(z.x-tx,z.y-ty);
+ if(range>12)return false; // Ground-targeted contamination ignores walls; its telegraph remains mandatory.
+ const zone={x:tx,y:ty,life:4.6,max:4.6,warn:.95,radius:1.4,hitTimer:0};
+ state.hazards.push(zone);
+ effect((tx+.5)*T,(ty+.5)*T,T*1.5,'#e0d45c',.8);
+ if(cercoAuditCurrent())cercoAuditCurrent().hazardsCreated=(cercoAuditCurrent().hazardsCreated||0)+1;
+ return true;
+}
+function updateContamination(dt){
+ const p=state.player;
+ for(let i=state.hazards.length-1;i>=0;i--){
+  const zone=state.hazards[i];zone.life-=dt;
+  if(zone.life<=0){state.hazards.splice(i,1);continue}
+  if(zone.life<=zone.max-zone.warn){
+   zone.hitTimer-=dt;
+   if(Math.hypot(p.x-zone.x,p.y-zone.y)<=zone.radius&&clearLine(state.room,zone.x,zone.y,p.x,p.y)&&zone.hitTimer<=0){
+    zone.hitTimer=.75;hitPlayer(Math.min(18,6+Math.floor(invasionTier()/2)*2));
+   }
+  }
+ }
+}
+function updateEncroachment(dt){
+ if(state.combat<25||!state.frenzy)return;
+ state.collapseElapsed+=dt;
+ // Advanced frenzies steadily consume the arena from its edges; never teleport or kill immediately.
+ const delay=Math.max(4,10-Math.floor(invasionTier()/2));
+ const speed=Math.max(3,9-Math.floor(invasionTier()/2));
+ const next=Math.min(Math.ceil(Math.max(state.room.w,state.room.h)/2)+1,Math.max(0,Math.floor((state.collapseElapsed-delay)/speed)+1));
+ if(next>state.encroachment){state.encroachment=next;toast('INVASION · PERIMETER LOST',1.4);textLog('The invasion is consuming the outer tiles.');}
+ const p=state.player,room=state.room;
+ const edge=Math.min(p.x-room.ox,p.y-room.oy,room.ox+room.w-1-p.x,room.oy+room.h-1-p.y);
+ if(edge<state.encroachment){state.collapseHit=(state.collapseHit||0)-dt;
+  if(state.collapseHit<=0){state.collapseHit=.7;hitPlayer(Math.min(36,12+invasionTier()*2))}
+ }
+ const current=cercoAuditCurrent();if(current)current.maxEncroachment=Math.max(current.maxEncroachment||0,state.encroachment);
+}
+function mobMovement(dt){
+ if(state.mode!=='play')return;
+ state.aiTimer-=dt;if(state.aiTimer<=0){state.flow=distanceField(state.room,state.player.x,state.player.y);state.aiTimer=.25}
+ const p=state.player,occupied=new Set([...state.mobs.flatMap(enemyCells),...state.turrets.map(t=>at(t.x,t.y))]);
+ for(const z of [...state.mobs]){
+  if(state.mode!=='play')break;
+  z.flash=Math.max(0,z.flash-dt);
+  if(z.type==='healer'){z.healTimer-=dt;if(z.healTimer<=0){z.healTimer+=Math.max(1.7,2.6-invasionTier()*.12);healerPulse(z)}}
+  if(z.type==='blighter'){z.castTimer-=dt;if(z.castTimer<=0){if(spawnContamination(z))z.castTimer=Math.max(2.2,4.3-invasionTier()*.16);else z.castTimer=.6}}
+  if(z.type==='snarer'){z.castTimer-=dt;if(z.castTimer<=0&&enemyDistance(z,p.x,p.y)<=5&&clearLine(state.room,z.x,z.y,p.x,p.y)){
+   enemyFire(z);z.castTimer=Math.max(3.0,4.9-invasionTier()*.15);
+  }}
+  if(z.type==='detonator'){
+   if(z.fuse>=0){z.fuse-=dt;if(z.fuse<=0){detonate(z,false);continue}}
+   else if(enemyDistance(z,p.x,p.y)<=3){z.fuse=.95;z.dashTimer=0;toast('DETONATOR · RUN!',.65)}
+  }
+  if(['ranged','seeker','shaman','boss','devil','demolisher'].includes(z.type)){
+   z.shootTimer-=dt;
+   const dd=Math.max(Math.abs(z.x-p.x),Math.abs(z.y-p.y));
+   if(z.shootTimer<=0&&dd<=11&&dd>=2&&(clearLine(state.room,z.x,z.y,p.x,p.y)||state.turrets.some(t=>Math.hypot(z.x-t.x,z.y-t.y)<(z.type==='demolisher'?11:4)&&clearLine(state.room,z.x,z.y,t.x,t.y)))){enemyFire(z);z.shootTimer=isGuardian(z)?Math.max(.9,1.6-state.combat*.012):z.type==='shaman'?2.75:z.type==='demolisher'?Math.max(1.45,2.3-invasionTier()*.07):z.type==='seeker'?Math.max(1.5,3-invasionTier()*.17):rangedAssault()?Math.max(1.8,2.7-state.combat*.014):Math.max(1.05,2.35-state.combat*.018)}
+  }
+  z.timer-=dt;if(z.timer>0)continue;
+  const difficulty=1+Math.min(.36,Math.max(0,state.combat-1)*.015);
+  z.timer+=Math.max(.15,z.interval/difficulty)*(state.frenzy?.77:1);
+  // A primed detonator makes short, conspicuous dashes toward the player.
+  if(z.type==='detonator'&&z.fuse>=0)z.timer=Math.min(z.timer,.14);
+  const dist=enemyDistance(z,p.x,p.y);
+  // Phantoms move through walls but must emerge on clear ground before attacking.
+  if(dist<=1&&!(z.type==='ghost'&&blockedIn(state.room,z.x,z.y))){
+   if(z.type==='detonator'){if(z.fuse<0)z.fuse=.75;continue}
+   const dx=p.x-z.x,dy=p.y-z.y;
+   if(z.type==='brute'||z.type==='ghost'||dist===0||legalStepIn(state.room,z.x,z.y,dx,dy)){const was=p.hp;if(hitPlayer(contactDamage()+(z.type==='brute'?6:0))){applyEnemyStatus(z);if(z.type==='shaman'&&p.hp<was)healMob(z,Math.min(5,was-p.hp));}}continue
+  }
+  for(const c of enemyCells(z))occupied.delete(c);
+  let tx=p.x,ty=p.y;
+  if(z.type==='interceptor'){const [vx,vy]=DIR[p.lastDir];tx=clamp(tx+vx*3,state.room.ox+1,state.room.ox+state.room.w-2);ty=clamp(ty+vy*3,state.room.oy+1,state.room.oy+state.room.h-2)}
+  else if(z.type==='flanker'){tx=clamp(tx+Math.round(Math.cos(z.flank)*3),state.room.ox+1,state.room.ox+state.room.w-2);ty=clamp(ty+Math.round(Math.sin(z.flank)*3),state.room.oy+1,state.room.oy+state.room.h-2)}
+  let winner=null,best=1e10;
+  for(const [dx,dy] of DIR){
+   if(z.type==='ghost'?(!inBounds(state.room,z.x+dx,z.y+dy)||occupied.has(at(z.x+dx,z.y+dy))):!canMobAdvance(z,dx,dy,occupied))continue;const x=z.x+dx,y=z.y+dy;
+   if(p.x>=x&&p.x<x+(z.w||1)&&p.y>=y&&p.y<y+(z.h||1))continue;
+   const field=state.flow?Math.min(...Array.from({length:z.w||1},(_,ix)=>Array.from({length:z.h||1},(_,iy)=>state.flow[at(x+ix,y+iy)])).flat()):99,target=Math.max(Math.abs(x-tx),Math.abs(y-ty));
+   const val=z.type==='ghost'?target:z.type==='normal'||z.type==='toxic'||z.type==='snarer'?field:field*.55+target*.65+(Math.max(Math.abs(x-p.x),Math.abs(y-p.y))<2?.6:0);
+   let score=val+Math.random()*.20;
+   if(['ranged','seeker','shaman','healer','blighter','demolisher'].includes(z.type)){
+    const distance=Math.max(Math.abs(x-p.x),Math.abs(y-p.y));
+    const sight=clearLine(state.room,x,y,p.x,p.y);
+    score=(sight?0:7)+Math.abs(distance-(z.type==='healer'?7:z.type==='blighter'?6:6))*.72+field*.14+(distance<=3?8:0)+Math.random()*.20;
+    if(z.type==='demolisher'&&state.turrets.length){
+     const target=state.turrets.reduce((best,t)=>!best||Math.hypot(t.x-x,t.y-y)<Math.hypot(best.x-x,best.y-y)?t:best,null);
+     if(target){score=Math.abs(Math.hypot(target.x-x,target.y-y)-5)*.8+(clearLine(state.room,x,y,target.x,target.y)?0:5)+Math.random()*.2;}
+    }
+    if(z.type==='healer'){
+     const allies=state.mobs.filter(a=>a!==z&&a.type!=='healer'&&a.type!=='detonator');
+     const wounded=allies.filter(a=>a.hp<a.maxHp);
+     const group=wounded.length?wounded:allies;
+     if(group.length){const proximity=Math.min(...group.map(a=>Math.hypot(x-a.x,y-a.y)));
+      score+=Math.abs(proximity-2.3)*1.1;}
+     // Reposition behind the frontline rather than charging the player.
+     if(distance<4)score+=12;
+    }
+   }if(score<best){best=score;winner={x,y}}
+  }
+  if(winner){z.x=winner.x;z.y=winner.y}for(const c of enemyCells(z))occupied.add(c);
+  const target=state.turrets.find(t=>Math.max(Math.abs(z.x-t.x),Math.abs(z.y-t.y))<=1);
+  if(target&&Math.random()<.30)damageTurret(target,isGuardian(z)?12:6);
+ }
+}
+function enemyFire(z){
+ if(state.enemyShots.length>=65)return;
+ const center=(v)=> (v+.5)*T,origin={x:center(z.x),y:center(z.y)};
+ const visibleTurrets=state.turrets.filter(t=>Math.hypot(t.x-z.x,t.y-z.y)<(z.type==='demolisher'?11:4)&&clearLine(state.room,z.x,z.y,t.x,t.y));
+ const bestTurret=z.type==='demolisher'?visibleTurrets.sort((a,b)=>Math.hypot(a.x-z.x,a.y-z.y)-Math.hypot(b.x-z.x,b.y-z.y))[0]:visibleTurrets[0];
+ const exposed=clearLine(state.room,z.x,z.y,state.player.x,state.player.y);
+ const target=exposed&&(!bestTurret||(z.type!=='demolisher'&&Math.random()<.85))?
+  {x:center(state.player.x),y:center(state.player.y)}:bestTurret?
+  {x:center(bestTurret.x),y:center(bestTurret.y)}:
+  {x:center(state.player.x),y:center(state.player.y)};
+ const base=Math.atan2(target.y-origin.y,target.x-origin.x);
+ const angles=isGuardian(z)?(z.type==='devil'?[-.32,0,.32]:[-.22,0,.22]):[0];
+ for(const off of angles){const a=base+off,speed=isGuardian(z)?250:z.type==='seeker'?Math.min(245,195+invasionTier()*7):z.type==='demolisher'?195:z.type==='snarer'?205:220+Math.min(65,invasionTier()*7);
+  state.enemyShots.push({x:origin.x,y:origin.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:z.type==='seeker'?Math.min(3.3,2.8+invasionTier()*.07):2.8,rad:isGuardian(z)?7:6,damage:isGuardian(z)?12:z.type==='shaman'?7:z.type==='snarer'?4:z.type==='seeker'?7:z.type==='demolisher'?6:8,demolisher:z.type==='demolisher',color:z.type==='devil'?'#ff6757':z.type==='boss'?'#ffa66c':z.type==='shaman'?'#b2f3c2':z.type==='snarer'?'#9dbafa':z.type==='seeker'?'#62eff3':z.type==='demolisher'?'#eabb62':'#cd9af9',homing:z.type==='seeker',snare:z.type==='snarer',siphonId:z.type==='shaman'?z.id:null});
+ }
+ effect(origin.x,origin.y,15,isGuardian(z)?'#f6a46e':'#d6a8ff',.18);
+}
+function applyEnemyStatus(z){
+ if(z.type==='snarer'){state.player.slowUntil=Math.max(state.player.slowUntil,state.simTime+2);toast('SLOWED!',.8)}
+ if(z.type==='toxic'){state.player.poisonUntil=state.simTime+4;state.player.poisonTick=0;toast('POISONED!',.8)}
+}
+function updateEnemyShots(dt){
+ for(let i=state.enemyShots.length-1;i>=0;i--){
+  const b=state.enemyShots[i];b.life-=dt;
+  if(b.homing&&b.life>0){
+   const p=state.player,desired=Math.atan2((p.y+.5)*T-b.y,(p.x+.5)*T-b.x),current=Math.atan2(b.vy,b.vx);
+   const delta=Math.atan2(Math.sin(desired-current),Math.cos(desired-current));
+   const turnRate=Math.min(2.25,1.35+invasionTier()*.13),turn=clamp(delta,-turnRate*dt,turnRate*dt),speed=Math.hypot(b.vx,b.vy);
+   b.vx=Math.cos(current+turn)*speed;b.vy=Math.sin(current+turn)*speed;
+  }
+  b.x+=b.vx*dt;b.y+=b.vy*dt;
+  if(b.life<=0||blockedIn(state.room,Math.floor(b.x/T),Math.floor(b.y/T))){state.enemyShots.splice(i,1);continue}
+  let removed=false;
+  for(const t of state.turrets){if(Math.hypot(b.x-(t.x+.5)*T,b.y-(t.y+.5)*T)<T*.38){damageTurret(t,b.damage*(b.demolisher?2.2:1));removed=true;break}}
+  if(removed){state.enemyShots.splice(i,1);continue}
+  const p=state.player;if(Math.hypot(b.x-(p.x+.5)*T,b.y-(p.y+.5)*T)<T*.45){const before=p.hp,hit=hitPlayer(b.damage);if(hit&&b.siphonId&&p.hp<before)healMob(state.mobs.find(z=>z.id===b.siphonId),Math.min(5,before-p.hp));if(hit&&b.snare){p.slowUntil=Math.max(p.slowUntil,state.simTime+1.45);toast('SLOWED!',.65)}state.enemyShots.splice(i,1)}
+ }
+}
+function contactDamage(){const p=state.player;const surrounding=state.mobs.filter(z=>Math.max(Math.abs(z.x-p.x),Math.abs(z.y-p.y))<=2).length;const base=Math.min(48,7+Math.floor(Math.max(0,state.combat-1)/3)*2);return Math.min(65,base+Math.min(15,Math.max(0,surrounding-1)*3))}
+function hitPlayer(amount){
+ const p=state.player;if(state.mode!=='play'||state.simTime-p.lastHit<.50)return false;
+ p.lastHit=state.simTime;
+ const defense=state.gear.armor?.amount||0;
+ const dealt=Math.max(1,Math.round(amount*(1-defense)));
+ const absorbed=Math.min(p.shield||0,dealt);p.shield=Math.max(0,(p.shield||0)-absorbed);
+ const hpDamage=dealt-absorbed;p.hp=Math.max(0,p.hp-hpDamage);
+ sparks((p.x+.5)*T,(p.y+.5)*T,8,hpDamage?'#ff9f95':'#99c3ff',.8);
+ effect((p.x+.5)*T,(p.y+.5)*T,29,hpDamage?'#eb8780':'#7ea9fc',.3);
+ if(absorbed>0&&p.shield===0)toast('SHIELD BROKEN!',.7);
+ addFloater((p.x+.5)*T,(p.y-.1)*T,absorbed&&hpDamage===0?'−'+absorbed+' SHIELD':hpDamage>0?'−'+hpDamage+' HP': '−'+dealt+' HP',absorbed&&!hpDamage?'#a2c5ff':'#ff9b98');
+ if(p.hp<=0)finishRun();return true;
+}
+function effect(x,y,r,color,life=.28){if(state.fx.length>100)state.fx.shift();state.fx.push({x,y,r,color,life,max:life})}
+function nearestVisibleEnemy(){
+ const p=state.player;if(!p)return null;
+ let best=null,bestDist=Infinity;
+ for(const z of state.mobs){
+  const dist=Math.hypot(z.x+(z.w||1)/2-.5-p.x,z.y+(z.h||1)/2-.5-p.y);
+  if(dist>10||dist>=bestDist||!enemyVisibleToWeapons(z)||!clearLine(state.room,p.x,p.y,z.x+(z.w||1)/2-.5,z.y+(z.h||1)/2-.5))continue;
+  best=z;bestDist=dist;
+ }
+ return best;
+}
+function fireShot(automatic=false){
+ if(state.mode!=='play')return;
+ const p=state.player;if(state.simTime-p.lastShot<shotDelay())return;
+ const available=SHOT_CAP-state.shots.filter(b=>b.source==='player').length;if(available<=0)return;
+ const x=(p.x+.5)*T,y=(p.y+.5)*T;
+ let tx=state.aimX,ty=state.aimY;
+ if(automatic){const target=nearestVisibleEnemy();if(!target)return;const c=enemyCenter(target);tx=c.x;ty=c.y;}
+ const a=Math.atan2(ty-y,tx-x),count=Math.min(1+have('multi'),available);
+ p.lastShot=state.simTime;
+ for(let i=0;i<count;i++){
+  const aa=a+(i-(count-1)/2)*.125;
+  state.shots.push({source:'player',x,y,vx:Math.cos(aa)*680,vy:Math.sin(aa)*680,rad:5,damage:(1+have('damage'))*(1+(state.gear.core?.amount||0))*(1+have('closeRange')*.32),pierce:have('pierce'),bounce:have('bounce'),life:1.8,homing:have('homing'),targetId:null,seen:new Set(),travel:0,maxTravel:have('closeRange')?Math.max(3.5,11-1.85*have('closeRange'))*T:Infinity,longLevel:have('longRange'),closeLevel:have('closeRange')});
+ }
+ effect(x,y,10,'#f7d68e',.12);
+}
+function blast(x,y,power,excluded){
+ const radius=T*(.72+have('boom')*.17);effect(x,y,radius,'#ffac68',.38);sparks(x,y,8,'#f6a363',.8);
+ for(const enemy of [...state.mobs]){if(state.mode!=='play')break;if(enemy.id===excluded)continue;const d=Math.hypot((enemy.x+.5)*T-x,(enemy.y+.5)*T-y);if(d<=radius)damageEnemy(enemy,power)}
+}
+function damageEnemy(z,dmg,environmental=false){if(!state.mobs.includes(z)||state.mode!=='play'||ghostInWall(z))return;z.hp-=dmg;z.flash=.12;if(z.hp<=0)killEnemy(z,environmental,environmental?'explosion':'normal')}
+function chainLightning(primary,level=have('lightning')){
+ if(!level||state.mode!=='play')return;
+ let current=primary,seen=new Set([primary.id]);
+ for(let step=0;step<level+1;step++){
+  let next=null,best=(3.2+.23*level)*T;
+  const origin=enemyCenter(current),cx=origin.x,cy=origin.y;
+  for(const z of state.mobs){if(seen.has(z.id))continue;const target=enemyCenter(z),d=Math.hypot(target.x-cx,target.y-cy);if(d<best&&enemyVisibleToWeapons(z)){best=d;next=z}}
+  if(!next)break;seen.add(next.id);
+  const target=enemyCenter(next),x=target.x,y=target.y;
+  state.arcs.push({x1:cx,y1:cy,x2:x,y2:y,life:.17,max:.17});
+  sparks(x,y,4,'#98deff',.6);
+  damageEnemy(next,Math.max(.65,(.8+level*.25)*Math.pow(.78,step)));
+  current=next;
+ }
+}
+function detonate(z,defused){
+ const i=state.mobs.indexOf(z);if(i<0||state.mode!=='play')return;
+ const center=enemyCenter(z);state.mobs.splice(i,1);
+ const radius=T*2.05;
+ effect(center.x,center.y,radius,defused?'#f1be85':'#ed4760',.42);
+ sparks(center.x,center.y,defused?22:30,defused?'#ffc48d':'#b2394e',1.25);
+ const p=state.player;
+ if(!defused&&Math.hypot((p.x+.5)*T-center.x,(p.y+.5)*T-center.y)<=radius&&clearLine(state.room,z.x,z.y,p.x,p.y)){
+  hitPlayer(Math.min(48,23+Math.floor(state.combat/4)*3));
+ }
+ if(state.mode!=='play')return;
+ // Disabling a detonator turns it into a weapon against the horde.
+ // Natural explosions damage nearby enemies without awarding suicidal chains.
+ for(const other of [...state.mobs]){
+  if(!state.mobs.includes(other)||state.mode!=='play')continue;
+  const c=enemyCenter(other);
+  if(Math.hypot(c.x-center.x,c.y-center.y)<=radius)damageEnemy(other,isGuardian(other)?3:7,!defused);
+ }
+}
+function killEnemy(z,fromNuke=false,origin=fromNuke?'nuke':'normal'){
+ if(state.mode!=='play')return;const i=state.mobs.indexOf(z);if(i<0)return;
+ if(z.type==='detonator'&&!fromNuke){
+  // Resolve chained explosions before checking the room objective.
+  const previous=state.deferWaveCompletion;
+  state.deferWaveCompletion=true;detonate(z,true);state.deferWaveCompletion=previous;
+  if(state.mode!=='play')return;
+ }else state.mobs.splice(i,1);
+ state.kills++;state.totalKills++;
+ if(isGuardian(z)){state.bossAlive=activeGuardians().length>0;if(cercoAuditCurrent()){const a=cercoAuditCurrent();a.guardiansDefeated=(a.guardiansDefeated||0)+1;a.guardianDefeated=!state.bossAlive&&state.guardianSpawned>=guardianTarget();}toast(state.bossAlive?'GUARDIAN DOWN · MORE REMAIN':'GUARDIANS DEFEATED!',1.7);textLog(state.bossAlive?'Another guardian still blocks the exit.':'The guardians are down. The exit can now open.');}
+ if(!fromNuke){state.combo=state.simTime-state.lastKill<COMBO_WINDOW?Math.min(999,state.combo+1):1;state.lastKill=state.simTime}
+ const m=fromNuke?1:comboMultiplier(),base=isGuardian(z)?1500:z.type==='brute'?420:z.type==='detonator'?210:z.type==='healer'?290:z.type==='shaman'?290:z.type==='ghost'?230:z.type==='seeker'?245:z.type==='blighter'?260:z.type==='demolisher'?265:z.type==='normal'?100:175;
+ const earned=Math.round(base*m);state.score+=earned;cercoAuditKill(z,base,m,earned,fromNuke,origin);
+ const center=enemyCenter(z),x=center.x,y=center.y;
+ const chunks=isGuardian(z)?35:z.type==='brute'?28:z.type==='detonator'?23:fromNuke?4:randomInt(5)+9;
+ sparks(x,y,chunks,isGuardian(z)?'#ffc781':z.type==='toxic'?'#a9e87c':z.type==='ranged'?'#d6b1fa':z.type==='seeker'?'#6ce9f3':z.type==='blighter'?'#d9d95f':z.type==='demolisher'?'#eabb62':z.type==='brute'?'#8796a9':z.type==='detonator'?'#a72b4c':z.type==='healer'?'#78cc9b':z.type==='shaman'?'#67bfa4':z.type==='ghost'?'#b7b5ec':'#eb9888',isGuardian(z)?1.6:1);
+ effect(x,y,isGuardian(z)?T*1.6:28,isGuardian(z)?'#f7bc79':'#d68b7b',isGuardian(z)?.55:.20);
+ if(!fromNuke&&(state.combo===5||state.combo===10||state.combo===20||state.combo===30)){
+  toast('COMBO ×'+comboMultiplier().toFixed(2)+' · '+state.combo+' KILLS',1.0);sparks(x,y,14,'#f4d47c',1.15);
+ }
+ if(!fromNuke&&(Math.random()<.27||isGuardian(z)))addFloater(x,y,'+'+earned,'#f6d084',isGuardian(z));
+ // Account-wide cosmetic currency uses a separate RNG, cap, and pickup path.
+ cercoCosmeticTryDrop(z,origin);
+ const maxCredits=100+state.combat*18;
+ if(!fromNuke&&state.creditsRoom<maxCredits){const gain=Math.min(maxCredits-state.creditsRoom,isGuardian(z)?42:z.type==='normal'?3:5);state.creditsRoom+=gain;state.credits+=gain;cercoAuditCredits('earned',gain)}
+ if(!fromNuke&&vampRule()){
+  const p=state.player,rule=vampRule();p.vampKills++;
+  if(p.vampKills>=rule.kills){p.vampKills-=rule.kills;
+   const heal=Math.min(rule.heal,p.maxHp-p.hp);
+   if(heal>0){p.hp+=heal;addFloater(x,y,'+'+heal+' HP','#98eeac');}
+  }
+ }
+ if(!fromNuke&&state.drops.length<9){const r=Math.random();
+  if(r<.0025&&state.roomNukes<1){state.roomNukes++;state.drops.push({x:z.x,y:z.y,type:'nuke',life:13})}
+  else if(r<Math.max(.012,.032-state.combat*.0007)&&state.roomLifeDrops<2){state.roomLifeDrops++;state.drops.push({x:z.x,y:z.y,type:'life',life:16,value:30})}
+  else if(have('shield')&&r<.050&&state.roomShieldDrops<2){state.roomShieldDrops++;state.drops.push({x:z.x,y:z.y,type:'shield',life:16,value:18})}
+ }
+ if(!state.deferWaveCompletion)verifyCombatObjective();
+}
+function collectDrops(){
+ if(!['play','safe'].includes(state.mode))return;
+ const p=state.player;
+ for(let i=state.drops.length-1;i>=0;i--){
+  if(!['play','safe'].includes(state.mode))break;const d=state.drops[i];if(d.x!==p.x||d.y!==p.y)continue;
+  state.drops.splice(i,1);
+  if(d.type==='style_coin'){cercoCosmeticCollect(d);emitCercoEvent('pickup_collected',{pickupType:'style_coin',room:state.stage,dropId:d.dropId,value:d.value,currencyId:CERCO_COSMETIC_CURRENCY});continue;}
+  if(state.audit&&state.audit.pickups[d.type]!==undefined)state.audit.pickups[d.type]++;
+  emitCercoEvent('pickup_collected',{pickupType:d.type,room:state.stage});
+  if(d.type==='life'){
+   const cap=state.mode==='safe'?Math.max(0,35-state.safeHealSpent):30;
+   const a=Math.min(d.value||30,cap,p.maxHp-p.hp);p.hp+=a;if(state.mode==='safe')state.safeHealSpent+=a;
+   toast('+'+Math.ceil(a)+' HP',.9);sparks((p.x+.5)*T,(p.y+.5)*T,10,'#83e8ac',.75);
+   textLog('Health pickup: +'+Math.ceil(a)+' HP.');
+  }else if(d.type==='shield'){
+   const gained=Math.min(d.value||18,p.shieldMax-p.shield);p.shield+=gained;toast('+'+gained+' SHIELD',.9);sparks((p.x+.5)*T,(p.y+.5)*T,12,'#94bfff',.75);
+  }else if(state.mode==='play'){
+   const all=state.mobs.filter(z=>!isGuardian(z));const boss=state.mobs.find(z=>isGuardian(z));
+   toast('☢ NUKE ☢',1.7);textLog('NUKE: '+all.length+' enemies eliminated.');
+   effect((p.x+.5)*T,(p.y+.5)*T,Math.max(W,H)*T,'#ffc96b',.7);
+   state.deferWaveCompletion=true;for(const mob of all){if(state.mode!=='play')break;killEnemy(mob,true,'nuke')}
+   if(boss&&state.mode==='play')for(const guardian of activeGuardians())damageEnemy(guardian,Math.max(1,Math.ceil(guardian.maxHp*.2)));
+   state.deferWaveCompletion=false;
+   verifyCombatObjective();
+  }
+ }
+}
+function aimGuided(b,dt){
+ if(b.source!=='player'||!b.homing||state.mode!=='play')return;
+ const range=(6.2+b.homing*1.35)*T;
+ let target=state.mobs.find(z=>z.id===b.targetId&&!b.seen.has(z.id));
+ const canTrack=z=>{
+  if(!z||!enemyVisibleToWeapons(z))return false;const c=enemyCenter(z);
+  return Math.hypot(c.x-b.x,c.y-b.y)<=range&&clearLine(state.room,b.x/T-.5,b.y/T-.5,c.x/T-.5,c.y/T-.5);
+ };
+ if(!canTrack(target)){
+  target=null;let nearest=range;
+  for(const z of state.mobs){if(b.seen.has(z.id)||!canTrack(z))continue;const c=enemyCenter(z),d=Math.hypot(c.x-b.x,c.y-b.y);if(d<nearest){nearest=d;target=z}}
+  b.targetId=target?.id??null;
+ }
+ if(!target)return;
+ const c=enemyCenter(target),desired=Math.atan2(c.y-b.y,c.x-b.x),current=Math.atan2(b.vy,b.vx);
+ const delta=Math.atan2(Math.sin(desired-current),Math.cos(desired-current));
+ const turn=clamp(delta,-(1.4+b.homing*.85)*dt,(1.4+b.homing*.85)*dt),speed=Math.hypot(b.vx,b.vy);
+ b.vx=Math.cos(current+turn)*speed;b.vy=Math.sin(current+turn)*speed;
+}
+function shotTouchesEnemy(b,z){
+ const left=z.x*T,top=z.y*T,right=(z.x+(z.w||1))*T,bottom=(z.y+(z.h||1))*T;
+ const nearX=clamp(b.x,left+3,right-3),nearY=clamp(b.y,top+3,bottom-3);
+ return Math.hypot(b.x-nearX,b.y-nearY)<=b.rad+T*.12;
+}
+function updateShots(dt){
+ for(let i=state.shots.length-1;i>=0;i--){
+  if(state.mode!=='play')return;const b=state.shots[i];b.life-=dt;let dead=b.life<=0;aimGuided(b,dt);
+  const sx=b.vx*dt,sy=b.vy*dt,steps=Math.max(1,Math.ceil(Math.hypot(sx,sy)/11));
+  for(let j=0;j<steps&&!dead;j++){
+   const nx=b.x+b.vx*dt/steps,ny=b.y+b.vy*dt/steps,x=Math.floor(nx/T),y=Math.floor(ny/T);
+   if(blockedIn(state.room,x,y)){
+    if(b.bounce>0){b.bounce--;if(b.source==='turret')b.ricochet=Math.max(0,b.ricochet-1);const blockX=blockedIn(state.room,x,Math.floor(b.y/T)),blockY=blockedIn(state.room,Math.floor(b.x/T),y);
+     if(blockX)b.vx=-b.vx;if(blockY)b.vy=-b.vy;if(!blockX&&!blockY){b.vx=-b.vx;b.vy=-b.vy}b.x+=b.vx*dt/steps;b.y+=b.vy*dt/steps;}
+    else dead=true;break;
+   }else{b.x=nx;b.y=ny}
+   if(b.source==='player'){b.travel=(b.travel||0)+Math.hypot(b.vx*dt/steps,b.vy*dt/steps);if(b.travel>=(b.maxTravel||Infinity)){dead=true;break}}
+   for(const z of [...state.mobs]){
+    if(state.mode!=='play')break;if(b.seen.has(z.id)||!enemyVisibleToWeapons(z))continue;
+    if(!shotTouchesEnemy(b,z))continue;
+    b.seen.add(z.id);
+    const center=enemyCenter(z),ex=center.x,ey=center.y;
+    const bonus=b.source==='player'&&b.longLevel?1+b.longLevel*.035*Math.min(10,(b.travel||0)/T):1;
+    damageEnemy(z,b.damage*bonus);
+    if(b.source==='player'&&have('boom')&&state.mode==='play')blast(ex,ey,have('boom'),z.id);
+    if(b.source==='player'&&have('lightning')&&state.mode==='play')chainLightning(z,have('lightning'));
+    if(b.source==='turret'&&have('turretLightning')&&state.mode==='play')chainLightning(z,have('turretLightning'));
+    // Engineering ricochet seeks another target after impact.
+    // Do not hit the same target twice; respect line of sight.
+    if(b.source==='turret'&&b.ricochet>0&&state.mode==='play'){
+     let best=null,closest=4.2;
+     for(const other of state.mobs){
+      if(b.seen.has(other.id)||!enemyVisibleToWeapons(other))continue;
+      const distance=Math.hypot(other.x-z.x,other.y-z.y);
+      if(distance>=closest||!clearLine(state.room,z.x,z.y,other.x,other.y))continue;
+      best=other;closest=distance;
+     }
+     if(best){const angle=Math.atan2((best.y+.5)*T-b.y,(best.x+.5)*T-b.x),speed=Math.hypot(b.vx,b.vy);
+      b.vx=Math.cos(angle)*speed;b.vy=Math.sin(angle)*speed;b.ricochet--;
+      state.arcs.push({x1:ex,y1:ey,x2:(best.x+.5)*T,y2:(best.y+.5)*T,life:.09,max:.09});
+      break;
+     }
+    }
+    if(b.pierce>0)b.pierce--;else dead=true;break;
+   }
+  }
+  if(dead)state.shots.splice(i,1);
+ }
+}
+
+function canPlaceTurret(x,y){
+ const rm=state.room,p=state.player;
+ if(blockedIn(rm,x,y)||(p.x===x&&p.y===y))return false;
+ if((rm.entrance.x===x&&rm.entrance.y===y)||(rm.exit.x===x&&rm.exit.y===y))return false;
+ if(state.turrets.some(t=>t.x===x&&t.y===y)||state.mobs.some(z=>x>=z.x&&x<z.x+(z.w||1)&&y>=z.y&&y<z.y+(z.h||1)))return false;
+ // Leave at least a couple of ways around the new structure; no trap at choke points.
+ const neighbors=DIR.filter(([dx,dy])=>!blockedIn(rm,x+dx,y+dy)).length;
+ if(neighbors<4)return false;
+ const walls=new Set(rm.walls);
+ walls.add(at(x,y));for(const t of state.turrets)walls.add(at(t.x,t.y));
+ const testRoom={...rm,walls};
+ return !!bfs(testRoom,{x:p.x,y:p.y},rm.exit);
+}
+function deployTurret(){
+ if(state.mode!=='play'||!have('turret'))return false;
+ // Limit active turrets only; destroyed turrets free deployment slots.
+ if(state.turrets.filter(t=>t.role!=='interceptor').length>=turretAllowance())return false;
+ if(state.simTime-state.lastDeploy<7)return false;
+ const p=state.player;
+ const candidates=[...DIR.map(([dx,dy])=>({x:p.x+dx,y:p.y+dy})),...DIR.map(([dx,dy])=>({x:p.x+2*dx,y:p.y+2*dy}))];
+ // Keep deployed turrets on accessible tiles, including near narrow corridors.
+ const spot=candidates.find(q=>canPlaceTurret(q.x,q.y));
+ if(!spot)return false;
+ state.lastDeploy=state.simTime;
+ const hp=28+have('turretPower')*12;
+ state.turrets.push({role:'attack',x:spot.x,y:spot.y,hp,maxHp:hp,life:45,timer:.4,flash:0});
+ sparks((spot.x+.5)*T,(spot.y+.5)*T,12,'#f9d77e',.7);
+ return true;
+}
+function deployInterceptor(){
+ if(state.mode!=='play'||!interceptorAllowance())return false;
+ if(state.turrets.filter(t=>t.role==='interceptor').length>=interceptorAllowance())return false;
+ if(state.simTime-state.lastInterceptDeploy<7)return false;
+ const p=state.player;
+ const candidates=[...DIR.map(([dx,dy])=>({x:p.x+dx,y:p.y+dy})),...DIR.map(([dx,dy])=>({x:p.x+2*dx,y:p.y+2*dy}))];
+ const spot=candidates.find(q=>canPlaceTurret(q.x,q.y));if(!spot)return false;
+ state.lastInterceptDeploy=state.simTime;
+ state.turrets.push({role:'interceptor',x:spot.x,y:spot.y,hp:25,maxHp:25,life:40,timer:.4,flash:0});
+ sparks((spot.x+.5)*T,(spot.y+.5)*T,11,'#84e6fb',.7);return true;
+}
+function damageTurret(t,damage){if(!state.turrets.includes(t))return;t.hp-=damage;t.flash=.14;
+ if(t.hp<=0){state.turrets.splice(state.turrets.indexOf(t),1);sparks((t.x+.5)*T,(t.y+.5)*T,16,'#f6b46f',1.0)}}
+function tickTurrets(dt){
+ for(let i=state.turrets.length-1;i>=0;i--){
+  const t=state.turrets[i];t.life-=dt;t.timer-=dt;t.flash=Math.max(0,t.flash-dt);
+  if(t.life<=0||t.hp<=0){state.turrets.splice(i,1);continue}
+  if(t.role==='interceptor'){
+   if(t.timer>0)continue;
+   const reach=5.2*T,originX=(t.x+.5)*T,originY=(t.y+.5)*T;
+   let target=null,best=Infinity;
+   for(const b of state.enemyShots){
+    const d=Math.hypot(b.x-originX,b.y-originY);
+    if(d<reach&&d<best&&clearLine(state.room,t.x,t.y,b.x/T-.5,b.y/T-.5)){target=b;best=d}
+   }
+   if(target){const idx=state.enemyShots.indexOf(target);if(idx>=0){state.enemyShots.splice(idx,1);
+    state.arcs.push({x1:originX,y1:originY,x2:target.x,y2:target.y,life:.18,max:.18});
+    sparks(target.x,target.y,7,'#78eafb',.7);
+    t.timer=.66;state.interceptCount=(state.interceptCount||0)+1;}
+   }continue;
+  }
+  if(t.timer>0||state.shots.length>=SHOT_CAP+18)continue;
+  const reach=4+have('turretRange')*.9;
+  const visible=state.mobs.filter(z=>Math.hypot(z.x-t.x,z.y-t.y)<=reach&&clearLine(state.room,t.x,t.y,z.x,z.y));
+  if(!visible.length)continue;
+  visible.sort((a,b)=>Math.hypot(a.x-t.x,a.y-t.y)-Math.hypot(b.x-t.x,b.y-t.y));
+  const target=visible[0],x=(t.x+.5)*T,y=(t.y+.5)*T,a=Math.atan2((target.y-t.y),(target.x-t.x));
+  state.shots.push({source:'turret',x,y,vx:Math.cos(a)*520,vy:Math.sin(a)*520,rad:4,damage:1+have('turretPower')*.65,pierce:0,bounce:have('turretRicochet'),ricochet:have('turretRicochet'),life:1.35,seen:new Set()});
+  t.timer=Math.max(.26,.94*Math.pow(.86,have('turretRate')));
+  effect(x,y,9,'#ebc17b',.11);
+ }
+}
+
+function repulsionPulse(){
+ if(state.mode!=='play'||!have('repulse')||state.simTime<state.repulseReady)return;
+ state.repulseReady=state.simTime+Math.max(8,17-3*have('repulse'));
+ const p=state.player,px=(p.x+.5)*T,py=(p.y+.5)*T;
+ effect(px,py,T*3.1,'#bde4ff',.55);sparks(px,py,16,'#c9e9ff',.7);
+ const occupied=new Set(state.turrets.map(t=>at(t.x,t.y)));
+ for(const z of state.mobs){for(const idx of enemyCells(z))occupied.add(idx)}
+ let displaced=0;
+ const candidates=state.mobs.filter(z=>enemyDistance(z,p.x,p.y)<=3).sort((a,b)=>enemyDistance(b,p.x,p.y)-enemyDistance(a,p.x,p.y));
+ for(const z of candidates){
+  for(const idx of enemyCells(z))occupied.delete(idx);
+  const dx=Math.sign(z.x+(z.w||1)/2-.5-p.x),dy=Math.sign(z.y+(z.h||1)/2-.5-p.y);
+  for(let i=0;i<(isGuardian(z)?1:2);i++){
+   if(!dx&&!dy)break;
+   if(!canMobAdvance(z,dx,dy,occupied))break;
+   z.x+=dx;z.y+=dy;displaced++;
+  }
+  for(const idx of enemyCells(z))occupied.add(idx);
+ }
+ if(displaced)addFloater(px,py-T*.7,'PULSE!','#c7e6ff');
+}
+function updateDrops(dt){for(let i=state.drops.length-1;i>=0;i--)if((state.drops[i].life-=dt)<=0)state.drops.splice(i,1)}
+function updateFX(dt){for(let i=state.fx.length-1;i>=0;i--)if((state.fx[i].life-=dt)<=0)state.fx.splice(i,1)}
+function tick(dt){
+ if(state.mode==='choice'||state.mode==='choiceSafe'){
+  state.choiceTimer=Math.max(0,state.choiceTimer-dt);
+  const label=$('choiceCountdown');if(label)label.textContent=Math.ceil(state.choiceTimer)+' s';
+  if(state.choiceTimer<=0)skipUpgrade('timeout');return;
+ }
+ if(state.mode==='transition')tickTransition(dt);
+ else if(state.mode==='extract')tickExtraction(dt);
+ else if(state.mode==='safe'){
+  state.safeTimer=Math.max(0,state.safeTimer-dt);state.simTime+=dt;
+  updateMovement(dt);updateParticles(dt);updateFX(dt);updateHUD();
+  if(state.safeTimer<=0)beginSafeExit();
+ }
+ else if(state.mode==='play'){
+  state.simTime+=dt;state.time-=dt;
+  if(state.simTime-state.lastKill>COMBO_WINDOW){state.combo=0}
+  regulateStamina(dt);
+  applyPoison(dt);if(state.mode!=='play')return;
+  if(guardianRoom()&&state.guardianSpawned<guardianTarget()){
+   const guardianType=state.guardianSpawned%2===0?(guardianStage()%2===0?'devil':'boss'):(guardianStage()%2===0?'boss':'devil');
+   spawnEnemy(guardianType);
+  }
+  if(state.time<=0&&!state.frenzy){state.time=0;state.frenzy=true;if(cercoAuditCurrent())cercoAuditCurrent().frenzyTriggered=true;toast('FRENZY! · THE HORDE SURGES',2);textLog('Time is up. Survive the frenzy until you reach the kill goal.')}
+  state.spawnTimer-=dt;if(state.spawnTimer<=0){spawnEnemy();state.spawnTimer=spawnGap()}
+  updateMovement(dt);if(state.mode!=='play')return;
+  updateSprintTrails(dt);if(state.mode!=='play')return;
+  mobMovement(dt);if(state.mode!=='play')return;
+  if(touch.fireHeld){applyTouchAim();fireShot()}
+  else if(state.holdFire)fireShot();
+  else if(have('autofire'))fireShot(true);
+  repulsionPulse();deployTurret();deployInterceptor();tickTurrets(dt);updateShots(dt);if(state.mode!=='play')return;
+  updateEnemyShots(dt);if(state.mode!=='play')return;
+  updateContamination(dt);if(state.mode!=='play')return;
+  updateEncroachment(dt);if(state.mode!=='play')return;
+  // Check completion even after the timer expires and the guardian is down.
+  verifyCombatObjective();if(state.mode!=='play')return;
+  updateDrops(dt);updateFX(dt);updateParticles(dt);updateHUD();
+ }
+ if(state.player&&state.player.blend<1)state.player.blend=Math.min(1,state.player.blend+dt/.11);
+}
+function finishRun(){if(state.mode==='dead')return;state.mode='dead';cercoAuditCloseRoom('defeated');if(state.audit){state.audit.result='defeat';state.audit.finalized=true;}state.holdFire=false;state.keys.clear();const item={points:state.score,room:state.stage,kills:state.totalKills,seed:state.seed};state.records.push(item);state.records.sort((a,b)=>b.points-a.points);state.records=state.records.slice(0,5);saveRecords();renderRecords();updateHUD();emitCercoEvent('run_finished',{result:'defeat',audit:cercoAuditReport()});showModal(`<div class="eyebrow" style="color:#f4aaa1">EXPEDITION OVER</div><h2>The horde has you surrounded.</h2><p>You reached <b>room ${state.stage}</b> and defeated <b>${state.totalKills}</b> enemies.</p><div style="font-size:38px;font-weight:950;color:#ffd58d">${state.score.toLocaleString('en-US')} <span style="font-size:13px;color:#9ab4c7">POINTS</span></div><p class="subline">✦ ${state.cosmetic?.collected||0} Style Coins collected (platform verification required).</p><p class="subline">Map seed ${state.seed}. Your five best runs are saved in this browser.</p><div class="actions"><button class="btn" id="again">New expedition</button><button class="btn secondary" id="same">Replay this map seed</button></div>`);$('again').onclick=()=>begin(numSeed());$('same').onclick=()=>begin(state.seed,true)}
+function showStart(){
+ state.mode='menu';state.holdFire=false;state.keys.clear();state.lastKey=null;setShopOpen(false);
+ showModal(`<div class="eyebrow">CERCO · EXPEDITION 0.9.4</div><h2>The horde learns to cut you off.</h2>
+ <p>Fight through the horde, stack upgrades and reach a sanctuary every five rooms. Health pickups are scattered on the floor. You have <b>45 seconds</b> to recover, gear up and move on.</p>
+ <div class="safeInfo">ϟ Chain Lightning · ▣ Turrets · ✹ Detonators · ◌ Phantoms · ✚ Healers · ◎ Homing Hunters · ☢ Contamination · ⬡ Shields · ◈ Merchant · ×3 Combo · ☢ Nuke</div>
+ <p><b>Close Quarters</b> trades bullet travel for damage; <b>Longshot</b> rewards traveled distance (including homing paths). They cannot be combined. <b>Shatter Sprint</b>, <b>Corrosive Wake</b>, <b>Sprint Drive</b>, and <b>Momentum Recovery</b> work only while actually sprinting. Demolishers attack turrets before players when visible.</p>
+ <p><b>Eight-direction movement:</b> Q W E A S D Z C. <b>Mouse:</b> aim and fire. <b>Space:</b> sprint. <b>On mobile:</b> move with the left joystick, hold FIRE on the right to shoot, drag FIRE to aim, and hold SPRINT to run. <b>Turrets:</b> maintain one active turret, or two with Dual Deployment; lost turrets redeploy after their 7-second cooldown. <b>Auto-fire:</b> an optional upgrade. <b>F:</b> toggle Auto-Move; it stays enabled when you hit a wall.</p>
+ <p>Rooms 7, 17, 27… feature ranged-only assaults. From later rooms onward, enemy teams evolve, and prolonged advanced frenzies trigger a spreading invasion from the room edges. Guardians appear in rooms 4, 9, 14… Reach the kill goal and defeat the guardian to unlock the exit. Sanctuaries appear in rooms 5, 10, 15… Your score is never spent. Gold Style Coins are collected for cosmetic rewards on ATANATUS; they are separate from shop credits and are subject to platform verification.</p>
+ <div class="actions"><button class="btn" id="start">Start expedition →</button></div>
+ <p class="subline">Playable offline. Your best runs are saved on this device.</p>`);
+ $('start').onclick=()=>begin(numSeed());
+}
+function pauseGame(){
+ if(['play','safe'].includes(state.mode)){
+  state.previousMode=state.mode;state.mode='paused';state.holdFire=false;state.keys.clear();
+  showModal(`<div class="eyebrow">PAUSED</div><h2>Expedition paused</h2><p>The clock and enemies are stopped.</p><div class="actions"><button class="btn" id="resume">Resume · P</button><button class="btn secondary" id="restartFromPause">Restart expedition</button></div>`);
+  $('resume').onclick=resumeGame;$('restartFromPause').onclick=confirmReset;
+ }else if(state.mode==='paused')resumeGame();
+}
+function resumeGame(){if(state.mode!=='paused')return;state.mode=state.previousMode||'play';hideModal();if(state.mode==='safe')renderShop()}
+function confirmReset(){if(state.mode==='menu'||state.mode==='dead'){showStart();return}const before=state.mode;state.mode='confirm';state.holdFire=false;state.keys.clear();showModal(`<div class="eyebrow" style="color:#ffbf8b">RESTART EXPEDITION?</div><h2>Abandon this run?</h2><p>Your unfinished run will be lost. Your existing local records will stay intact.</p><div class="actions"><button class="btn secondary" id="cancelReset">Go back</button><button class="btn" id="yesReset">Abandon run</button></div>`);$('yesReset').onclick=()=>{cercoAuditCloseRoom('abandoned');if(state.audit){state.audit.result='abandoned';state.audit.finalized=true;}emitCercoEvent('run_abandoned',{result:'abandoned',audit:cercoAuditReport()});showStart()};$('cancelReset').onclick=()=>{state.mode=before;if(before==='choice'||before==='choiceSafe')showUpgradeChoices(true);else if(before==='safe')showRefuge();else if(before==='paused'){state.mode=state.previousMode||'play';pauseGame()}else hideModal()}}
+function drawFloor(room,ctx=g){ctx.fillStyle='#09111b';ctx.fillRect(0,0,cv.width,cv.height);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const px=x*T,py=y*T;if(!inBounds(room,x,y)){ctx.fillStyle=(x+y)%2?'#0b1420':'#0d1623';ctx.fillRect(px,py,T,T);continue}ctx.fillStyle=room.safe?(x+y)%2?'#1e342e':'#1c312d':(x+y)%2?'#182638':'#1b2b3c';ctx.fillRect(px+1,py+1,T-2,T-2);ctx.strokeStyle=room.safe?'#29453b':'#273b4c';ctx.lineWidth=.5;ctx.strokeRect(px+.5,py+.5,T-1,T-1)}
+// Solid boundary, walls and a simple room style.
+const bx=room.ox*T,by=room.oy*T,bw=room.w*T,bh=room.h*T;ctx.strokeStyle=room.safe?'#518b6d':'#536c81';ctx.lineWidth=5;ctx.strokeRect(bx+2,by+2,bw-4,bh-4);for(const id of room.walls){const x=id%W,y=Math.floor(id/W),px=x*T,py=y*T;ctx.fillStyle='#0b121c';ctx.fillRect(px+5,py+8,T-5,T-4);ctx.fillStyle=room.safe?'#45685b':['#465568','#4e5c67','#475263','#4b5660'][room.theme];ctx.fillRect(px+2,py+2,T-5,T-5);ctx.fillStyle=room.safe?'#81aa91':'#71869a';ctx.fillRect(px+5,py+5,T-11,5);ctx.strokeStyle=room.safe?'#6e9983':'#63758a';ctx.lineWidth=1.2;ctx.strokeRect(px+3,py+3,T-7,T-7)}}
+function renderTerrain(){if(state.room)drawFloor(state.room,terrainContext)}
+function drawDoors(room){const entrance=room.entrance,exit=room.exit;for(const [pos,active,green] of [[entrance,true,false],[exit,state.mode==='extract'||state.mode==='transition'||room.safe,room.safe]]){const x=pos.x*T+T/2,y=pos.y*T+T/2;g.save();g.shadowColor=green?'#8ff5b0':active?'#97e8ff':'#e5a68c';g.shadowBlur=active?20:4;g.fillStyle=green?'#234d3f':active?'#245873':'#4a3d3d';g.fillRect(x-16,y-18,32,36);g.strokeStyle=green?'#a5f7c3':active?'#a9e8ff':'#ad7f77';g.lineWidth=2;g.strokeRect(x-15,y-17,30,34);g.fillStyle=green?'#9ae9bd':active?'#b6f4ff':'#ca8f7b';g.fillRect(x-9,y-11,18,23);g.fillStyle='#253748';g.fillRect(x-2,y-5,4,15);g.restore()}
+if(room.safe){const cx=(room.ox+room.w/2)*T,cy=(room.oy+room.h/2)*T;g.save();g.strokeStyle='#73b88b';g.lineWidth=2;g.globalAlpha=.5;g.beginPath();g.arc(cx,cy,85,0,Math.PI*2);g.stroke();g.beginPath();g.arc(cx,cy,56,0,Math.PI*2);g.stroke();g.fillStyle='#7bd4a1';g.globalAlpha=.8;g.textAlign='center';g.font='bold 14px monospace';g.fillText('S A N C T U A R Y',cx,cy-73);g.restore()}}
+function drawDrops(){for(const d of state.drops){const x=(d.x+.5)*T,y=(d.y+.5)*T;g.save();const glow=.7+.3*Math.sin(state.anim*8);g.globalAlpha=glow; if(d.type==='style_coin'){
+  g.shadowColor='#e7ad4f';g.shadowBlur=12+7*glow;g.fillStyle='#98651e';
+  g.beginPath();g.arc(x,y,15,0,Math.PI*2);g.fill();
+  g.fillStyle='#f9d477';g.beginPath();g.arc(x,y,11,0,Math.PI*2);g.fill();
+  g.strokeStyle='#fff0b0';g.lineWidth=1.5;g.beginPath();g.arc(x,y,11,0,Math.PI*2);g.stroke();
+  g.shadowBlur=0;g.fillStyle='#6b4519';g.textAlign='center';g.textBaseline='middle';g.font='900 11px system-ui';g.fillText('✦',x,y+1);
+  g.font='900 11px system-ui';g.fillStyle='#ffe6a0';g.shadowColor='#000';g.shadowBlur=3;
+  g.fillText('+'+d.value,x,y-21);
+ }else if(d.type==='shield'){g.fillStyle='#93bfff';g.shadowColor='#6da7ff';g.shadowBlur=18;g.beginPath();g.arc(x,y,13,0,2*Math.PI);g.fill();g.fillStyle='#243c6b';g.font='bold 18px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('⬡',x,y+1)}else if(d.type==='life'){g.fillStyle='#8de9b0';g.shadowColor='#5bd897';g.shadowBlur=13;g.beginPath();g.arc(x,y,13,0,2*Math.PI);g.fill();g.fillStyle='#194934';g.fillRect(x-2,y-8,4,16);g.fillRect(x-8,y-2,16,4)}else{g.fillStyle='#f8ca65';g.shadowColor='#f0ae48';g.shadowBlur=22;g.beginPath();g.arc(x,y,14,0,2*Math.PI);g.fill();g.fillStyle='#60411d';g.font='bold 18px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('☢',x,y+1)}g.restore()}}
+function drawHazards(){
+ for(const trail of state.trails){const x=(trail.x+.5)*T,y=(trail.y+.5)*T;
+  g.save();g.globalAlpha=.12+.29*clamp01(trail.life/trail.max);g.fillStyle='#8fcf36';g.fillRect(x-17,y-17,34,34);
+  g.globalAlpha=.65*clamp01(trail.life/trail.max);g.strokeStyle='#c8f16b';g.lineWidth=2;g.strokeRect(x-14,y-14,28,28);g.restore();}
+ const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ for(const zone of state.hazards){
+  const cx=(zone.x+.5)*T,cy=(zone.y+.5)*T,active=zone.life<=zone.max-zone.warn;
+  g.save();g.globalAlpha=active?.23:.10;
+  g.fillStyle=active?'#d5ca36':'#f6e3a1';g.beginPath();g.arc(cx,cy,zone.radius*T,0,Math.PI*2);g.fill();
+  g.globalAlpha=active?.86:.52;g.strokeStyle=active?'#f0e85d':'#ffe89a';g.lineWidth=active?3:2;
+  g.setLineDash(active?[]:[6,5]);g.beginPath();g.arc(cx,cy,zone.radius*T,0,Math.PI*2);g.stroke();g.setLineDash([]);
+  if(active){g.globalAlpha=.42;g.fillStyle='#ddd94d';
+   for(let i=0;i<6;i++){const a=i*1.047+(reduceMotion?0:state.anim*.4);g.fillRect(cx+Math.cos(a)*zone.radius*T*.53-3,cy+Math.sin(a)*zone.radius*T*.53-3,6,6)}
+  }g.restore();
+ }
+ if(state.encroachment>0&&state.mode==='play'){
+  const rm=state.room;g.save();g.fillStyle='#d4ad39';g.globalAlpha=.13;
+  for(let y=rm.oy;y<rm.oy+rm.h;y++)for(let x=rm.ox;x<rm.ox+rm.w;x++){
+   const edge=Math.min(x-rm.ox,y-rm.oy,rm.ox+rm.w-1-x,rm.oy+rm.h-1-y);
+   if(edge<state.encroachment){g.fillRect(x*T,y*T,T,T)}
+  }g.restore();
+ }
+}
+function drawMobs(){
+ const palette={normal:['#c87573','#f0b0a6'],interceptor:['#dca46f','#f3d6a2'],flanker:['#ac80d2','#d9b4f6'],ranged:['#9568cd','#dfb2ff'],seeker:['#177a82','#8afaff'],blighter:['#a3a13c','#e8e586'],demolisher:['#9a683e','#f6d391'],toxic:['#7bb05f','#b7efa4'],snarer:['#6384b6','#b3d4ff'],boss:['#ed9755','#fff1aa'],devil:['#a63d58','#ffa2ac'],brute:['#626d7a','#a0adbd'],detonator:['#731c35','#ee5274'],healer:['#4a966d','#a2f1c5'],shaman:['#358f7c','#b4f4da'],ghost:['#9d95d6','#e1d9ff']};
+ for(const z of state.mobs){
+  const boss=isGuardian(z),brute=z.type==='brute',det=z.type==='detonator',s=brute?T*2-9:boss?T-5:30,x=z.x*T+((z.w||1)*T-s)/2,y=z.y*T+((z.h||1)*T-s)/2,[base,edge]=palette[z.type]||palette.normal;
+  g.fillStyle='#0008';g.fillRect(x+5,y+6,s,s);g.fillStyle=z.flash>0?'#fff':base;if(z.type==='ghost'){g.save();const hidden=ghostInWall(z);g.globalAlpha=hidden?.22+.12*Math.sin(state.anim*4):.58+.16*Math.sin(state.anim*4);g.shadowColor='#b6aeff';g.shadowBlur=hidden?8:18;g.fillRect(x,y,s,s);g.restore()}else g.fillRect(x,y,s,s);
+  if(brute){g.strokeStyle='#d7dbe3';g.globalAlpha=.22;g.lineWidth=2;g.beginPath();g.moveTo(x+s/2,y);g.lineTo(x+s/2,y+s);g.moveTo(x,y+s/2);g.lineTo(x+s,y+s/2);g.stroke();g.globalAlpha=1}
+  if(det){g.save();g.shadowColor='#d53c60';g.shadowBlur=15;g.strokeStyle='#f66784';g.lineWidth=2;g.strokeRect(x+4,y+4,s-8,s-8);if(z.fuse>=0){g.fillStyle='#ffadba';g.globalAlpha=.45+.55*Math.abs(Math.sin(state.anim*18));g.fillRect(x+5,y+5,s-10,s-10)}g.restore()}
+  g.strokeStyle=edge;g.lineWidth=boss||brute?3:1.8;g.strokeRect(x+1,y+1,s-2,s-2);
+  if(z.type==='devil'){
+   g.save();g.strokeStyle='#ffb2bc';g.lineWidth=3;g.beginPath();g.moveTo(x+s*.22,y+3);g.lineTo(x+s*.08,y-12);g.lineTo(x+s*.40,y);g.moveTo(x+s*.78,y+3);g.lineTo(x+s*.92,y-12);g.lineTo(x+s*.60,y);g.stroke();
+   g.beginPath();g.moveTo(x+s,y+s*.75);g.bezierCurveTo(x+s+20,y+s*.65,x+s+14,y+s+18,x+s+26,y+s+13);g.stroke();g.restore();
+  }
+  g.fillStyle='#352834';g.fillRect(x+s*.23,y+s*.28,4,5);g.fillRect(x+s*.64,y+s*.28,4,5);
+  if(z.type==='ranged'||z.type==='seeker'||z.type==='blighter'||z.type==='demolisher'||z.type==='toxic'||z.type==='snarer'||boss||brute||det||z.type==='healer'||z.type==='shaman'||z.type==='ghost'){
+   g.textAlign='center';g.font=`bold ${boss?18:14}px system-ui`;
+   g.fillStyle='#f3f8fb';g.fillText(z.type==='ranged'?'↗':z.type==='seeker'?'◎':z.type==='blighter'?'☢':z.type==='demolisher'?'⌁':z.type==='toxic'?'☣':z.type==='snarer'?'⌛':z.type==='detonator'?'✹':z.type==='brute'?'▦':z.type==='healer'?'✚':z.type==='shaman'?'✣':z.type==='ghost'?'◌':'◆',x+s/2,y+s*.82);
+  }
+  if(z.maxHp>1){g.fillStyle='#151c28';g.fillRect(x,y-(boss?9:5),s,boss?5:3);g.fillStyle=boss?'#f9c36e':'#e9a878';g.fillRect(x,y-(boss?9:5),s*clamp(z.hp/z.maxHp,0,1),boss?5:3)}
+ }
+}
+function drawPlayer(){
+ const p=state.player;if(!p)return;
+ const xx=(p.fromX+(p.x-p.fromX)*p.blend)*T+T/2,yy=(p.fromY+(p.y-p.fromY)*p.blend)*T+T/2;
+ const poisoned=p.poisonUntil>state.simTime,slowed=p.slowUntil>state.simTime,sprint=isSprinting();
+ if(poisoned){g.strokeStyle='#83dc7b';g.lineWidth=2;g.beginPath();g.arc(xx,yy,22,0,Math.PI*2);g.stroke()}
+ if(p.shield>0){g.save();g.strokeStyle='#91b9ff';g.shadowColor='#77a5ff';g.shadowBlur=12;g.lineWidth=3;g.globalAlpha=.65+.2*Math.sin(state.anim*5);g.strokeRect(xx-20,yy-20,40,40);g.restore()}
+ if(sprint){g.strokeStyle='#f3d083';g.lineWidth=2;g.beginPath();g.arc(xx,yy,21,0,Math.PI*2);g.stroke()}
+ if(slowed){g.strokeStyle='#8cafff';g.lineWidth=2;g.strokeRect(xx-20,yy-20,40,40)}
+ cercoDrawAvatar(g,cercoEquippedSkin,xx,yy,state.anim,state.simTime-p.lastHit<.15);
+ g.beginPath();g.moveTo(xx,yy);const a=Math.atan2(state.aimY-yy,state.aimX-xx);g.lineTo(xx+Math.cos(a)*25,yy+Math.sin(a)*25);
+ g.strokeStyle='#f4d68b';g.lineWidth=3;g.stroke();
+ if(p.auto){g.save();g.strokeStyle='#7fe4f1';g.globalAlpha=.55;g.setLineDash([4,4]);g.beginPath();g.arc(xx,yy,22,0,Math.PI*2);g.stroke();g.restore()}
+}
+function drawShots(){
+ for(const b of state.shots){g.save();const distant=b.source==='player'&&b.longLevel?Math.min(1,(b.travel||0)/(T*10)):0;
+  if(distant>0){
+   const vx=b.vx||0,vy=b.vy||0,speed=Math.max(1,Math.hypot(vx,vy));
+   const tx=vx/speed,ty=vy/speed,intensity=.25+.75*distant,tail=18+42*intensity;
+   const colorOuter=distant>.88?'#fff2a8':distant>.62?'#ffd06e':'#8de6ff';
+   const colorMid=distant>.88?'#ffd45a':distant>.62?'#ffb057':'#a7f2ff';
+   const colorCore=distant>.88?'#fffdf0':distant>.62?'#fff0d0':'#eefbff';
+   g.globalAlpha=.18+.18*intensity;
+   g.strokeStyle=colorOuter;g.lineWidth=10+12*intensity;g.lineCap='round';
+   g.beginPath();g.moveTo(b.x-tx*tail,b.y-ty*tail);g.lineTo(b.x,b.y);g.stroke();
+   g.globalAlpha=.28+.26*intensity;
+   g.strokeStyle=colorMid;g.lineWidth=5+6*intensity;g.beginPath();g.moveTo(b.x-tx*(tail*.78),b.y-ty*(tail*.78));g.lineTo(b.x,b.y);g.stroke();
+   g.globalAlpha=.22+.18*intensity;
+   for(let i=0;i<3+(distant>.68?1:0)+(distant>.9?1:0);i++){
+    const ang=Math.atan2(vy,vx)+((i/(2+(distant>.68?1:0)+(distant>.9?1:0)))-.5)*(0.55+.2*intensity);
+    const len=8+16*intensity+i*2;
+    g.strokeStyle=i%2?colorMid:colorOuter;g.lineWidth=1.8+1.6*intensity;
+    g.beginPath();g.moveTo(b.x-Math.cos(ang)*4,b.y-Math.sin(ang)*4);g.lineTo(b.x+Math.cos(ang)*len,b.y+Math.sin(ang)*len);g.stroke();
+   }
+   g.globalAlpha=1;
+   g.shadowColor=colorOuter;g.shadowBlur=20+34*intensity;
+   g.fillStyle=colorOuter;g.beginPath();g.arc(b.x,b.y,b.rad+5*intensity,0,Math.PI*2);g.fill();
+   g.shadowColor=colorMid;g.shadowBlur=10+24*intensity;
+   g.fillStyle=colorMid;g.beginPath();g.arc(b.x,b.y,b.rad+2.6*intensity,0,Math.PI*2);g.fill();
+   g.shadowColor=colorCore;g.shadowBlur=6+10*intensity;
+   g.fillStyle=colorCore;g.beginPath();g.arc(b.x,b.y,Math.max(2.2,b.rad-1)+1.3*intensity,0,Math.PI*2);g.fill();
+  }else{
+   g.fillStyle=b.closeLevel?'#ff9d62':b.source==='shard'?'#f6b876':b.source==='turret'&&have('turretLightning')?'#a8dbff':b.source==='turret'&&have('turretRicochet')?'#f6c67d':b.source==='turret'?'#e9b76d':b.homing?'#a6f4ff':'#f8dd9d';
+   g.shadowColor=b.source==='shard'?'#ffac5c':b.homing?'#54caff':b.source==='turret'&&have('turretLightning')?'#7daaff':'#ffce72';
+   g.shadowBlur=12;g.beginPath();g.arc(b.x,b.y,b.rad,0,Math.PI*2);g.fill();
+  }
+  g.restore()}
+ for(const b of state.enemyShots){g.save();g.fillStyle=b.color;g.shadowColor=b.color;g.shadowBlur=12;g.beginPath();g.arc(b.x,b.y,b.rad,0,Math.PI*2);g.fill();g.restore()}
+}
+function drawTurrets(){
+ for(const t of state.turrets){const x=(t.x+.5)*T,y=(t.y+.5)*T;
+  g.save();const defense=t.role==='interceptor';g.shadowColor=defense?'#60daf8':'#e7b05a';g.shadowBlur=10;
+  g.fillStyle=t.flash>0?'#fff9d3':defense?'#277a8e':'#c69b58';g.fillRect(x-13,y-13,26,26);
+  g.strokeStyle=defense?'#a3edff':have('turretLightning')?'#9dddff':'#ffe0a2';g.lineWidth=2;g.strokeRect(x-13,y-13,26,26);
+  g.fillStyle=defense?'#e3faff':'#fff4ca';g.textAlign='center';g.textBaseline='middle';g.font='bold 17px monospace';g.fillText(defense?'◇':'✦',x,y+1);g.restore();
+  g.fillStyle='#19222f';g.fillRect(x-13,y-20,26,3);g.fillStyle='#a6dfac';g.fillRect(x-13,y-20,26*clamp01(t.hp/t.maxHp),3);
+ }
+}
+function drawMerchant(){
+ if(!state.room.safe||!state.navMerchant)return;
+ const m=state.navMerchant,x=(m.x+.5)*T,y=(m.y+.5)*T;
+ g.save();g.shadowColor='#f2cd7a';g.shadowBlur=18;
+ g.fillStyle='#a58040';g.fillRect(x-15,y-15,30,30);g.strokeStyle='#ffe1a1';g.lineWidth=2;g.strokeRect(x-15,y-15,30,30);
+ g.fillStyle='#ffe5aa';g.font='bold 24px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText('◈',x,y);
+ g.shadowBlur=0;g.font='bold 10px system-ui';g.fillStyle='#f7e7b3';g.textBaseline='alphabetic';g.fillText('SHOP',x,y-23);g.restore();
+}
+function drawEffects(){
+ for(const fx of state.fx){const k=1-fx.life/fx.max;g.save();g.globalAlpha=.72*(1-k);g.strokeStyle=fx.color;g.lineWidth=3+k*3;g.beginPath();g.arc(fx.x,fx.y,fx.r*(.2+.8*k),0,2*Math.PI);g.stroke();g.restore()}
+ for(const a of state.arcs){g.save();g.strokeStyle='#8bdfff';g.shadowColor='#79ccff';g.shadowBlur=9;g.lineWidth=2.6;g.globalAlpha=clamp01(a.life/a.max);
+  g.beginPath();g.moveTo(a.x1,a.y1);const dx=a.x2-a.x1,dy=a.y2-a.y1;
+  for(let j=1;j<5;j++){const t=j/5,shift=(j%2?1:-1)*6;g.lineTo(a.x1+dx*t-dy/Math.max(1,Math.hypot(dx,dy))*shift,a.y1+dy*t+dx/Math.max(1,Math.hypot(dx,dy))*shift)}
+  g.lineTo(a.x2,a.y2);g.stroke();g.restore();
+ }
+ for(const p of state.particles){g.globalAlpha=clamp01(p.life/p.max);g.fillStyle=p.color;g.fillRect(p.x,p.y,p.size,p.size)}g.globalAlpha=1;
+ for(const f of state.floaters){g.globalAlpha=clamp01(f.life/f.max);g.fillStyle=f.color;g.font=(f.big?'900 22':'800 13')+'px system-ui';g.textAlign='center';g.shadowColor='#000';g.shadowBlur=4;g.fillText(f.text,f.x,f.y);g.shadowBlur=0}g.globalAlpha=1;
+}
+function draw(){
+ const room=state.room;if(!room){g.clearRect(0,0,cv.width,cv.height);return}
+ g.drawImage(terrainCanvas,0,0);drawDoors(room);drawHazards();drawMerchant();drawDrops();drawTurrets();drawMobs();drawPlayer();drawShots();drawEffects();
+ if(state.frenzy&&state.mode==='play'){g.fillStyle='#e76d4c0a';g.fillRect(0,0,cv.width,cv.height)}
+ if(state.mode==='transition'){const alpha=clamp(1-state.transitionTimer/.55,0,1);g.fillStyle=`rgba(5,11,20,${alpha})`;g.fillRect(0,0,cv.width,cv.height)}
+}
+function animate(now){const dt=Math.min(.034,Math.max(0,(now-state.last)/1000||0));state.last=now;state.anim+=dt;if(state.noticeEnd<state.anim)ui.toast.style.opacity='0';updateTouchPresentation();tick(dt);if(state.player&&state.player.blend<1)state.player.blend=Math.min(1,state.player.blend+dt/.11);draw();requestAnimationFrame(animate)}
+function setAim(ev){const r=cv.getBoundingClientRect();state.aimX=clamp((ev.clientX-r.left)*cv.width/r.width,0,cv.width);state.aimY=clamp((ev.clientY-r.top)*cv.height/r.height,0,cv.height)}
+cv.addEventListener('pointermove',ev=>{if(ev.pointerType!=='touch')setAim(ev)});cv.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;setAim(ev);if(ev.pointerType==='touch'){allowTouch();ev.preventDefault();return;}if(state.mode==='play'){state.holdFire=true;fireShot();ev.preventDefault()}});window.addEventListener('pointerup',()=>state.holdFire=false);cv.addEventListener('contextmenu',e=>e.preventDefault());
+// When embedded alongside chat or forms, game controls must not hijack keys
+// while typing or using browser shortcuts.
+function isEditing(target){return !!(target&&(target.isContentEditable||target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable=false])')))}
+document.addEventListener('focusin',ev=>{if(isEditing(ev.target)){state.keys.clear();state.holdFire=false}});
+window.addEventListener('keydown',ev=>{
+ const k=ev.key.length===1?ev.key.toLowerCase():ev.key;
+ if(isEditing(ev.target)||ev.ctrlKey||ev.metaKey||ev.altKey)return;
+ if(!$('infoShade').hidden){if(k==='Escape'||k==='p'){closeInfo()}ev.preventDefault();return;}
+
+ if(ev.repeat&&['p','r','f'].includes(k))return;
+ if(Object.prototype.hasOwnProperty.call(KEY,k)&&['play','safe'].includes(state.mode)){
+  if(!ev.repeat)tryPlayerKey(k);ev.preventDefault();return;
+ }
+ if(k===' '){ev.preventDefault();if(state.mode==='play')state.keys.add(' ');return}
+ if(k==='p'){ev.preventDefault();pauseGame();return}
+ if(k==='r'){ev.preventDefault();confirmReset();return}
+ if(k==='f'&&['play','safe'].includes(state.mode)&&have('auto')){
+  state.player.auto=!state.player.auto;
+  state.player.autoHeading=state.player.auto?activeDirection():null;
+  state.stepCooldown=0;
+  toast(state.player.auto?'AUTO-MOVE ON · CHOOSE DIRECTION':'AUTO-MOVE OFF',1);return;
+ }
+ if(state.mode==='safe'&&k==='Enter'&&state.navMerchant){if(Math.max(Math.abs(state.player.x-state.room.exit.x),Math.abs(state.player.y-state.room.exit.y))<=1)beginSafeExit();return}
+ if((state.mode==='choice'||state.mode==='choiceSafe')&&k==='0'){skipUpgrade('manual');ev.preventDefault();return;}
+ if((state.mode==='choice'||state.mode==='choiceSafe')&&['1','2','3'].includes(k)){
+  const u=state.choiceOptions[Number(k)-1];if(u)pickUpgrade(u.id);
+ }
+});
+window.addEventListener('keyup',ev=>{const k=ev.key.length===1?ev.key.toLowerCase():ev.key;state.keys.delete(k);if(state.lastKey===k)state.lastKey=Array.from(state.keys).at(-1)||null});window.addEventListener('blur',()=>{state.keys.clear();state.holdFire=false;releaseTouchInput();if(state.mode==='play'||state.mode==='safe')pauseGame()});
+$('exitSafe').addEventListener('click',beginSafeExit);$('pauseBtn').addEventListener('click',pauseGame);$('resetBtn').addEventListener('click',confirmReset);
+$('helpBtn').addEventListener('click',()=>openInfo('controls'));
+$('topBtn').addEventListener('click',()=>openInfo('ranks'));
+$('logBtn').addEventListener('click',()=>openInfo('log'));
+$('closeInfo').addEventListener('click',closeInfo);
+$('infoShade').addEventListener('pointerdown',e=>{if(e.target===$('infoShade'))closeInfo()});
+$('openShop').addEventListener('click',()=>{if(state.mode==='safe'){setShopOpen(true);positionSafeShop();renderShop()}});
+$('closeShop').addEventListener('click',()=>setShopOpen(false));
+$('leaveSafe').addEventListener('click',beginSafeExit);
+let fitQueued=false;
+function queueArenaFit(){if(fitQueued)return;fitQueued=true;requestAnimationFrame(()=>{
+ fitQueued=false;
+ if(state.mode==='menu'&&configureWorld()){
+  state.room=buildMap(1,false);renderTerrain();state.player=makePlayer();waveRules();
+ }
+ fitArena();
+})}
+const arenaObserver=new ResizeObserver(queueArenaFit);
+arenaObserver.observe(document.querySelector('.layout'));
+window.addEventListener('resize',queueArenaFit);
+requestAnimationFrame(fitArena);
+
+// The release file exposes no developer-only game controls.
+document.body.classList.toggle('touchEnabled',touchCapability);loadRecords();renderRecords();configureWorld();fitArena();state.seed=numSeed();state.room=buildMap(1,false);renderTerrain();state.player=makePlayer();waveRules();updateHUD();showStart();emitCercoEvent('bridge_ready',{capabilities:cercoBridgeCapabilities()});requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

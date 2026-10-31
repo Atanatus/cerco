@@ -169,7 +169,7 @@
             const [live, state, capabilities] = await Promise.all([instance.catalog(), instance.equipped(), instance.capabilities(), service.refresh()]);
             if (epoch !== frameEpoch) return;
             if (capabilities.protocol !== 1 || capabilities.game !== 'CERCO' || live.schema !== 'cerco.skins.v1' ||
-                !['0.8.1', '0.8.3', '0.9.0', '0.9.1', '0.9.2', '0.9.3'].includes(live.gameVersion) || state.cosmeticOnly !== true) throw new Error();
+                !['0.8.1', '0.8.3', '0.9.0', '0.9.1', '0.9.2', '0.9.3', '0.9.4', '0.9.5'].includes(live.gameVersion) || state.cosmeticOnly !== true) throw new Error();
             const inv = service.getState()?.inventory; if (!inv) throw new Error();
             await applySkin(inv.equippedSkinId, instance); render();
         } catch (_) { if (epoch === frameEpoch) { announce('Skins service unavailable. Original remains available in the game.'); render(); } }
