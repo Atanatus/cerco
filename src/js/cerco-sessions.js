@@ -451,7 +451,7 @@
     // A real iframe has dataset; unit-test frame doubles may not.
     // Never register beta matches, reports or economic receipts.
     if (frame.dataset?.cercoPlaytest === '091' ||
-        frame.dataset?.src === './games/CERCO/cerco_expedition_v092_beta.html') return;
+        ['./games/CERCO/cerco_expedition_v092_beta.html', './games/CERCO/cerco_expedition_v093_beta.html'].includes(frame.dataset?.src)) return;
 
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
