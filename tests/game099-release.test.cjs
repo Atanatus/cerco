@@ -15,11 +15,11 @@ test('0.9.9 Matriarch preserves source bytes and runtime contract',()=>{
   }
 });
 
-test('0.9.9 selected as beta and 0.9.8 retained',()=>{
+test('0.9.9 preserved while 0.9.12 is the active beta',()=>{
   const html=fs.readFileSync('index.html','utf8');
-  assert.match(html,/data-src="\.\/games\/CERCO\/cerco_expedition_v099_beta\.html"/);
-  assert.match(html,/0\.9\.9 BETA/);
-  assert.match(html,/Public beta 0\.9\.9/);
+  assert.match(html,/data-src="\.\/games\/CERCO\/cerco_expedition_v0912_beta\.html"/);
+  assert.match(html,/0\.9\.12 BETA/);
+  assert.match(html,/Public beta 0\.9\.12/);
   assert.ok(fs.existsSync('games/CERCO/cerco_expedition_v098_beta.html'));
 });
 
@@ -29,7 +29,7 @@ test('0.9.9 does not join official economy and supports cosmetic-only skins',()=
   assert.match(sessions,/cerco_expedition_v099_beta\.html/);
   assert.match(sessions,/\['0\.8\.0', '0\.8\.1', '0\.8\.3', '0\.9\.0'\]\.includes\(gameVersion\)/);
   assert.match(sessions,/session\.gameVersion !== '0\.9\.0'/);
-  assert.match(skins,/'0\.9\.8', '0\.9\.9'\]\.includes\(live\.gameVersion\)/);
+  assert.match(skins,/'0\.9\.8', '0\.9\.9', '0\.9\.12'\]\.includes\(live\.gameVersion\)/);
 });
 
 test('X link has safe external target and dedicated styling',()=>{

@@ -7,8 +7,8 @@ test('53C registers only the dedicated UI module',()=>{
 
   assert.match(html,/ui-op53c\.css/);
   assert.match(html,/ui-op53c\.js/);
-  assert.match(html,/cerco_expedition_v099_beta\.html/);
-  assert.doesNotMatch(html,/data-src="[^"]*v091/);
+  assert.match(html,/cerco_expedition_v0912_beta\.html/);
+  assert.doesNotMatch(html,/data-src="[^"]*v091_beta[.]html/);
 });
 
 test('53C is presentation-only; paid image has no purchase action',()=>{
