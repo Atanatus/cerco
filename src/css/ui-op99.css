@@ -1,0 +1,187 @@
+/* CERCO OP99 — inert header login and featured social post. */
+
+.app > .header > .cerco-login-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  z-index: 4;
+  transform: translateY(-50%) skewX(-12deg);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 126px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #62757a;
+  border-top-color: #82989b;
+  border-bottom-color: #26383d;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #26373d, #141f24);
+  box-shadow: inset 0 1px #ffffff20, inset 0 -2px #0006;
+  color: #eef5f3;
+  opacity: 1;
+  cursor: default;
+  pointer-events: none;
+}
+
+.app > .header > .cerco-login-placeholder > span {
+  display: block;
+  transform: skewX(12deg);
+  font: 400 13px/1 var(--cerco-font), monospace;
+  letter-spacing: .025em;
+  white-space: nowrap;
+}
+
+.player-panel .cerco-featured-x {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 120px;
+  margin: 7px 6px 7px;
+  border: 1px solid #39545c;
+  border-top-color: #63848b;
+  border-radius: 3px;
+  background: #0d171d;
+  overflow: hidden;
+  box-shadow: inset 0 1px #ffffff13;
+}
+
+.cerco-featured-x .cerco-featured-post-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 14px 12px 12px;
+  gap: 14px;
+  color: #e9f6f5;
+  text-decoration: none;
+  background:
+    radial-gradient(circle at 80% 50%, #215a5840, transparent 65%),
+    linear-gradient(150deg, #14252d, #09141a);
+}
+
+.cerco-featured-post-link::before {
+  content: "𝕏";
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: 700 clamp(65px, 7vw, 110px)/1 Arial, sans-serif;
+  color: #5ba59d16;
+  pointer-events: none;
+}
+
+.cerco-featured-post-top,
+.cerco-featured-post-middle,
+.cerco-featured-post-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+}
+
+.cerco-featured-post-top {
+  align-items: center;
+  gap: 9px;
+  color: #a9cec7;
+  font: 400 12px/1.25 var(--cerco-font), monospace;
+  letter-spacing: .05em;
+}
+
+.cerco-featured-post-mark {
+  color: #f0faf8;
+  font: 700 23px/1 Arial, sans-serif;
+}
+
+.cerco-featured-post-middle {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.cerco-featured-post-middle strong {
+  color: #f0faf8;
+  font: 400 clamp(17px, 1.8vw, 23px)/1.1 var(--cerco-font), monospace;
+  letter-spacing: .04em;
+  overflow-wrap: anywhere;
+}
+
+.cerco-featured-post-middle > span {
+  color: #95b5bb;
+  font: 400 13px/1.25 var(--cerco-font), monospace;
+  overflow-wrap: anywhere;
+}
+
+.cerco-featured-post-bottom {
+  align-items: center;
+  justify-content: center;
+  padding: 9px 5px;
+  border: 1px solid #608b86;
+  background: #18342f;
+  color: #e7f9f0;
+  font: 400 12px/1.25 var(--cerco-font), monospace;
+  text-align: center;
+}
+
+.cerco-featured-post-link:hover .cerco-featured-post-bottom {
+  background: #285a4c;
+  border-color: #a0d8c3;
+}
+
+.cerco-featured-post-link:focus-visible {
+  outline: 2px solid #b9f5f9;
+  outline-offset: -4px;
+}
+
+@media (max-width: 900px) {
+  .app > .header > .cerco-login-placeholder {
+    top: 5px;
+    left: 10px;
+    transform: skewX(-12deg);
+    width: 94px;
+    height: 36px;
+    padding: 0 7px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app {
+    grid-template-rows:
+      96px
+      minmax(540px, 75vh)
+      auto
+      minmax(520px, 65vh)
+      68px;
+  }
+
+  .player-panel .cerco-featured-x {
+    grid-column: 1 / -1;
+    min-height: 170px;
+    margin: 0;
+  }
+
+  .cerco-featured-x .cerco-featured-post-link {
+    min-height: 170px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app > .header > .cerco-login-placeholder {
+    width: 85px;
+    height: 34px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cerco-featured-post-link,
+  .cerco-featured-post-bottom {
+    transition: none;
+  }
+}

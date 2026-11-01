@@ -27,7 +27,7 @@ test('OP96 footer button is responsive and independent', () => {
 
   assert.match(css, /\.app > \.footer/);
   assert.match(css, /position: absolute/);
-  assert.match(css, /right: 12px/);
+  assert.match(css, /right: 8%;/);
   assert.match(css, /@media \(max-width: 900px\)/);
   assert.match(css, /\.atanatus-x-text/);
 
