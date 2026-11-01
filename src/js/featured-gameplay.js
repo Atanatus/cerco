@@ -28,6 +28,10 @@
     'cerco-featured-share'
   );
 
+  const playButton = document.getElementById(
+    'cerco-featured-play'
+  );
+
   const gameButton = document.getElementById(
     'cerco-play-button'
   );
@@ -38,7 +42,7 @@
 
   if (
     !cfg || !card || !video || !title || !hook ||
-    !watch || !share || !gameButton || !gameFrame
+    !watch || !share || !playButton || !gameButton || !gameFrame
   ) {
     console.error('[CERCO FEATURED] Missing integration elements.');
     return;
@@ -65,6 +69,7 @@
   video.loop = true;
   video.preload = 'none';
 
+  let userRequested = false;
   let gameActivated = false;
   let cardVisible = false;
   let observer = null;
@@ -79,6 +84,10 @@
   function pausePreview() {
     if (!video.paused) {
       video.pause();
+    }
+    if (!gameActivated) {
+      card.classList.remove('has-preview');
+      card.dataset.previewState = 'paused';
     }
   }
 
@@ -106,7 +115,7 @@
       isPlayingGame() ||
       !cardVisible ||
       document.visibilityState !== 'visible' ||
-      matchMedia('(prefers-reduced-motion: reduce)').matches
+      (!userRequested && matchMedia('(prefers-reduced-motion: reduce)').matches)
     ) {
       pausePreview();
       return;
@@ -122,13 +131,14 @@
 
     if (play && typeof play.catch === 'function') {
       play.catch(() => {
-        // Browser autoplay policy or unsupported codec:
-        // keep the static, clickable card.
+        if (gameActivated) return;
+        card.classList.remove('has-preview');
+        card.dataset.previewState = 'blocked';
       });
     }
   }
 
-  video.addEventListener('loadeddata', () => {
+  video.addEventListener('playing', () => {
     if (gameActivated) return;
     card.classList.add('has-preview');
     card.dataset.previewState = 'ready';
@@ -138,6 +148,13 @@
     if (gameActivated) return;
     card.classList.remove('has-preview');
     card.dataset.previewState = 'unavailable';
+  });
+
+  playButton.addEventListener('click', () => {
+    if (isPlayingGame()) return;
+    userRequested = true;
+    cardVisible = true;
+    startPreviewIfEligible();
   });
 
   // The handler is registered in capture phase so the video is
