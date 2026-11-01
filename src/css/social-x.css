@@ -29,14 +29,10 @@
   font: 700 22px/1 Arial, sans-serif;
 }
 .app > .header .atanatus-x-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font: 400 11px/1 var(--cerco-font), monospace;
-}
-.app > .header .atanatus-x-text small {
-  color: #a9c9cd;
-  font-size: 9px;
+  display: block;
+  font: 400 13px/1 var(--cerco-font), monospace;
+  letter-spacing: .025em;
+  color: #e8f4f4;
 }
 .app > .header > .atanatus-x-link:hover {
   border-color: #a4e4eb;

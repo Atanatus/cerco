@@ -11,7 +11,7 @@
   link.href = 'https://x.com/AtanatusX';
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
-  link.title = 'Follow @AtanatusX';
+  link.title = 'Follow us on X';
   link.setAttribute('aria-label', 'Follow Atanatus on X');
 
   const symbol = document.createElement('span');
@@ -22,13 +22,7 @@
   const label = document.createElement('span');
   label.className = 'atanatus-x-text';
 
-  const eyebrow = document.createElement('small');
-  eyebrow.textContent = 'FOLLOW ON X';
-
-  const account = document.createElement('strong');
-  account.textContent = '@ATANATUSX';
-
-  label.append(eyebrow, account);
+  label.textContent = 'FOLLOW US ON X';
   link.append(symbol, label);
   header.insertBefore(link, brand);
 })();

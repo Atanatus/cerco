@@ -44,32 +44,45 @@
   figure.append(defaultImage, caption);
   gallery.prepend(figure);
 
-  // Profile_Picture2 is intentionally display-only.
-  // No buy button, price authority, entitlement or ledger change.
-  const card = document.createElement('article');
-  card.className = 'cerco-picture-preview';
-  card.dataset.profilePicturePreview = 'Profile_Picture2';
+  // Profile pictures 02-06: preview only, no purchase authority.
+  const pictures = [
+    'Profile_Picture2.png',
+    'Profile_Picture3.png',
+    'Profile_Picture4.png',
+    'Profile_Picture5.png',
+    'Profile_Picture6.png'
+  ];
 
-  const paidImage = document.createElement('img');
-  paidImage.src = './assets/profile-pictures/Profile_Picture2.png';
-  paidImage.alt = 'Profile picture 02 preview';
-  paidImage.width = 160;
-  paidImage.height = 160;
-  paidImage.loading = 'lazy';
-  paidImage.decoding = 'async';
+  const cards = pictures.map((file, index) => {
+    const number = String(index + 2).padStart(2, '0');
 
-  const heading = document.createElement('h4');
-  heading.textContent = 'PROFILE PICTURE 02';
+    const card = document.createElement('article');
+    card.className = 'cerco-picture-preview';
+    card.dataset.profilePicturePreview = file.slice(0, -4);
 
-  const state = document.createElement('p');
-  state.textContent = 'COMING SOON';
+    const image = document.createElement('img');
+    image.src = './assets/profile-pictures/' + file;
+    image.alt = 'Profile picture ' + number + ' preview';
+    image.width = 160;
+    image.height = 160;
+    image.loading = 'lazy';
+    image.decoding = 'async';
 
-  const note = document.createElement('p');
-  note.className = 'cerco-picture-note';
-  note.textContent = 'Purchase unavailable until server activation.';
+    const heading = document.createElement('h4');
+    heading.textContent = 'PROFILE PICTURE ' + number;
 
-  card.append(paidImage, heading, state, note);
-  shop.replaceChildren(card);
+    const state = document.createElement('p');
+    state.textContent = 'COMING SOON';
+
+    const note = document.createElement('p');
+    note.className = 'cerco-picture-note';
+    note.textContent = 'Purchase unavailable until server activation.';
+
+    card.append(image, heading, state, note);
+    return card;
+  });
+
+  shop.replaceChildren(...cards);
 
   document.documentElement.dataset.cercoProfilePictures = 'preview';
 })();
