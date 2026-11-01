@@ -1,0 +1,173 @@
+/* CERCO OP112-R — fitted desktop sidebar; natural mobile page flow. */
+
+@media (min-width: 761px) {
+  .app > .player-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0;
+    gap: 0;
+  }
+
+  .player-panel > .player-name {
+    flex: 0 0 auto;
+    min-height: 22px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
+
+  .player-panel > .player-avatar {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: min(98px, calc(100% - 10px), 16dvh);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-width: 98px;
+    max-height: 98px;
+    min-height: 0;
+    margin: 3px auto 4px;
+  }
+
+  .player-panel > .player-stats {
+    flex: 0 0 auto;
+    min-height: 0;
+    gap: 0;
+    padding: 2px 5px 3px;
+    font-size: 14px;
+  }
+
+  .player-panel .player-xp-system {
+    gap: 2px;
+    padding-bottom: 4px;
+    margin-bottom: 3px;
+  }
+
+  .player-panel .player-xp-system .player-progress {
+    height: 8px;
+  }
+
+  .player-panel .player-stats > .player-xp-system ~ div {
+    padding-left: 8px;
+    padding-right: 8px;
+    line-height: 1.1;
+  }
+
+  .player-panel .player-stats > .player-xp-system + div {
+    padding-top: 2px;
+  }
+
+  .player-panel .player-stats > div:last-child {
+    padding-bottom: 1px;
+  }
+
+  .player-panel > .music-player {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    margin-top: 4px;
+    padding: 4px 6px 3px;
+    gap: 4px;
+    grid-template-rows: auto auto;
+  }
+
+  .player-panel .music-controls {
+    gap: 4px;
+  }
+
+  .player-panel .music-controls > button,
+  .player-panel .music-controls > #cerco-volume-control > button {
+    height: 30px;
+    min-height: 30px;
+  }
+
+  .player-panel .music-progress {
+    padding-top: 3px;
+  }
+
+  .player-panel #music-seek {
+    height: 10px;
+  }
+
+  .player-panel .music-timing {
+    padding-top: 2px;
+  }
+
+  .player-panel > .cerco-featured-x {
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    margin: 4px 5px 5px;
+    padding: 5px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .player-panel .cerco-featured-title {
+    flex: 0 0 auto;
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  .player-panel .cerco-featured-media {
+    flex: 1 1 0;
+    min-height: 54px;
+  }
+
+  .player-panel .cerco-featured-hook {
+    flex: 0 0 auto;
+    font-size: 11px;
+    line-height: 1.12;
+  }
+
+  .player-panel .cerco-featured-actions {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .player-panel .cerco-featured-actions > .cerco-featured-post-link,
+  .player-panel .cerco-featured-actions > #cerco-featured-share {
+    min-height: 27px;
+    padding: 4px 2px;
+    font-size: 10px;
+    line-height: 1.1;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 620px) {
+  .player-panel > .player-avatar {
+    width: min(82px, calc(100% - 10px), 14dvh);
+    max-height: 82px;
+  }
+
+  .player-panel > .music-player {
+    padding-top: 3px;
+    padding-bottom: 2px;
+    gap: 3px;
+  }
+
+  .player-panel .music-controls > button,
+  .player-panel .music-controls > #cerco-volume-control > button {
+    height: 27px;
+    min-height: 27px;
+  }
+
+  .player-panel .cerco-featured-media {
+    min-height: 48px;
+  }
+}
+
+/*
+ * Explicitly restore both overflow axes for mobile.
+ * visible + hidden computes to auto; both must be visible.
+ */
+@media (max-width: 760px) {
+  .app > .player-panel {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+}
