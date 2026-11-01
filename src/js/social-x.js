@@ -1,10 +1,9 @@
 (() => {
   'use strict';
 
-  const header = document.querySelector('.app > .header');
-  const brand = header?.querySelector('.cerco-header-brand');
+  const footer = document.querySelector('.app > .footer');
 
-  if (!header || !brand || header.querySelector('.atanatus-x-link')) return;
+  if (!footer || footer.querySelector('.atanatus-x-link')) return;
 
   const link = document.createElement('a');
   link.className = 'atanatus-x-link';
@@ -24,5 +23,5 @@
 
   label.textContent = 'FOLLOW US ON X';
   link.append(symbol, label);
-  header.insertBefore(link, brand);
+  footer.append(link);
 })();

@@ -31,3 +31,19 @@
   .music-controls { grid-template-columns: repeat(4,minmax(0,54px)); justify-content: center; gap: 12px; }
 }
 @media (pointer: coarse) { .music-controls button { height: 44px; } #music-seek { height: 28px; } }
+
+/* OP96 — Compact player: retain metadata nodes for the audio controller. */
+.music-player {
+  grid-template-rows: auto auto;
+  gap: 6px;
+  min-height: 94px;
+  padding: 8px 8px 7px;
+}
+.music-player .music-heading {
+  display: none;
+}
+@media (max-width: 760px) {
+  .player-panel .music-player {
+    min-height: 94px;
+  }
+}
