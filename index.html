@@ -19,12 +19,15 @@
   <link rel="stylesheet" href="./src/css/ui-op65.css">
   <link rel="stylesheet" href="./src/css/social-x.css">
   <link rel="stylesheet" href="./src/css/ui-op99.css">
+  <link rel="stylesheet" href="./src/css/featured-gameplay.css">
   <script src="./src/js/guest-profile.js" defer></script>
   <script src="./src/js/economy-client.js" defer></script>
   <script src="./src/js/ui-op50.js" defer></script>
   <script src="./src/js/social-x.js" defer></script>
   <script src="./src/js/ui-op52.js" defer></script>
   <script src="./src/js/ui-op99.js" defer></script>
+  <script src="./src/js/featured-gameplay-config.js" defer></script>
+  <script src="./src/js/featured-gameplay.js" defer></script>
   <script src="./src/js/ui-op53c.js" defer></script>
 
   <script src="./src/js/main.js" defer></script>
@@ -263,22 +266,23 @@
       <div class="music-timing"><span id="music-elapsed">0:00</span><span id="music-duration">—:—</span></div>
     </div>
   </section>
-  <section class="cerco-featured-x" aria-label="Featured X post">
-    <a class="cerco-featured-post-link"
-       href="https://x.com/AtanatusX/status/2116585588195196972"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Open the featured Atanatus post on X in a new tab">
-      <span class="cerco-featured-post-top">
-        <span class="cerco-featured-post-mark" aria-hidden="true">𝕏</span>
-        <span>FEATURED POST</span>
-      </span>
-      <span class="cerco-featured-post-middle">
-        <strong>ATANATUS</strong>
-        <span>@AtanatusX</span>
-      </span>
-      <span class="cerco-featured-post-bottom">VIEW POST ON X</span>
-    </a>
+  <section class="cerco-featured-x" aria-label="Featured gameplay">
+    <h3 id="cerco-featured-title" class="cerco-featured-title">FEATURED GAMEPLAY</h3>
+    <div class="cerco-featured-media">
+      <video id="cerco-featured-video"
+             muted playsinline loop preload="none"
+             disablepictureinpicture
+             aria-label="Matriarch gameplay preview"></video>
+      <span class="cerco-featured-fallback" aria-hidden="true">MATRIARCH · GAMEPLAY</span>
+    </div>
+    <p id="cerco-featured-hook" class="cerco-featured-hook">Defeat her. You have 1.5 seconds to escape.</p>
+    <div class="cerco-featured-actions">
+      <a class="cerco-featured-post-link"
+         href="https://x.com/AtanatusX/status/2116585588195196972"
+         target="_blank"
+         rel="noopener noreferrer">WATCH ON X</a>
+      <button type="button" id="cerco-featured-share">SHARE POST</button>
+    </div>
   </section></aside>
     <!-- CERCO COOKIES V042 -->
 <footer class="footer">

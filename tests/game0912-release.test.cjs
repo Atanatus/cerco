@@ -10,12 +10,12 @@ const source='games/CERCO/cerco_expedition_v0912_beta.html';
 test('0.9.12 Tactical Evolution preserves source and bridge',()=>{
   const bytes=fs.readFileSync(source);
 
-  assert.equal(bytes.length,204012);
+  assert.equal(bytes.length,207215);
 
   assert.equal(
     crypto.createHash('sha256').update(bytes)
       .digest('hex').toUpperCase(),
-    '6A35657B8B4A86F4DC9E4F01B9192FA5EBCE201C9BDD5350CB938D277874C27F'
+    '0429A722B074FAF7A1AF7BAB3AA8550AC28AACE41F0976885ECE4C3AEAE0338E'
   );
 
   const html=bytes.toString('utf8');

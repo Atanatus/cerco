@@ -143,6 +143,30 @@ body{height:100dvh}
  body.touchEnabled #touchHudCombo,body.touchEnabled #touchHudRoomKills{display:none}
 }
 
+
+/* Startup UX fix: the main action must never sit underneath instructions. */
+#veil .modal.startModal{width:min(470px,100%);max-width:min(470px,100%);max-height:100%;overflow:hidden;padding:clamp(13px,2.4vh,23px);display:flex;flex-direction:column;justify-content:center;gap:clamp(7px,1.5vh,12px)}
+#veil .modal.startModal .eyebrow{font-size:10px}
+#veil .modal.startModal h2{font-size:clamp(19px,3.5vh,25px);line-height:1.17;margin:0}
+#veil .modal.startModal .startLead{font-size:clamp(11px,1.75vh,13px);line-height:1.45;color:#afc7dc;margin:0}
+.startQuick{display:grid;grid-template-columns:1.45fr 1fr 0.7fr;gap:7px}
+.startQuick span{background:#101e2d;border:1px solid #29495d;border-radius:7px;padding:8px 5px;text-align:center;min-width:0}
+.startQuick b{font-size:clamp(9px,1.5vh,11px);color:#d4eefc;display:block;white-space:nowrap}
+.startQuick small{font-size:10px;color:#86a5bc;display:block;margin-top:2px}
+.startActions{display:flex;flex-direction:column;gap:7px}
+#veil .startActions .btn{width:100%;min-height:38px;flex:0 0 auto;border-radius:7px}
+#veil .startActions .startPrimary{min-height:clamp(38px,6vh,50px);font-size:clamp(12px,2vh,16px);font-weight:900;letter-spacing:.06em;color:#091823;background:linear-gradient(105deg,#93e3f7,#b8ebf5);border-color:#a5e9f5;box-shadow:0 0 22px #5abbd42a}
+#veil .startActions .startPrimary:hover{background:linear-gradient(105deg,#b4f1ff,#d5f7ff);border-color:#e2fbff}
+#veil .startActions .startSecondary{background:transparent;border-color:#355068;color:#b7cfe0;font-size:12px;min-height:34px}
+#veil .startModal .startNote{font-size:10px;text-align:center;color:#7893a9;margin:0}
+.advancedRules{border:1px solid #35546c;border-radius:8px;margin:14px 0;background:#112233}
+.advancedRules summary{cursor:pointer;padding:11px 12px;font-weight:800;color:#c6e8fa}
+.advancedRules summary:focus-visible{outline:2px solid #b5eeff;outline-offset:2px}
+.advancedRulesBody{padding:0 12px 12px;color:#bbcee0;font-size:12px;line-height:1.55}
+.advancedRulesBody h3{font-size:15px;color:#e6f5ff}
+.advancedRulesBody p{margin:9px 0}
+.advancedRulesBody .safeInfo{font-size:11px}
+@media(max-height:410px){#veil{padding:6px}#veil .modal.startModal{gap:5px;padding:10px}#veil .modal.startModal .startLead{font-size:11px}#veil .modal.startModal h2{font-size:18px}#veil .startActions .startPrimary{min-height:35px}#veil .startActions .startSecondary{min-height:30px}.startQuick span{padding:4px 3px}.startQuick small{font-size:9px}}
 </style>
 </head>
 <body>
@@ -244,6 +268,15 @@ body{height:100dvh}
       <div class="control"><span>Persistent auto-move (if unlocked)</span><b>F · toggle on/off</b></div>
       <div class="control"><span>Auto-fire (if unlocked)</span><b>Nearest visible target</b></div>
       <div class="control"><span>Pause / Restart</span><b>P / R</b></div>
+      <details class="advancedRules"><summary>Expedition rules and abilities</summary>
+        <div class="advancedRulesBody"><h3>Expedition rules and abilities</h3>
+ <p>Fight through the horde, stack upgrades and reach a sanctuary every five rooms. Health pickups are scattered on the floor. You have <b>45 seconds</b> to recover, gear up and move on.</p>
+ <div class="safeInfo">◉ Singularity · ϟ Chain Lightning · ▣ Turrets · ✹ Detonators · ◌ Phantoms · ✚ Healers · ◎ Homing Hunters · ☢ Contamination · ⬡ Shields · ◈ Merchant · ×3 Combo · ☢ Nuke</div>
+ <p><b>Close Quarters</b> trades bullet travel for damage; <b>Longshot</b> rewards traveled distance (including homing paths). They cannot be combined. <b>Shatter Sprint</b>, <b>Corrosive Wake</b>, <b>Sprint Drive</b>, and <b>Momentum Recovery</b> work only while actually sprinting. Demolishers attack turrets before players when visible. <b>Orbit Magnet</b> gathers nearby conventional drops, but not Nukes or score beacons. <b>Piercing Force</b> rewards successive hits by the same projectile. <b>Sprint Mastery</b> unlocks advanced sprint abilities. Rare <b>score beacons</b> grant ×1.5 kill points temporarily; they are not Style Coins.</p>
+ <p><b>Singularity:</b> an optional autonomous gravity anchor; it pulls clustered small enemies along walkable tiles without damaging them. Guardian and heavy units resist it. No extra controls required.</p>
+ <p><b>Eight-direction movement:</b> Q W E A S D Z C. <b>Mouse:</b> aim and fire. <b>Space:</b> sprint. <b>On mobile:</b> move with the left joystick, hold FIRE on the right to shoot, drag FIRE to aim, and hold SPRINT to run. <b>Turrets:</b> maintain one active turret, or two with Dual Deployment; lost turrets redeploy after their 7-second cooldown. <b>Auto-fire:</b> an optional upgrade. <b>F:</b> toggle Auto-Move; it stays enabled when you hit a wall.</p>
+ <p>Enemy tactics evolve with combat progress: faster projectiles, predictive interception, sharper homing with a close-range dodge window, and more dangerous guardian salvos in advanced rooms. Rooms 7, 17, 27… feature ranged-only assaults. From later rooms onward, enemy teams evolve, and prolonged advanced frenzies trigger a spreading invasion from the room edges. Guardian rooms 4, 9, 14… rotate several guardian types, including a giant Detonator Matriarch that spits out dangerous but nonrewarding bombs. Defeat every guardian and survive any marked death blast to unlock the exit. Sanctuaries appear in rooms 5, 10, 15… Your score is never spent. Gold Style Coins are collected for cosmetic rewards on ATANATUS; they are separate from shop credits and are subject to platform verification.</p></div>
+      </details>
       <p class="infoIntro">Hold the mouse button to fire manually, even with Auto-fire. Turrets redeploy when a slot opens and their 7-second cooldown is ready. Auto-move stays enabled when you hit a wall; choose another direction. Life Steal carries its kill counter across rooms. Base movement speed increases with progression. Shop credits, Style Coins and score are all separate. Collect gold coins for cosmetic rewards on ATANATUS; the website must verify them.</p>
         <div class="legend"><span><i class="dot" style="background:#eac16e"></i>Style Coins</span><span><i class="dot" style="background:#75d4ee"></i>Player</span><span><i class="dot" style="background:#d77d74"></i>Zombies</span><span><i class="dot" style="background:#84e1ac"></i>Health</span><span><i class="dot" style="background:#f1c66a"></i>Nuke</span><span><i class="dot" style="background:#b7e3ff"></i>Exit</span></div>
     </section>
@@ -832,7 +865,7 @@ Object.defineProperty(window,'CERCO_BRIDGE',{
 function textLog(msg){const el=document.createElement('div');el.textContent=msg;ui.log.prepend(el);while(ui.log.children.length>7)ui.log.lastElementChild.remove()}
 function toast(msg,duration=1.5){state.noticeText=msg;state.noticeDuration=duration;state.noticeEnd=state.anim+duration;ui.toast.textContent=msg;ui.toast.style.opacity='1'}
 function hideModal(){ui.veil.classList.add('hidden')}
-function showModal(html){ui.modal.innerHTML=html;ui.veil.classList.remove('hidden')}
+function showModal(html){ui.modal.classList.remove('startModal');ui.modal.innerHTML=html;ui.veil.classList.remove('hidden')}
 function saveRecords(){try{localStorage.setItem('cerco_expedicion_v04_records',JSON.stringify(state.records))}catch(e){}}
 function loadRecords(){try{const a=JSON.parse(localStorage.getItem('cerco_expedicion_v04_records')||'[]');state.records=Array.isArray(a)?a.filter(x=>x&&Number.isSafeInteger(x.points)&&x.points>=0&&x.points<=Number.MAX_SAFE_INTEGER&&Number.isSafeInteger(x.room)&&x.room>=1&&Number.isSafeInteger(x.kills)&&x.kills>=0).slice(0,5):[]}catch(e){state.records=[]}}
 function renderRecords(){ui.ranks.replaceChildren();if(!state.records.length){ui.ranks.textContent='No completed runs yet.';return}state.records.forEach((r,i)=>{const d=document.createElement('div');d.className='rank';const a=document.createElement('span'),b=document.createElement('strong');a.textContent=`${i+1}. Room ${r.room} · ${r.kills} kills`;b.textContent=r.points.toLocaleString('en-US');d.append(a,b);ui.ranks.appendChild(d)})}
@@ -2142,17 +2175,17 @@ function tick(dt){
 function finishRun(){if(state.mode==='dead')return;state.mode='dead';cercoAuditCloseRoom('defeated');if(state.audit){state.audit.result='defeat';state.audit.finalized=true;}state.holdFire=false;state.keys.clear();const item={points:state.score,room:state.stage,kills:state.totalKills,seed:state.seed};state.records.push(item);state.records.sort((a,b)=>b.points-a.points);state.records=state.records.slice(0,5);saveRecords();renderRecords();updateHUD();emitCercoEvent('run_finished',{result:'defeat',audit:cercoAuditReport()});showModal(`<div class="eyebrow" style="color:#f4aaa1">EXPEDITION OVER</div><h2>The horde has you surrounded.</h2><p>You reached <b>room ${state.stage}</b> and defeated <b>${state.totalKills}</b> enemies.</p><div style="font-size:38px;font-weight:950;color:#ffd58d">${state.score.toLocaleString('en-US')} <span style="font-size:13px;color:#9ab4c7">POINTS</span></div><p class="subline">✦ ${state.cosmetic?.collected||0} Style Coins collected (platform verification required).</p><p class="subline">Map seed ${state.seed}. Your five best runs are saved in this browser.</p><div class="actions"><button class="btn" id="again">New expedition</button><button class="btn secondary" id="same">Replay this map seed</button></div>`);$('again').onclick=()=>begin(numSeed());$('same').onclick=()=>begin(state.seed,true)}
 function showStart(){
  state.mode='menu';state.holdFire=false;state.keys.clear();state.lastKey=null;setShopOpen(false);
- showModal(`<div class="eyebrow">CERCO · EXPEDITION 0.9.12</div><h2>The horde learns to cut you off.</h2>
- <p>Fight through the horde, stack upgrades and reach a sanctuary every five rooms. Health pickups are scattered on the floor. You have <b>45 seconds</b> to recover, gear up and move on.</p>
- <div class="safeInfo">◉ Singularity · ϟ Chain Lightning · ▣ Turrets · ✹ Detonators · ◌ Phantoms · ✚ Healers · ◎ Homing Hunters · ☢ Contamination · ⬡ Shields · ◈ Merchant · ×3 Combo · ☢ Nuke</div>
- <p><b>Close Quarters</b> trades bullet travel for damage; <b>Longshot</b> rewards traveled distance (including homing paths). They cannot be combined. <b>Shatter Sprint</b>, <b>Corrosive Wake</b>, <b>Sprint Drive</b>, and <b>Momentum Recovery</b> work only while actually sprinting. Demolishers attack turrets before players when visible. <b>Orbit Magnet</b> gathers nearby conventional drops, but not Nukes or score beacons. <b>Piercing Force</b> rewards successive hits by the same projectile. <b>Sprint Mastery</b> unlocks advanced sprint abilities. Rare <b>score beacons</b> grant ×1.5 kill points temporarily; they are not Style Coins.</p>
- <p><b>Singularity:</b> an optional autonomous gravity anchor; it pulls clustered small enemies along walkable tiles without damaging them. Guardian and heavy units resist it. No extra controls required.</p>
- <p><b>Eight-direction movement:</b> Q W E A S D Z C. <b>Mouse:</b> aim and fire. <b>Space:</b> sprint. <b>On mobile:</b> move with the left joystick, hold FIRE on the right to shoot, drag FIRE to aim, and hold SPRINT to run. <b>Turrets:</b> maintain one active turret, or two with Dual Deployment; lost turrets redeploy after their 7-second cooldown. <b>Auto-fire:</b> an optional upgrade. <b>F:</b> toggle Auto-Move; it stays enabled when you hit a wall.</p>
- <p>Enemy tactics evolve with combat progress: faster projectiles, predictive interception, sharper homing with a close-range dodge window, and more dangerous guardian salvos in advanced rooms. Rooms 7, 17, 27… feature ranged-only assaults. From later rooms onward, enemy teams evolve, and prolonged advanced frenzies trigger a spreading invasion from the room edges. Guardian rooms 4, 9, 14… rotate several guardian types, including a giant Detonator Matriarch that spits out dangerous but nonrewarding bombs. Defeat every guardian and survive any marked death blast to unlock the exit. Sanctuaries appear in rooms 5, 10, 15… Your score is never spent. Gold Style Coins are collected for cosmetic rewards on ATANATUS; they are separate from shop credits and are subject to platform verification.</p>
- <div class="actions"><button class="btn" id="start">Start expedition →</button></div>
- <p class="subline">Playable offline. Your best runs are saved on this device.</p>`);
+ showModal(`<div class="eyebrow">CERCO · EXPEDITION 0.9.12</div>
+ <h2>The horde learns to cut you off.</h2>
+ <p class="startLead">Fight through hostile rooms, choose upgrades and survive an evolving horde.</p>
+ <div class="startQuick"><span><b>Q W E A S D Z C</b><small>Move</small></span><span><b>Mouse</b><small>Aim · Fire</small></span><span><b>Space</b><small>Sprint</small></span></div>
+ <div class="startActions"><button class="btn startPrimary" id="start" type="button">START EXPEDITION</button><button class="btn secondary startSecondary" id="startRules" type="button">Rules &amp; controls</button></div>
+ <p class="startNote">20 upgrades per run · Local records saved on this device</p>`);
+ ui.modal.classList.add('startModal');
  $('start').onclick=()=>begin(numSeed());
+ $('startRules').onclick=()=>openInfo('controls');
 }
+
 function pauseGame(){
  if(['play','safe'].includes(state.mode)){
   state.previousMode=state.mode;state.mode='paused';state.holdFire=false;state.keys.clear();

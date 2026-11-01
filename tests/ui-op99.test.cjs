@@ -61,6 +61,6 @@ test('OP99 preserves audio, gameplay and current X destination',()=>{
   assert.equal(
     crypto.createHash('sha256').update(bytes)
       .digest('hex').toUpperCase(),
-    '6A35657B8B4A86F4DC9E4F01B9192FA5EBCE201C9BDD5350CB938D277874C27F'
+    '0429A722B074FAF7A1AF7BAB3AA8550AC28AACE41F0976885ECE4C3AEAE0338E'
   );
 });

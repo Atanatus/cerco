@@ -1,0 +1,139 @@
+/* CERCO — featured gameplay, video never cropped. */
+
+.player-panel .cerco-featured-x {
+  padding: 8px;
+  gap: 6px;
+  min-height: 182px;
+  background: linear-gradient(160deg, #12252e, #08131a);
+}
+
+.cerco-featured-x .cerco-featured-title {
+  flex: 0 0 auto;
+  margin: 0;
+  font: 400 12px/1.2 var(--cerco-font), monospace;
+  letter-spacing: .07em;
+  color: #c6e8ed;
+}
+
+.cerco-featured-x .cerco-featured-media {
+  position: relative;
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 55px;
+  overflow: hidden;
+  background: #050c13;
+  border: 1px solid #284751;
+  border-radius: 3px;
+}
+
+.cerco-featured-x #cerco-featured-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #050c13;
+  pointer-events: none;
+}
+
+.cerco-featured-x .cerco-featured-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  background: radial-gradient(
+    circle at center,
+    #223c49,
+    #071019 77%
+  );
+  color: #91c3cf;
+  font: 400 12px/1.3 var(--cerco-font), monospace;
+  text-align: center;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+
+.cerco-featured-x.has-preview .cerco-featured-fallback {
+  display: none;
+}
+
+.cerco-featured-x .cerco-featured-hook {
+  flex: 0 0 auto;
+  margin: 0;
+  color: #e4f6f4;
+  font: 400 12px/1.3 var(--cerco-font), monospace;
+  overflow-wrap: anywhere;
+}
+
+.cerco-featured-x .cerco-featured-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.player-panel .cerco-featured-x .cerco-featured-post-link,
+.player-panel .cerco-featured-x #cerco-featured-share {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 30px;
+  height: auto;
+  padding: 6px 3px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid #648e91;
+  border-radius: 3px;
+  background: linear-gradient(#205148, #14332f);
+  color: #f0fbf8;
+  font: 400 10px/1.2 var(--cerco-font), monospace;
+  text-align: center;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.player-panel .cerco-featured-x #cerco-featured-share {
+  border-color: #426976;
+  background: linear-gradient(#203c4b, #122635);
+}
+
+.player-panel .cerco-featured-x .cerco-featured-post-link::before {
+  content: none;
+  display: none;
+}
+
+.player-panel .cerco-featured-x .cerco-featured-post-link:hover,
+.player-panel .cerco-featured-x #cerco-featured-share:hover {
+  border-color: #9fe5d7;
+  background: #275b54;
+}
+
+.player-panel .cerco-featured-x .cerco-featured-post-link:focus-visible,
+.player-panel .cerco-featured-x #cerco-featured-share:focus-visible {
+  outline: 2px solid #b7f5ef;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .player-panel .cerco-featured-x {
+    min-height: 215px;
+  }
+
+  .player-panel .cerco-featured-x .cerco-featured-post-link {
+    min-height: 30px;
+  }
+
+  .cerco-featured-x .cerco-featured-hook {
+    font-size: 12px;
+  }
+}
