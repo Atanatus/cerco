@@ -3,6 +3,7 @@
   'use strict';
 
   const API = 'https://cerco-api.atanatus.workers.dev';
+  const CERCO_DG_RULESET = 'CERCO-0.9.12-AMBER-DG05098-P1';
   const frame = document.getElementById('cerco-game-frame');
   if (!frame) return;
 
@@ -251,8 +252,8 @@
     const audit = detail.audit;
     if (!audit || typeof audit !== 'object' || !uuid(guestId)) return null;
     if (audit.gameVersion !== gameVersion ||
-        (['0.8.3', '0.9.0'].includes(gameVersion) && (audit.schema !== 'cerco.audit.v2' ||
-          audit.ruleset !== (gameVersion === '0.9.0' ? 'CERCO-0.9.0' : 'CERCO-0.8.2') || audit.trust !== 'client_reported_unverified' ||
+        (['0.8.3', '0.9.0', '0.9.12'].includes(gameVersion) && (audit.schema !== 'cerco.audit.v2' ||
+          audit.ruleset !== (gameVersion === '0.9.12' ? CERCO_DG_RULESET : gameVersion === '0.9.0' ? 'CERCO-0.9.0' : 'CERCO-0.8.2') || audit.trust !== 'client_reported_unverified' ||
           audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
           audit.cosmeticEconomy?.serverWalletCredited !== false ||
           audit.final?.styleCoinsVerified !== false))) return null;
@@ -384,7 +385,7 @@
       const result = await post('/matches/start', {
         game_version: session.gameVersion,
         mode: 'expedition',
-        ...(identity && session.gameVersion === '0.9.0' ? { client_run_id: session.runId, ruleset: 'CERCO-0.9.0' } : {})
+        ...(identity && ['0.9.0', '0.9.12'].includes(session.gameVersion) ? { client_run_id: session.runId, ruleset: session.gameVersion === '0.9.12' ? CERCO_DG_RULESET : 'CERCO-0.9.0' } : {})
       }, authorization ? 'Bearer ' + authorization : null);
 
       if (result.status !== 'active' ||
@@ -456,8 +457,9 @@
     if (message.event === 'run_started') {
       if (sessions.has(runId)) return;
       const gameVersion = detail.gameVersion || '0.8.0';
-      if (!['0.8.0', '0.8.1', '0.8.3', '0.9.0'].includes(gameVersion)) return;
+      if (!['0.8.0', '0.8.1', '0.8.3', '0.9.0', '0.9.12'].includes(gameVersion)) return;
       if (gameVersion === '0.9.0' && (detail.ruleset !== 'CERCO-0.9.0' || detail.auditSchema !== 'cerco.audit.v2')) return;
+      if (gameVersion === '0.9.12' && (detail.ruleset !== CERCO_DG_RULESET || detail.auditSchema !== 'cerco.audit.v2')) return;
 
       if (currentSession && !currentSession.finished) { forget(currentSession); }
       if (currentSession) stopReceipts(currentSession);

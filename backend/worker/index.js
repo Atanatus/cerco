@@ -17,7 +17,8 @@ const headers = {
   'Access-Control-Allow-Origin': 'https://cerco.atanatus.com',
   'X-Content-Type-Options': 'nosniff'
 };
-const gameVersions = ['0.8.0', '0.8.1', '0.8.3', '0.9.0'];
+const gameVersions = ['0.8.0', '0.8.1', '0.8.3', '0.9.0', '0.9.12'];
+const CERCO_DG_RULESET = 'CERCO-0.9.12-AMBER-DG05098-P1';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers });
@@ -236,6 +237,13 @@ export default {
              audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
              audit.cosmeticEconomy?.serverWalletCredited !== false ||
              audit.final?.styleCoinsVerified !== false)) ||
+          (audit.gameVersion === '0.9.12' &&
+            (audit.ruleset !== CERCO_DG_RULESET ||
+             audit.schema !== 'cerco.audit.v2' ||
+             audit.seedReplay !== false ||
+             audit.cosmeticEconomy?.trust !== 'client_reported_unverified' ||
+             audit.cosmeticEconomy?.serverWalletCredited !== false ||
+             audit.final?.styleCoinsVerified !== false)) ||
           audit.seed !== body.seed ||
           !audit.final ||
           audit.final.score !== body.score ||
@@ -279,6 +287,8 @@ export default {
              AND m.status = 'active'
              AND m.game_version = ?
              AND m.mode = 'expedition'
+             AND (m.game_version <> '0.9.12' OR
+                  (m.ruleset = ? AND m.client_run_id = ?))
            ON CONFLICT(match_id) DO NOTHING`
         ).bind(
           crypto.randomUUID(),
@@ -291,7 +301,9 @@ export default {
           body.active_seconds,
           auditJson,
           body.match_id,
-          audit.gameVersion
+          audit.gameVersion,
+          audit.gameVersion === '0.9.12' ? audit.ruleset : null,
+          body.run_id
         ).run();
 
         // D1 may include the lifecycle trigger's UPDATE in changes.
@@ -464,6 +476,13 @@ export default {
 
       const matchId = crypto.randomUUID();
       const economic = body.game_version === '0.9.0' && body.client_run_id !== undefined;
+      const dg044 = body.game_version === '0.9.12';
+      if (dg044 && (!guest ||
+          typeof body.client_run_id !== 'string' ||
+          body.client_run_id.length < 1 ||
+          body.client_run_id.length > 150 ||
+          body.ruleset !== CERCO_DG_RULESET))
+        return json({ error: 'invalid_ruleset_session' }, 400);
       if (economic && (!guest || typeof body.client_run_id !== 'string' || body.client_run_id.length < 1 ||
           body.client_run_id.length > 150 || body.ruleset !== 'CERCO-0.9.0')) return json({error:'invalid_economic_session'},400);
       const randomBytes = crypto.getRandomValues(new Uint8Array(32));
@@ -475,9 +494,11 @@ export default {
         await env.DB.batch([
           env.DB.prepare(
             `INSERT INTO matches
-             (match_id, game_version, mode, status, started_at, guest_id)
-             VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP, ?)`
-          ).bind(matchId, body.game_version, 'expedition', guest?.guest_id || null),
+             (match_id, game_version, mode, status, started_at, guest_id, ruleset, client_run_id)
+             VALUES (?, ?, ?, 'active', CURRENT_TIMESTAMP, ?, ?, ?)`
+          ).bind(matchId, body.game_version, 'expedition', guest?.guest_id || null,
+             dg044 ? CERCO_DG_RULESET : null,
+             dg044 ? body.client_run_id : null),
           env.DB.prepare(
             `INSERT INTO match_session_tokens (match_id, token_hash)
              VALUES (?, ?)`
@@ -510,7 +531,7 @@ export default {
       const metric = url.searchParams.get('metric') || 'score';
       // Old clients retain their original ruleset. New clients explicitly select theirs.
       const ruleset = url.searchParams.get('ruleset') || 'CERCO-0.7.0';
-      const versions = { 'CERCO-0.7.0': ['0.8.0', '0.8.1'], 'CERCO-0.8.2': ['0.8.3'], 'CERCO-0.9.0': ['0.9.0'] }[ruleset];
+      const versions = { 'CERCO-0.7.0': ['0.8.0', '0.8.1'], 'CERCO-0.8.2': ['0.8.3'], 'CERCO-0.9.0': ['0.9.0'], 'CERCO-0.9.12-AMBER-DG05098-P1': ['0.9.12'] }[ruleset];
       if (!Array.isArray(versions)) return json({ error: 'invalid_ruleset' }, 400);
 
       if (!['guest', 'registered'].includes(kind)) {

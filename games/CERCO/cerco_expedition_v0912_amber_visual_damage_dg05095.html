@@ -950,7 +950,7 @@ touchAuto.addEventListener('click',()=>{
 
 const upgrades=[
 {id:'damage',family:'POWER',name:'Heavy Core',symbol:'◆',description:'+1 damage per projectile.',max:12},
-{id:'rate',family:'POWER',name:'Rapid Fire',symbol:'↻',description:'Reduces firing cooldown by 14%.',max:11},
+{id:'rate',family:'POWER',name:'Rapid Fire',symbol:'↻',description:'Reduces firing cooldown by 14%.',max:9},
 {id:'boom',family:'POWER',name:'Blast Impact',symbol:'✹',description:'Hits damage enemies in a small area.',max:5},
 {id:'multi',family:'BALLISTICS',name:'Multi-Shot',symbol:'✺',description:'Fires one additional projectile per shot.',max:5},
 {id:'pierce',family:'BALLISTICS',name:'Piercing',symbol:'➤',description:'Each projectile pierces one additional enemy.',max:6},
@@ -987,6 +987,9 @@ const upgrades=[
 function rng(seed){let a=seed>>>0||0x13579bdf;return()=>{a^=a<<13;a^=a>>>17;a^=a<<5;return (a>>>0)/4294967296}}
 function numSeed(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]||123456789}catch(e){return (Math.random()*0xffffffff)>>>0||123456789}}
 const random=(a,b)=>a+Math.random()*(b-a),randomInt=n=>Math.floor(Math.random()*n);
+const gameRandom=()=>state.gameplayRng();
+const gameRandomInt=n=>Math.floor(gameRandom()*n);
+const gameRandomRange=(a,b)=>a+gameRandom()*(b-a);
 const SHOT_CAP=24,MAX_TURRETS=2,SAFE_SECONDS=45,COMBO_WINDOW=3;
 // Every initial unlock and every subsequent level consumes exactly one selection.
 // There is deliberately NO cap on the number of different ability IDs in a build.
@@ -1274,7 +1277,7 @@ const state={runId:null,mode:'menu',previousMode:'menu',stage:1,combat:1,cleared
 // CERCO integration protocol v1: read-only game events for embedding sites.
 // Messages contain no user identifiers or credentials; the host supplies identity.
 const CERCO_VERSION='0.9.12';
-const CERCO_RULESET='CERCO-0.9.12-AMBER-DG05082'; // Amber beta ruleset, separate from original 0.9.12.
+const CERCO_RULESET='CERCO-0.9.12-AMBER-DG05098-P1'; // Amber beta ruleset, separate from original 0.9.12.
 const CERCO_AUDIT_SCHEMA='cerco.audit.v2';
 // Cosmetic API v1 — source of truth for CERCO skin IDs and visual rendering.
 // No equipment, stats, purchases or player identity are managed by this module.
@@ -1595,7 +1598,18 @@ const VAMP_RULES=[null,{kills:12,heal:4},{kills:10,heal:4},{kills:8,heal:4},{kil
 function vampRule(){return VAMP_RULES[clamp(have('drain'),0,5)]||null}
 function stepDelay(){const level=Math.min(.25,.012*Math.max(0,state.combat-1));const boots=state.gear.boots?.amount||0;const boost=isSprinting()?1.60+have('sprintSpeed')*.12:1;const slow=state.player?.slowUntil>state.simTime?1.43:1;return Math.max(.075,.163*slow/(1+level+boots)/boost)}
 function spawnGap(){return Math.max(.12,.68-.022*(state.combat-1))*(state.frenzy?.5:1)*(rangedAssault()?1.4:1)}
-function waveRules(){const r=state.combat;state.goal=Math.round(20+9*(r-1)+.48*(r-1)*(r-1));state.duration=rangedAssault()?80:Math.min(120,60+5*(r-1));if(rangedAssault())state.goal=Math.max(20,Math.round(state.goal*.70));state.time=state.duration;state.kills=0;state.frenzy=false;state.spawnTimer=.40;state.aiTimer=0;state.combo=0;state.lastKill=-100;state.creditsRoom=0;state.bossAlive=false;state.roomBossSpawned=false;state.guardianSpawned=0}
+function waveRules(){const r=state.combat;state.goal=Math.round(20+9*(r-1)+.48*(r-1)*(r-1));state.duration=rangedAssault()?80:Math.min(120,60+5*(r-1));if(rangedAssault())state.goal=Math.max(20,Math.round(state.goal*.70));state.time=state.duration;state.kills=0;state.frenzy=false;state.spawnTimer=.40;
+if(rangedAssault()){
+ const preDeadlineBudget=Math.max(
+  0,
+  Math.floor((state.duration-state.spawnTimer)/spawnGap())
+ );
+ const feasibleGoal=Math.max(
+  20,
+  Math.floor(preDeadlineBudget*.60)
+ );
+ state.goal=Math.min(state.goal,feasibleGoal);
+}state.aiTimer=0;state.combo=0;state.lastKill=-100;state.creditsRoom=0;state.bossAlive=false;state.roomBossSpawned=false;state.guardianSpawned=0}
 function localToWorld(room,x,y){return {x:x+room.ox,y:y+room.oy}}
 function inBounds(room,x,y){return x>=room.ox&&x<room.ox+room.w&&y>=room.oy&&y<room.oy+room.h}
 function blockedIn(room,x,y){return !inBounds(room,x,y)||room.walls.has(at(x,y))}
@@ -1682,7 +1696,7 @@ function prepareStage(stage,award){
  }
  updateHUD();
 }
-function begin(seed,seedReplay=false){document.querySelector('.app').classList.remove('safe-room','shop-open');configureWorld();fitArena();state.runId=makeRunId();state.runInitialized=false;state.seedReplay=!!seedReplay;state.seed=(seed>>>0)||numSeed();state.score=0;state.kills=0;state.totalKills=0;state.cleared=0;state.simTime=0;cercoAuditInit();cercoCosmeticInit();state.up={};state.choiceOptions=[];state.upgradeRerolls=0;state.keys.clear();state.lastKey=null;state.holdFire=false;state.nextMob=1;state.clock=0;state.credits=0;state.creditsRoom=0;state.gear={armor:null,core:null,boots:null};state.stamina=100;state.staminaMax=100;state.lastDeploy=-100;state.lastInterceptDeploy=-100;state.repulseReady=0;state.upgradePicks=0;state.choiceSkips=0;state.guardianSpawned=0;state.enemyShots=[];state.amberShots=[];state.turrets=[];state.particles=[];state.shockwaves=[];state.floaters=[];state.arcs=[];state.hazards=[];state.announcedTypes=new Set();state.trails=[];state.sprintSteps=0;state.sprintHealDistance=0;state.sprintHealed=0;state.sprintShardAt=-100;state.scoreBoostUntil=0;state.scoreBeaconsSpawned=0;state.singularity=null;state.singularityReady=0;state.singularityScanAt=0;state.singularityCasts=0;state.matriarchBursts=[];state.matriarchSpitFx=[];state.summonsSpawned=0;state.lastPlayerMove=0;state.collapseElapsed=0;state.encroachment=0;state.player=null;state.room=buildMap(1,false);state.player=makePlayer();prepareStage(1,false);ui.log.replaceChildren();textLog('Expedition started. Fight your way through.');updateBuild();renderRecords();state.runInitialized=true;emitCercoEvent('run_started');emitCercoEvent('room_entered',{roomType:'combat'})}
+function begin(seed,seedReplay=false){document.querySelector('.app').classList.remove('safe-room','shop-open');configureWorld();fitArena();state.runId=makeRunId();state.runInitialized=false;state.seedReplay=!!seedReplay;state.seed=(seed>>>0)||numSeed();state.gameplayRng=rng((state.seed^0x6d2b79f5)>>>0||1);state.score=0;state.kills=0;state.totalKills=0;state.cleared=0;state.simTime=0;cercoAuditInit();cercoCosmeticInit();state.up={};state.choiceOptions=[];state.upgradeRerolls=0;state.keys.clear();state.lastKey=null;state.holdFire=false;state.nextMob=1;state.clock=0;state.credits=0;state.creditsRoom=0;state.gear={armor:null,core:null,boots:null};state.stamina=100;state.staminaMax=100;state.lastDeploy=-100;state.lastInterceptDeploy=-100;state.repulseReady=0;state.upgradePicks=0;state.choiceSkips=0;state.guardianSpawned=0;state.enemyShots=[];state.amberShots=[];state.turrets=[];state.particles=[];state.shockwaves=[];state.floaters=[];state.arcs=[];state.hazards=[];state.announcedTypes=new Set();state.trails=[];state.sprintSteps=0;state.sprintHealDistance=0;state.sprintHealed=0;state.sprintShardAt=-100;state.scoreBoostUntil=0;state.scoreBeaconsSpawned=0;state.singularity=null;state.singularityReady=0;state.singularityScanAt=0;state.singularityCasts=0;state.matriarchBursts=[];state.matriarchSpitFx=[];state.summonsSpawned=0;state.lastPlayerMove=0;state.collapseElapsed=0;state.encroachment=0;state.player=null;state.room=buildMap(1,false);state.player=makePlayer();prepareStage(1,false);ui.log.replaceChildren();textLog('Expedition started. Fight your way through.');updateBuild();renderRecords();state.runInitialized=true;emitCercoEvent('run_started');emitCercoEvent('room_entered',{roomType:'combat'})}
 function combatObjectiveReady(){
  return state.mode==='play' && state.kills>=state.goal && !state.bossAlive && (!guardianRoom() || state.guardianSpawned>=guardianTarget()) && !state.matriarchBursts.length;
 }
@@ -1739,7 +1753,7 @@ const MAX_UPGRADE_REROLLS=3,UPGRADE_REROLL_STEP=60;
 function eligibleUpgrades(){return buildPicks()>=BUILD_PICK_CAP?[]:upgrades.filter(u=>have(u.id)<u.max&&(!u.requires||have(u.requires))&&(!u.excludes||!have(u.excludes)))}
 function shuffleUpgrades(items){
  const result=items.slice();
- for(let i=result.length-1;i>0;i--){const j=randomInt(i+1);[result[i],result[j]]=[result[j],result[i]]}
+ for(let i=result.length-1;i>0;i--){const j=gameRandomInt(i+1);[result[i],result[j]]=[result[j],result[i]]}
  return result;
 }
 function rerollUpgradeChoices(){
@@ -1999,7 +2013,7 @@ function zombieType(){
   if(state.combat>=6)types.push('seeker','shaman');
   if(state.combat>=10)types.push('blighter');
   if(state.combat>=11)types.push('demolisher');
-  return types[randomInt(types.length)];
+  return types[gameRandomInt(types.length)];
  }
  const n=state.combat,tier=invasionTier();
  const count=type=>state.mobs.filter(z=>z.type===type).length;
@@ -2023,7 +2037,7 @@ function zombieType(){
  add('demolisher',n>=11?5+Math.min(4,tier):0,dangerous&&count('demolisher')<2&&rangedThreatCount()<shooterCap);
  // Camping is countered by pressure from outside melee range, not by instant damage.
  if(antiCampActive())for(const item of choices){if(['ranged','seeker','blighter','demolisher'].includes(item.type))item.weight*=3.2}
- const total=choices.reduce((v,c)=>v+c.weight,0);let r=Math.random()*total;
+ const total=choices.reduce((v,c)=>v+c.weight,0);let r=gameRandom()*total;
  for(const item of choices){r-=item.weight;if(r<0)return item.type}
  return 'normal';
 }
@@ -2055,12 +2069,12 @@ function spawnEnemy(forced){
  let validPool=[];
  for(const candidate of pools){validPool=valid(candidate);if(validPool.length)break}
  if(!validPool.length)return false;
- const pos=validPool[randomInt(validPool.length)];
+ const pos=validPool[gameRandomInt(validPool.length)];
  const levelHp=Math.floor((state.combat-1)/6)+Math.floor((state.combat-1)/18);
  const baseHp={normal:1,interceptor:2,flanker:3,ranged:2,seeker:3,blighter:4,demolisher:5,toxic:2,snarer:5,healer:7,shaman:4,ghost:3,boss:17,devil:20,matriarch:23,brute:11,shieldBrute:14,detonator:3}[type]||1;
  const hp=isGuardian({type})?baseHp+state.combat*3+Math.min(25,guardianStage()*2):baseHp+levelHp;
- const interval=type==='snarer'?.94:(type==='boss'||type==='devil')?1.04:type==='matriarch'?1.28:(type==='brute'||type==='shieldBrute')?1.30:type==='detonator'?.27:type==='ghost'?1.10:type==='healer'?.80:type==='blighter'?1.05:type==='demolisher'?.98:type==='seeker'?.88:type==='shaman'?1.12:type==='ranged'?random(.70,1.01):random(.52,.86);
- state.mobs.push({id:state.nextMob++,type,x:pos.x,y:pos.y,hp,maxHp:hp,interval,timer:random(.05,.30),flash:0,flank:Math.random()*Math.PI*2,shootTimer:random(.9,2.0),healTimer:random(1.5,2.7),fuse:-1,dashTimer:0,castTimer:random(2.4,4.0),summonCooldown:type==='matriarch'?3.6:0,summonWindup:0,volleyCount:0,w:(type==='brute'||type==='shieldBrute'||type==='matriarch')?2:1,h:(type==='brute'||type==='shieldBrute'||type==='matriarch')?2:1,armorShield:type==='shieldBrute'?8+Math.min(18,invasionTier()*2):0,armorShieldMax:type==='shieldBrute'?8+Math.min(18,invasionTier()*2):0});
+ const interval=type==='snarer'?.94:(type==='boss'||type==='devil')?1.04:type==='matriarch'?1.28:(type==='brute'||type==='shieldBrute')?1.30:type==='detonator'?.27:type==='ghost'?1.10:type==='healer'?.80:type==='blighter'?1.05:type==='demolisher'?.98:type==='seeker'?.88:type==='shaman'?1.12:type==='ranged'?gameRandomRange(.70,1.01):gameRandomRange(.52,.86);
+ state.mobs.push({id:state.nextMob++,type,x:pos.x,y:pos.y,hp,maxHp:hp,interval,timer:gameRandomRange(.05,.30),flash:0,flank:gameRandom()*Math.PI*2,shootTimer:gameRandomRange(.9,2.0),healTimer:gameRandomRange(1.5,2.7),fuse:-1,dashTimer:0,castTimer:gameRandomRange(2.4,4.0),summonCooldown:type==='matriarch'?3.6:0,summonWindup:0,volleyCount:0,w:(type==='brute'||type==='shieldBrute'||type==='matriarch')?2:1,h:(type==='brute'||type==='shieldBrute'||type==='matriarch')?2:1,armorShield:type==='shieldBrute'?8+Math.min(18,invasionTier()*2):0,armorShieldMax:type==='shieldBrute'?8+Math.min(18,invasionTier()*2):0});
  if(isGuardian({type})){state.guardianSpawned++;state.bossAlive=true;state.roomBossSpawned=state.guardianSpawned>=guardianTarget();
   if(cercoAuditCurrent())cercoAuditCurrent().guardianRoster.push(type);
   toast(type==='matriarch'?'DETONATOR MATRIARCH!':type==='devil'?'INFERNAL GUARDIAN!':'GUARDIAN INCOMING!',2.1);
@@ -2269,14 +2283,14 @@ function mobMovement(dt){
    if(p.x>=x&&p.x<x+(z.w||1)&&p.y>=y&&p.y<y+(z.h||1))continue;
    const field=state.flow?Math.min(...Array.from({length:z.w||1},(_,ix)=>Array.from({length:z.h||1},(_,iy)=>state.flow[at(x+ix,y+iy)])).flat()):99,target=Math.max(Math.abs(x-tx),Math.abs(y-ty));
    const val=z.type==='ghost'?target:z.type==='normal'||z.type==='toxic'||z.type==='snarer'?field:field*.55+target*.65+(Math.max(Math.abs(x-p.x),Math.abs(y-p.y))<2?.6:0);
-   let score=val+Math.random()*.20;
+   let score=val+gameRandom()*.20;
    if(['ranged','seeker','shaman','healer','blighter','demolisher','matriarch'].includes(z.type)){
     const distance=Math.max(Math.abs(x-p.x),Math.abs(y-p.y));
     const sight=clearLine(state.room,x,y,p.x,p.y);
-    score=(sight?0:7)+Math.abs(distance-(z.type==='healer'?7:z.type==='matriarch'?5:z.type==='blighter'?6:6))*.72+field*.14+(distance<=3?8:0)+Math.random()*.20;
+    score=(sight?0:7)+Math.abs(distance-(z.type==='healer'?7:z.type==='matriarch'?5:z.type==='blighter'?6:6))*.72+field*.14+(distance<=3?8:0)+gameRandom()*.20;
     if(z.type==='demolisher'&&state.turrets.length){
      const target=state.turrets.reduce((best,t)=>!best||Math.hypot(t.x-x,t.y-y)<Math.hypot(best.x-x,best.y-y)?t:best,null);
-     if(target){score=Math.abs(Math.hypot(target.x-x,target.y-y)-5)*.8+(clearLine(state.room,x,y,target.x,target.y)?0:5)+Math.random()*.2;}
+     if(target){score=Math.abs(Math.hypot(target.x-x,target.y-y)-5)*.8+(clearLine(state.room,x,y,target.x,target.y)?0:5)+gameRandom()*.2;}
     }
     if(z.type==='matriarch'&&distance<=3)score+=10;
     if(z.type==='healer'){
@@ -2292,7 +2306,7 @@ function mobMovement(dt){
   }
   if(winner){z.x=winner.x;z.y=winner.y}for(const c of enemyCells(z))occupied.add(c);
   const target=state.turrets.find(t=>Math.max(Math.abs(z.x-t.x),Math.abs(z.y-t.y))<=1);
-  if(target&&Math.random()<.30)damageTurret(target,isGuardian(z)?12:6);
+  if(target&&gameRandom()<.30)damageTurret(target,isGuardian(z)?12:6);
  }
 }
 // Singularity changes formations, not damage, score or the underlying navigation grid.
@@ -2396,7 +2410,7 @@ function enemyFire(z){
  const visibleTurrets=state.turrets.filter(t=>Math.hypot(t.x-z.x,t.y-z.y)<(z.type==='demolisher'?11:4)&&clearLine(state.room,z.x,z.y,t.x,t.y));
  const bestTurret=z.type==='demolisher'?visibleTurrets.sort((a,b)=>Math.hypot(a.x-z.x,a.y-z.y)-Math.hypot(b.x-z.x,b.y-z.y))[0]:visibleTurrets[0];
  const exposed=clearLine(state.room,z.x,z.y,state.player.x,state.player.y);
- const aimAtPlayer=exposed&&(!bestTurret||(z.type!=='demolisher'&&Math.random()<.85))||!bestTurret;
+ const aimAtPlayer=exposed&&(!bestTurret||(z.type!=='demolisher'&&gameRandom()<.85))||!bestTurret;
  const initial=aimAtPlayer?{x:center(state.player.x),y:center(state.player.y)}:{x:center(bestTurret.x),y:center(bestTurret.y)};
  const target=tacticalAimPoint(z,initial,aimAtPlayer);
  const base=Math.atan2(target.y-origin.y,target.x-origin.x);if(z.type==='ranged')CERCO_VISUAL_DG05088.aim(z,base);
@@ -2693,7 +2707,7 @@ function killEnemy(z,fromNuke=false,origin=fromNuke?'nuke':'normal'){
    if(heal>0){p.hp+=heal;addFloater(x,y,'+'+heal+' HP','#98eeac');}
   }
  }
- if(!fromNuke&&state.drops.length<9){const r=Math.random();
+ if(!fromNuke&&state.drops.length<9){const r=gameRandom();
   if(r<.0025&&state.roomNukes<1){state.roomNukes++;state.drops.push({x:z.x,y:z.y,type:'nuke',life:13})}
   else if(r<Math.max(.012,.032-state.combat*.0007)&&state.roomLifeDrops<2){state.roomLifeDrops++;state.drops.push({x:z.x,y:z.y,type:'life',life:16,value:30})}
   else if(have('shield')&&r<.050&&state.roomShieldDrops<2){state.roomShieldDrops++;state.drops.push({x:z.x,y:z.y,type:'shield',life:16,value:18})}
@@ -4073,13 +4087,71 @@ function draw(){
   g.fillStyle=cercoVisual.flashColor;g.fillRect(0,0,cv.width,cv.height);g.restore();}
  if(state.mode==='transition'){const alpha=clamp(1-state.transitionTimer/.55,0,1);g.fillStyle=`rgba(5,11,20,${alpha})`;g.fillRect(0,0,cv.width,cv.height)}
 }
-function animate(now){const dt=Math.min(.034,Math.max(0,(now-state.last)/1000||0));state.last=now;
- state.anim+=dt;
- cercoVisual.shake=Math.max(0,cercoVisual.shake-dt*37);
- cercoVisual.flash=Math.max(0,cercoVisual.flash-dt*1.7);
- if(state.noticeEnd<state.anim)ui.toast.style.opacity='0';updateTouchPresentation();tick(dt);
- if(state.player&&state.player.blend<1)state.player.blend=Math.min(1,state.player.blend+dt/.11);
- draw();requestAnimationFrame(animate);
+const CERCO_FIXED_STEP = 1 / 60;
+const CERCO_MAX_FRAME_DELTA = 0.25;
+let cercoAccumulator = 0;
+
+function animate(now) {
+ const elapsed = state.last
+  ? Math.max(0, (now - state.last) / 1000)
+  : 0;
+
+ state.last = now;
+
+ // Never simulate a suspended-tab gap.
+ const frameDt = document.hidden || elapsed > 0.5
+  ? 0
+  : Math.min(elapsed, CERCO_MAX_FRAME_DELTA);
+
+ cercoAccumulator = Math.min(
+  CERCO_MAX_FRAME_DELTA,
+  cercoAccumulator + frameDt
+ );
+
+ let steps = 0;
+
+ while (
+  cercoAccumulator + 1e-9 >= CERCO_FIXED_STEP &&
+  steps < 15
+ ) {
+  cercoAccumulator = Math.max(
+   0,
+   cercoAccumulator - CERCO_FIXED_STEP
+  );
+
+  const dt = CERCO_FIXED_STEP;
+
+  state.anim += dt;
+
+  cercoVisual.shake = Math.max(
+   0,
+   cercoVisual.shake - dt * 37
+  );
+
+  cercoVisual.flash = Math.max(
+   0,
+   cercoVisual.flash - dt * 1.7
+  );
+
+  tick(dt);
+
+  if (state.player && state.player.blend < 1) {
+   state.player.blend = Math.min(
+    1,
+    state.player.blend + dt / .11
+   );
+  }
+
+  steps++;
+ }
+
+ if (state.noticeEnd < state.anim) {
+  ui.toast.style.opacity = '0';
+ }
+
+ updateTouchPresentation();
+ draw();
+ requestAnimationFrame(animate);
 }
 function setAim(ev){const r=cv.getBoundingClientRect();state.aimX=clamp((ev.clientX-r.left)*cv.width/r.width,0,cv.width);state.aimY=clamp((ev.clientY-r.top)*cv.height/r.height,0,cv.height)}
 cv.addEventListener('pointermove',ev=>{if(ev.pointerType!=='touch')setAim(ev)});cv.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;setAim(ev);if(ev.pointerType==='touch'){allowTouch();ev.preventDefault();return;}if(state.mode==='play'){state.holdFire=true;fireShot();ev.preventDefault()}});window.addEventListener('pointerup',()=>state.holdFire=false);cv.addEventListener('contextmenu',e=>e.preventDefault());
